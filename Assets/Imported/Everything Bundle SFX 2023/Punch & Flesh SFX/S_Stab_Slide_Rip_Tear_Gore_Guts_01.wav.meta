@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: ff2b47121c08b494c94f541b784f7f3d
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 6
+  defaultSettings:
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  preloadAudioData: 1
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270068
+  packageName: Everything Bundle SFX 2023
+  packageVersion: 3.0
+  assetPath: Assets/Everything Bundle SFX 2023/Punch & Flesh SFX/S_Stab_Slide_Rip_Tear_Gore_Guts_01.wav
+  uploadId: 626046

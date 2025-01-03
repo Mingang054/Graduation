@@ -1,0 +1,30 @@
+fileFormatVersion: 2
+guid: b9d3dcc025e13ef41843f03431d1738e
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 6
+  defaultSettings:
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  preloadAudioData: 1
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270068
+  packageName: Everything Bundle SFX 2023
+  packageVersion: 3.0
+  assetPath: Assets/Everything Bundle SFX 2023/SCI FI Games Sound Pack/Voice Robots/Wav_Voice
+    Robots 12-Audio.wav
+  uploadId: 626046
