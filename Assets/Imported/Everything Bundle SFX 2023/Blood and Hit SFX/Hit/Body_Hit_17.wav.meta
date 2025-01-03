@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: 919f1b162da81a94a8bf0eee3356d5bf
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 6
+  defaultSettings:
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  preloadAudioData: 1
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270068
+  packageName: Everything Bundle SFX 2023
+  packageVersion: 3.0
+  assetPath: Assets/Everything Bundle SFX 2023/Blood and Hit SFX/Hit/Body_Hit_17.wav
+  uploadId: 626046

@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: d3cf5f51a92174e4c82f8c0e342e954b
+AudioImporter:
+  externalObjects: {}
+  serializedVersion: 6
+  defaultSettings:
+    loadType: 0
+    sampleRateSetting: 0
+    sampleRateOverride: 44100
+    compressionFormat: 1
+    quality: 1
+    conversionMode: 0
+  platformSettingOverrides: {}
+  forceToMono: 0
+  normalize: 1
+  preloadAudioData: 1
+  loadInBackground: 0
+  ambisonic: 0
+  3D: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 270068
+  packageName: Everything Bundle SFX 2023
+  packageVersion: 3.0
+  assetPath: Assets/Everything Bundle SFX 2023/Flip Flops Sound Effects/Sand/FlipFlopsSand37.wav
+  uploadId: 626046
