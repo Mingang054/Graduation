@@ -10,27 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf50ea0e4913cdb4a92942be4a6faaf9, type: 3}
-  m_Name: F201
+  m_Name: F202
   m_EditorClassIdentifier: 
-  width: 1
-  height: 1
-  itemName: Special Can of tuna
-  itemCode: F201
-  itemSprite: {fileID: -4550549056436868033, guid: 3b3dbb934645b1f4bbe25dcfe32115c4, type: 3}
-  price: 100
-  weight: 0.1
+  size: {x: 1, y: 2}
+  itemName: MRE
+  itemCode: F200
+  itemSprite: {fileID: -1290736198924709835, guid: 50796329bb5defa438ff865b133f6857, type: 3}
+  price: 500
+  weight: 0.2
   maxStack: 255
   itemType: 2
-  description: Dorkas loves it
-  hp: 0
-  sp: 0
-  energy: 30
-  hydration: 10
+  description: In honest, it sucks
+  hp: 5
+  sp: 20
+  energy: 50
+  hydration: 50
   hpRegen: 0
   spRegen: 0
-  energyRegen: 0
-  hydrationRegen: 0
-  regenDuration: 0
+  energyRegen: 0.5
+  hydrationRegen: 0.5
+  regenDuration: 5
   hemostasis: 0
   consumableType: 1
   isConsumable: 1

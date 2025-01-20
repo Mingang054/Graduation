@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Armor : ItemBase
+public class Armor : ItemInstance
 {
     public float durability { get; private set; }  // 내구도
 
@@ -20,9 +20,10 @@ public class Armor : ItemBase
         }
     }
 
-    // 방어구 착용
-    public override void Use()
+    // 내구도 설정
+    public void SetDurability(float newDurability)
     {
-        Debug.Log($"{data.itemName} 착용됨.");
+        durability = Mathf.Clamp(newDurability, 0, 100);
+        Debug.Log($"{data.itemName} 내구도 설정: {durability}");
     }
 }

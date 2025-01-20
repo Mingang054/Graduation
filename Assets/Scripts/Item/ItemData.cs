@@ -2,8 +2,7 @@
 
 public abstract class ItemData : ScriptableObject
 {
-    public int width;
-    public int height;
+    public Vector2Int size;
     public string itemName;                   // 아이템 이름
     public string itemCode;                   // 아이템 코드  4자리 16진수 테스트용 첫자리 F
     public Sprite itemSprite;                 // 아이템 아이콘

@@ -8,7 +8,7 @@ public enum ItemType
     Armor,            // 옷 (방어구)
     Consumable,       // 소모품
     SpecialConsumable,
-    Miscellaneous     // 기타 아이템
+    etc     // 기타 아이템
 }
 
 

@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf50ea0e4913cdb4a92942be4a6faaf9, type: 3}
-  m_Name: F202
+  m_Name: F200
   m_EditorClassIdentifier: 
-  width: 1
-  height: 2
+  size: {x: 1, y: 2}
   itemName: MRE
   itemCode: F200
   itemSprite: {fileID: -1290736198924709835, guid: 50796329bb5defa438ff865b133f6857, type: 3}

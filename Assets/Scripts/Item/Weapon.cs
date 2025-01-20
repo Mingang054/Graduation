@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 
-public class Weapon : ItemBase
+public class Weapon : ItemInstance
 {
     public float durability { get; private set; }  // 내구도
+    public Magazine currentMag;
 
     public Weapon(WeaponData data, int initialCount = 1, float initialDurability = 100)
         : base(data, initialCount)
@@ -20,9 +21,10 @@ public class Weapon : ItemBase
         }
     }
 
-    // 무기 사용
-    public override void Use()
+    // 내구도 설정
+    public void SetDurability(float newDurability)
     {
-        Debug.Log($"{data.itemName} 사용됨 (무기 발사)");
+        durability = Mathf.Clamp(newDurability, 0, 100);
+        Debug.Log($"{data.itemName} 내구도 설정: {durability}");
     }
 }

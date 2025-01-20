@@ -1,16 +1,18 @@
 using UnityEngine;
 
-public class Consumable : ItemBase
+public class Consumable : ItemInstance
 {
     public Consumable(ConsumableData data, int initialCount = 1)
-        : base(data, initialCount) { }
-
-    // 소모품 사용
-    public override void Use()
+        : base(data, initialCount)
     {
-        ConsumableData consumableData = (ConsumableData)data;
-        Debug.Log($"{data.itemName} 사용! HP +{consumableData.hp}, SP +{consumableData.sp}");
+    }
 
-        SetCount(count - 1);  // 수량 감소
+
+    // 사용 처리
+    public void Use()
+    {
+        
+        Debug.LogWarning($"{data.itemName}을(를) 더 이상 사용할 수 없습니다.");
+        
     }
 }

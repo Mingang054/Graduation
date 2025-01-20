@@ -1,26 +1,27 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
-
-//½ÇÁ¦·Î ÀÎº¥Åä¸® µî¿¡¼­ ¼ÒÁöÇÏ°Ô µÉ ¾ÆÀÌÅÛ ÀÎ½ºÅÏ½ºÀÔ´Ï´Ù
+// ê³µí†µ ì•„ì´í…œ ì†ì„±ì„ ê°€ì§„ ì¶”ìƒ í´ë˜ìŠ¤
+[System.Serializable]
 public class ItemInstance
 {
-    public ItemBase item { get; private set; }  // ItemBase ÂüÁ¶
-    
-    public ItemInstance(ItemBase item)
+    public Vector2Int location;
+    public ItemData data { get; private set; }  // ScriptableObject ë°ì´í„° ì°¸ì¡°
+    public int count { get; private set; }      // ìˆ˜ëŸ‰
+    public float totalWeight => count * data.weight;  // ì´ ë¬´ê²Œ ê³„ì‚°
 
+    public ItemInstance(ItemData data, int initialCount = 1)
     {
-        this.item = item;
+        this.location = new Vector2Int(0, 0);                       
+        this.data = data;
+        this.count = Mathf.Clamp(initialCount, 0, data.maxStack);
     }
 
-    // ¼ö·® ¹İÈ¯
-    public int GetCount()
+    // ìˆ˜ëŸ‰ ì„¤ì •
+    public void SetCount(int count)
     {
-        return item.count;
+        this.count = Mathf.Clamp(count, 0, data.maxStack);
     }
 
-    // ¾ÆÀÌÅÛ »ç¿ë
-    public void UseItem()
-    {
-        item.Use();
-    }
+    // ì•„ì´í…œ ì‚¬ìš© ì¶”ìƒ ë©”ì„œë“œ (íŒŒìƒ í´ë˜ìŠ¤ì—ì„œ êµ¬í˜„)
+    //public abstract void Use();
 }
