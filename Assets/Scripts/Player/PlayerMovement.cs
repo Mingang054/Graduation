@@ -6,7 +6,6 @@ public class PlayerMovement : MonoBehaviour
     public static PlayerMovement Instance { get; private set; } // 싱글톤 인스턴스
 
     [SerializeField] private Animator animator;
-    [SerializeField] private Transform armObject; // ArmObject Transform 추가
 
     // 임시 변수들
     private float temp = 50f; // 임시 달리기용 자원
@@ -87,7 +86,6 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         OptimizeFlipObject(); // 마우스 위치 변화 시에만 반전 처리
-        OptimizeRotateArm(); // 마우스 이동 시에만 팔 회전 처리
     }
 
     void FixedUpdate()
@@ -168,30 +166,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OptimizeRotateArm()
-    {
-        if (armObject == null) return;
-
-        // 마우스 위치를 월드 좌표로 변환
-        Vector3 mousePosition = Input.mousePosition;
-        if (mousePosition == previousMousePosition) return; // 변경 없으면 무시
-        previousMousePosition = mousePosition;
-
-        mousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
-
-        // ArmObject와 마우스 간의 각도 계산
-        Vector3 direction = mousePosition - armObject.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        // 캐릭터의 좌우 반전 상태를 고려하여 각도 조정
-        if (transform.localScale.x < 0) // 왼쪽으로 반전된 경우
-        {
-            angle -= 180f;
-        }
-
-        // ArmObject 회전 적용
-        armObject.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
-    }
 
     private void OptimizeUpdateAnimator()
     {
@@ -212,3 +186,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 }
+
+
+

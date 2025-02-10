@@ -1,65 +1,114 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class ItemInstanceUI : MonoBehaviour
 {
-    public Image itemImage; // ¾ÆÀÌÅÛ ÀÌ¹ÌÁö
-    public Text itemCountText; // ¾ÆÀÌÅÛ ¼ö·® ÅØ½ºÆ®
-    private ItemInstance itemInstance; // ÇöÀç UI°¡ ³ªÅ¸³»´Â ¾ÆÀÌÅÛ ÀÎ½ºÅÏ½º
+    public Image itemImage; // ì•„ì´í…œ ì´ë¯¸ì§€
+    public Text itemCountText; // ì•„ì´í…œ ìˆ˜ëŸ‰ í…ìŠ¤íŠ¸
+    private ItemInstance itemInstance; // í˜„ì¬ UIê°€ ë‚˜íƒ€ë‚´ëŠ” ì•„ì´í…œ ì¸ìŠ¤í„´ìŠ¤
+    private RectTransform rectTransform; // UI ìœ„ì¹˜ë¥¼ ì¡°ì •í•  RectTransform
 
-    // ¾ÆÀÌÅÛ UI ÃÊ±âÈ­
+    private void Awake()
+    {
+        rectTransform = GetComponent<RectTransform>();
+
+        // ì•„ì´í…œì´ ì¡´ì¬í•  ê²½ìš°, UI ìœ„ì¹˜ ë° í¬ê¸°ë¥¼ ì´ˆê¸°í™”
+        if (itemInstance != null)
+        {
+            UpdateUI();
+            UpdateSize(); // UI í¬ê¸° ì„¤ì •
+        }
+    }
+
+    // ì•„ì´í…œ UI ì´ˆê¸°í™”
     public void Initialize(ItemInstance instance)
     {
         itemInstance = instance;
-        Refresh(); // ÃÊ±âÈ­ ½Ã UI¸¦ ¾÷µ¥ÀÌÆ®
+        UpdateUI(); // UI ì—…ë°ì´íŠ¸
+        UpdatePosition(itemInstance.location); // UI ìœ„ì¹˜ ì´ˆê¸°í™”
+        UpdateSize(); // UI í¬ê¸° ì„¤ì •
     }
 
-    // UI ¸®ÇÁ·¹½Ã ¸Ş¼­µå
-    public void Refresh()
+    // UI ë¦¬í”„ë ˆì‹œ ë©”ì„œë“œ
+    public void UpdateUI()
     {
         if (itemInstance != null)
         {
-            // ¾ÆÀÌÅÛ ½ºÇÁ¶óÀÌÆ® ¼³Á¤
+            UpdatePosition(itemInstance.location);
+            UpdateSize(); // í¬ê¸° ì¡°ì • ì¶”ê°€
+
+            // ì•„ì´í…œ ìŠ¤í”„ë¼ì´íŠ¸ ì„¤ì •
             itemImage.sprite = itemInstance.data.itemSprite;
             itemImage.enabled = true;
 
-            // ¼ö·® ÅØ½ºÆ® ¾÷µ¥ÀÌÆ®
-            itemCountText.text = itemInstance.count > 1 ? itemInstance.count.ToString() : ""; // 1°³ÀÏ ¶§´Â Ç¥½Ã ¾È ÇÔ
+            // ìˆ˜ëŸ‰ í…ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
+            itemCountText.text = itemInstance.count > 1 ? itemInstance.count.ToString() : ""; // 1ê°œì¼ ë•ŒëŠ” í‘œì‹œ ì•ˆ í•¨
         }
         else
         {
-            // ¾ÆÀÌÅÛÀÌ ¾øÀ¸¸é UI ÃÊ±âÈ­
+            // ì•„ì´í…œì´ ì—†ìœ¼ë©´ UI ì´ˆê¸°í™”
             itemImage.sprite = null;
             itemImage.enabled = false;
             itemCountText.text = "";
         }
     }
 
-    // µå·¡±× ½ÃÀÛ Ã³¸®
+    // UI ìœ„ì¹˜ ì—…ë°ì´íŠ¸ (ë¡œì»¬ ì¢Œí‘œ ê¸°ì¤€)
+    public void UpdatePosition(Vector2Int location)
+    {
+        if (rectTransform == null)
+        {
+            Debug.LogWarning("RectTransformì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+            return;
+        }
+
+        // ìƒˆë¡œìš´ UI ìœ„ì¹˜ ì„¤ì • (Pivotì´ ë§ì¶°ì ¸ ìˆìœ¼ë¯€ë¡œ ìœ„ì¹˜ê°’ë§Œ ë³€ê²½)
+        rectTransform.anchoredPosition = new Vector2(location.x * 96-96, -location.y * 96+96);
+    }
+
+    // UI í¬ê¸° ì—…ë°ì´íŠ¸
+    public void UpdateSize()
+    {
+        if (rectTransform == null)
+        {
+            Debug.LogWarning("RectTransformì´ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+            return;
+        }
+
+        if (itemInstance != null)
+        {
+            // ì•„ì´í…œ í¬ê¸° = size * 96
+            rectTransform.sizeDelta = new Vector2(itemInstance.data.size.x * 96, itemInstance.data.size.y * 96);
+            Debug.Log($"UI í¬ê¸° ì—…ë°ì´íŠ¸: {rectTransform.sizeDelta}");
+        }
+    }
+
+
+
+
+
+
+    // ë“œë˜ê·¸ ì‹œì‘ ì²˜ë¦¬
     public void OnBeginDrag()
     {
-        Debug.Log($"µå·¡±× ½ÃÀÛ: {itemInstance.data.itemName}");
-        // µå·¡±× ½ÃÀÛ ·ÎÁ÷ Ãß°¡
+        Debug.Log($"ë“œë˜ê·¸ ì‹œì‘: {itemInstance.data.itemName}");
     }
 
-    // µå·¡±× Áß Ã³¸®
+    // ë“œë˜ê·¸ ì¤‘ ì²˜ë¦¬
     public void OnDrag(Vector3 mousePosition)
     {
-        transform.position = mousePosition; // µå·¡±× UI ÀÌµ¿
+        transform.position = mousePosition; // ë“œë˜ê·¸ UI ì´ë™
     }
 
-    // µå·¡±× Á¾·á Ã³¸®
+    // ë“œë˜ê·¸ ì¢…ë£Œ ì²˜ë¦¬
     public void OnEndDrag(Vector3 mousePosition)
     {
-        Debug.Log($"µå·¡±× Á¾·á: {itemInstance.data.itemName}");
-        // µå·¡±× Á¾·á ¹× µå·Ó Ã³¸®
+        Debug.Log($"ë“œë˜ê·¸ ì¢…ë£Œ: {itemInstance.data.itemName}");
     }
 
-    // Å¬¸¯ Ã³¸®
+    // í´ë¦­ ì²˜ë¦¬
     public void OnClick()
     {
-        Debug.Log($"¾ÆÀÌÅÛ Å¬¸¯: {itemInstance.data.itemName}");
-        // Å¬¸¯ µ¿ÀÛ Ãß°¡
+        Debug.Log($"ì•„ì´í…œ í´ë¦­: {itemInstance.data.itemName}");
     }
 }

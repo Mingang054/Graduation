@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: {x: 1, y: 2}
   itemName: MRE
-  itemCode: F200
+  itemCode: F202
   itemSprite: {fileID: -1290736198924709835, guid: 50796329bb5defa438ff865b133f6857, type: 3}
   price: 500
   weight: 0.2

@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: F200
   m_EditorClassIdentifier: 
   size: {x: 1, y: 2}
-  itemName: MRE
+  itemName: Cup
   itemCode: F200
-  itemSprite: {fileID: -1290736198924709835, guid: 50796329bb5defa438ff865b133f6857, type: 3}
+  itemSprite: {fileID: -2299316985778227356, guid: 61288c1ac52a57d48baedbd23a421fb7, type: 3}
   price: 500
   weight: 0.2
   maxStack: 255
   itemType: 2
-  description: In honest, it sucks
+  description: MREEEEE
   hp: 5
   sp: 20
   energy: 50
