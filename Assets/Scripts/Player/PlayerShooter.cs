@@ -120,6 +120,7 @@ public class PlayerShooter : MonoBehaviour
 
         // 🔹 오브젝트 풀에서 탄환 가져오기
         GameObject newProjectile = ProjectilePoolManager.Instance.GetProjectile(
+            Faction.Friendly,  // 🔹 플레이어가 발사한 탄환
             2f,  // 삭제 시간
             currentWeapon.projectileSpeed,
             currentWeapon.damage,
@@ -131,13 +132,15 @@ public class PlayerShooter : MonoBehaviour
         {
             newProjectile.transform.position = firePosition;
 
-            // 🔹 발사 방향을 기반으로 회전 설정 (90도 보정 제거)
+            // 🔹 발사 방향을 기반으로 회전 설정 (이동 방향에 맞춰 자동 조정)
             float angle = Mathf.Atan2(finalDirection.y, finalDirection.x) * Mathf.Rad2Deg;
             newProjectile.transform.rotation = Quaternion.Euler(0, 0, angle);
 
             newProjectile.GetComponent<Projectile>().Launch(finalDirection);
         }
     }
+
+
 
 
 

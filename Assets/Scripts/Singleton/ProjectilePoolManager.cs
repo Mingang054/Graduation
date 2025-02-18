@@ -33,7 +33,7 @@ public class ProjectilePoolManager : MonoBehaviour
         }
     }
 
-    public GameObject GetProjectile(float returnTime, float speed, float damage, float penetration, float colliderSize)
+    public GameObject GetProjectile(Faction faction, float returnTime, float speed, float damage, float penetration, float colliderSize)
     {
         if (poolQueue.Count == 0)
         {
@@ -47,7 +47,7 @@ public class ProjectilePoolManager : MonoBehaviour
         Projectile projectile = obj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            projectile.SetForEnable(speed, damage, penetration, colliderSize);
+            projectile.SetForEnable(faction, speed, damage, penetration, colliderSize);
         }
 
         StartCoroutine(SetDeleteTime(obj, returnTime));

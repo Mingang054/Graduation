@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//미사용 Dummy
 public class LivingEntity : MonoBehaviour, IDamageable
 {
+
+
     public float startingHealthPoint = 100;
     public float healthPointMax = 100;                   //최대체력
     public float healthPoint { get; protected set; }     //체력
@@ -20,7 +23,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
         healthPoint = startingHealthPoint;
     }
 
-    public virtual void OnDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal)
+    public virtual void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal)
     {
         float penetratedArmor= armor - penetration;
         if (penetratedArmor < 0f) { penetratedArmor = 0f; }

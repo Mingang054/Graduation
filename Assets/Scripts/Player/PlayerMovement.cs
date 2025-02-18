@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private float temp = 50f; // 임시 달리기용 자원
     private float tempMax = 100f;
     private float tempRegain = 1f;
-    private float tempCost = 5f;
+    private float tempCost = 5;
 
     // sprint 플래그
     private bool isSprinting = false;
@@ -19,14 +19,14 @@ public class PlayerMovement : MonoBehaviour
     private bool isSprintReset = true;
 
     // 이동 관련 변수
-    private float walkSpeed = 5f;
+    private float walkSpeed = 4f;
     public float WalkSpeed
     {
         get { return walkSpeed; }
         private set { walkSpeed = Mathf.Clamp(value, 0f, 20f); }
     }
 
-    private float sprintSpeed = 10f;
+    private float sprintSpeed = 7.5f;
     public float SprintSpeed
     {
         get { return sprintSpeed; }

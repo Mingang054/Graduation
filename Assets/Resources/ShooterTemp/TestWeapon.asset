@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestWeapon
   m_EditorClassIdentifier: 
   size: {x: 0, y: 0}
-  itemName: testgun
+  itemName: 
   itemCode: TTTT
   itemSprite: {fileID: 4786024892068483932, guid: 42c4f01ab51a7014d90e8de54e075611, type: 3}
   price: 0
@@ -22,7 +22,7 @@ MonoBehaviour:
   itemType: 0
   description: GunForTest
   category: 0
-  damage: 20
+  damage: 40
   penetration: 10
   damageAP: 10
   penetrationAP: 50
@@ -33,10 +33,10 @@ MonoBehaviour:
   barrelLength: 0.5
   timeToSwap: 1
   colliderSize: 0
-  dispersion: 0
-  dispersionRate: 0
+  dispersion: 1
+  dispersionRate: 0.2
   reloadMode: 0
-  fireMode: 0
+  fireMode: 1
   attackMode: 1
   attackClip: {fileID: 8300000, guid: 091bc1550b391304c812177eb52e63dc, type: 3}
   bullet: {fileID: -2346302928887187388, guid: d0b3f1e155d19e343bfc23591304c1d7, type: 3}

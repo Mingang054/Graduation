@@ -6,14 +6,16 @@ public class Projectile : MonoBehaviour
     private float speed;
     private float damage;
     private float penetration;
+    private Faction faction; // 🔹 피아 식별을 위한 Faction 변수
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    public void SetForEnable(float speed, float damage, float penetration, float colliderSize)
+    public void SetForEnable(Faction faction, float speed, float damage, float penetration, float colliderSize)
     {
+        this.faction = faction; // 🔹 탄환의 소속 설정
         this.speed = speed;
         this.damage = damage;
         this.penetration = penetration;
@@ -37,10 +39,24 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Wall"))
+        // 🔹 충돌한 대상이 DamageableEntity인지 확인
+        DamageableEntity target = other.GetComponent<DamageableEntity>();
+
+        if (target != null && target.faction != faction) // 🔹 Faction이 다르면 데미지 적용
+        {
+            Vector2 hitPoint = other.ClosestPoint(transform.position); // 충돌 지점
+            Vector2 hitNormal = (transform.position - other.transform.position).normalized; // 충돌 방향
+
+            target.OnHitDamage(damage, penetration, hitPoint, hitNormal);
+
+            gameObject.SetActive(false);
+            ProjectilePoolManager.Instance.ReturnProjectile(gameObject);
+        }
+        else if (other.CompareTag("Wall")) // 🔹 벽(Wall)과 충돌한 경우에만 삭제
         {
             gameObject.SetActive(false);
             ProjectilePoolManager.Instance.ReturnProjectile(gameObject);
         }
     }
+
 }
