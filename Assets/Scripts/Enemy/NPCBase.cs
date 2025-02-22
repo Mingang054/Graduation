@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-using UnityEngine;
 using System.Collections;
 
 public class NPCBase : DamageableEntity
@@ -10,9 +9,10 @@ public class NPCBase : DamageableEntity
     private Collider2D npcCollider;
     private AudioSource audioSource;
 
+    public bool isAttacking = false;
+
 
     public AlertState alertState;
-
 
 
 
@@ -128,7 +128,7 @@ public class NPCBase : DamageableEntity
                 }
             }
 
-            // ✅ 사망 시 90도 회전
+            // ✅ 사망 확인용 시각 테스트
             transform.rotation = Quaternion.Euler(0, 0, 90);
 
             // ✅ 10초 후 삭제

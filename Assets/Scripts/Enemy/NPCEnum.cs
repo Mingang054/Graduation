@@ -14,7 +14,8 @@ public enum AlertState
     Stay,
     Searching, //탐지거리 0.5
     Aleat, //탐지거리 1
-    Track //추적
+    Track,
+    Attack
 }
 
 public enum TrackType
@@ -26,6 +27,7 @@ public enum TrackType
 
 public enum Faction 
 {
+    Wall,
     Friendly,
     Slavika,
     Zombie

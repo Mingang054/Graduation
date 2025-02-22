@@ -16,7 +16,7 @@ MonoBehaviour:
   health: 150
   armor: 20
   speed: 3
-  detectionRange: 20
+  detectionRange: 2
   fireRange: 10
   attckType: 0
   trackType: 1
