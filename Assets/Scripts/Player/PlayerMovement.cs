@@ -92,14 +92,12 @@ public class PlayerMovement : MonoBehaviour
     {
         OptimizeControlMovement(); // 이동 관련 최적화 처리
         OptimizeUpdateAnimator(); // 애니메이션 상태 변경 시에만 업데이트
-        Debug.Log(temp);
     }
 
     private void OptimizeControlMovement()
     {
         if (moveInput == Vector2.zero) // 이동하지 않을 때는 조기 반환
         {
-            Debug.Log("정지 상태...");
             RegainTemp();
             return;
         }
@@ -119,14 +117,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (isSprinting && isSprintable && isTempEnough)
         {
-            Debug.Log("Sprint 중...");
             isSprintReset = false;
             temp -= tempCost * Time.fixedDeltaTime;
             MovePlayer(sprintSpeed);
         }
         else
         {
-            Debug.Log("걷는 중...");
             RegainTemp();
             MovePlayer(walkSpeed);
         }

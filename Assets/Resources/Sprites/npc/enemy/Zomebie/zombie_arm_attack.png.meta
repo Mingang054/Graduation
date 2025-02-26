@@ -153,20 +153,20 @@ TextureImporter:
       name: zombie_arm_attack_0
       rect:
         serializedVersion: 2
-        x: 120
-        y: 628
-        width: 58
-        height: 19
+        x: 0
+        y: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f3d10ae9c3c161b70800000000000000
-      internalID: 8869307562837679423
+      spriteID: 7966b4b18615e2d42a4a4865260abe31
+      internalID: -723262621
       vertices: []
       indices: 
       edges: []
@@ -175,20 +175,20 @@ TextureImporter:
       name: zombie_arm_attack_1
       rect:
         serializedVersion: 2
-        x: 375
-        y: 633
-        width: 58
-        height: 26
+        x: 256
+        y: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f698c55c297755eb0800000000000000
-      internalID: -4731744361222731409
+      spriteID: e8930966a0847ab498a71aa00423031d
+      internalID: 1626334209
       vertices: []
       indices: 
       edges: []
@@ -197,20 +197,20 @@ TextureImporter:
       name: zombie_arm_attack_2
       rect:
         serializedVersion: 2
-        x: 630
-        y: 634
-        width: 52
-        height: 38
+        x: 512
+        y: 512
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: ebf56049a5d652aa0800000000000000
-      internalID: -6186418277325578306
+      spriteID: 8a96003a330bf614c9fed1c62bed0b44
+      internalID: -938377163
       vertices: []
       indices: 
       edges: []
@@ -219,20 +219,20 @@ TextureImporter:
       name: zombie_arm_attack_3
       rect:
         serializedVersion: 2
-        x: 119
-        y: 377
-        width: 58
-        height: 26
+        x: 0
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 017601ae05503f920800000000000000
-      internalID: 3022765619978200848
+      spriteID: 327be1772fe72684caf211e066c08ee0
+      internalID: 311102623
       vertices: []
       indices: 
       edges: []
@@ -241,20 +241,20 @@ TextureImporter:
       name: zombie_arm_attack_4
       rect:
         serializedVersion: 2
-        x: 376
-        y: 369
-        width: 57
-        height: 22
+        x: 256
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5714882acb75125d0800000000000000
-      internalID: -3089091401707142795
+      spriteID: 07e3ce52ddc6cae4ab3ec6b02c22eb28
+      internalID: 1152969301
       vertices: []
       indices: 
       edges: []
@@ -263,20 +263,20 @@ TextureImporter:
       name: zombie_arm_attack_5
       rect:
         serializedVersion: 2
-        x: 631
-        y: 364
-        width: 58
-        height: 27
+        x: 512
+        y: 256
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d4a561618ce2e8a40800000000000000
-      internalID: 5372282842398480973
+      spriteID: 0167e52774092c44ab828a883b4c1816
+      internalID: 1049556078
       vertices: []
       indices: 
       edges: []
@@ -285,20 +285,20 @@ TextureImporter:
       name: zombie_arm_attack_6
       rect:
         serializedVersion: 2
-        x: 121
-        y: 83
-        width: 41
-        height: 52
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 596dd0a242c2be230800000000000000
-      internalID: 3669074855259395733
+      spriteID: 93ba66c2eccf5614c97906d5f59140c0
+      internalID: 2098033096
       vertices: []
       indices: 
       edges: []
@@ -307,20 +307,20 @@ TextureImporter:
       name: zombie_arm_attack_7
       rect:
         serializedVersion: 2
-        x: 377
-        y: 89
-        width: 50
-        height: 46
+        x: 256
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3cf5ea9e5bc84cb60800000000000000
-      internalID: 7765486370431066051
+      spriteID: cea8865bae1b9b240abaacb409d66ba8
+      internalID: -1652694986
       vertices: []
       indices: 
       edges: []
@@ -329,20 +329,20 @@ TextureImporter:
       name: zombie_arm_attack_8
       rect:
         serializedVersion: 2
-        x: 632
-        y: 113
-        width: 57
-        height: 22
+        x: 512
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 651c6f33b5fcd1650800000000000000
-      internalID: 6205343852207194454
+      spriteID: e547a7199f7ba6547819a46bf754fe21
+      internalID: -163465253
       vertices: []
       indices: 
       edges: []
@@ -351,7 +351,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 30e757f75f31a4e4e80ad9b480203359
     internalID: 0
     vertices: []
     indices: 
@@ -360,7 +360,16 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      zombie_arm_attack_0: -723262621
+      zombie_arm_attack_1: 1626334209
+      zombie_arm_attack_2: -938377163
+      zombie_arm_attack_3: 311102623
+      zombie_arm_attack_4: 1152969301
+      zombie_arm_attack_5: 1049556078
+      zombie_arm_attack_6: 2098033096
+      zombie_arm_attack_7: -1652694986
+      zombie_arm_attack_8: -163465253
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
