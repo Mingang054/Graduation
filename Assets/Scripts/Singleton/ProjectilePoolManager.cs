@@ -42,13 +42,13 @@ public class ProjectilePoolManager : MonoBehaviour
         }
 
         GameObject obj = poolQueue.Dequeue();
-        obj.SetActive(true);
-
         Projectile projectile = obj.GetComponent<Projectile>();
         if (projectile != null)
         {
             projectile.SetForEnable(faction, speed, damage, penetration, colliderSize);
         }
+        obj.SetActive(true);
+
 
         StartCoroutine(SetDeleteTime(obj, returnTime));
         return obj;

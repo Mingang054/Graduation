@@ -41,6 +41,7 @@ public class ZombieScript : NPCBase
 
     public Collider2D attackCollider;
 
+
     public override void Awake()
     {
         base.Awake();
@@ -113,20 +114,20 @@ public class ZombieScript : NPCBase
                     {
                         Debug.Log($"[ZombieScript] 타겟이 공격 범위 내에 있습니다: {currentTarget.gameObject.name}");
                         StartAttackTask(); // 공격 상태로 전환
-                        return; // TrackRoutine 종료
+                        // TrackRoutine 종료
                     }
                 }
 
                 if (Time.time - lastFindTargetTime > detectionTimeout)
                 {
                     Debug.LogWarning("[ZombieScript] 타겟을 놓쳤거나 감지 시간이 초과되었습니다.");
-                    return; // Stay 상태 전환은 SearchTask에서 처리
+                    // Stay 상태 전환은 SearchTask에서 처리
                 }
             }
             else
             {
                 Debug.LogWarning("[ZombieScript] currentTarget이 존재하지 않거나 NavMesh 위에 있지 않습니다.");
-                return; // Stay 상태 전환은 SearchTask에서 처리
+                // Stay 상태 전환은 SearchTask에서 처리
             }
 
             await UniTask.Delay(200);
@@ -282,29 +283,31 @@ public class ZombieScript : NPCBase
     private DamageableEntity FindClosestTarget(float detectionRange)
     {
         int layerMask = LayerMask.GetMask("DamageableEntity");
+        Debug.Log($"LayerMask 값: {layerMask}");
         Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, detectionRange, layerMask);
 
-        Debug.Log($"[ZombieScript] 감지된 2D Collider 수: {colliders.Length}");
+        Debug.Log($"[SoliderScript] 감지된 2D Collider 수: {colliders.Length}");
 
         DamageableEntity closestTarget = null;
         float closestDistance = Mathf.Infinity;
 
         foreach (var collider in colliders)
         {
-            Debug.Log($"[ZombieScript] 감지된 2D Collider: {collider.gameObject.name}");
+            if (collider == null) continue; // ✅ collider가 null이면 건너뜀
+
+            Debug.Log($"[SoliderScript] 감지된 2D Collider: {collider.gameObject.name}");
 
             DamageableEntity damageable = collider.GetComponent<DamageableEntity>();
-            if (damageable != null && damageable.gameObject != gameObject)
+            if (damageable == null || damageable.gameObject == gameObject) continue; // ✅ damageable이 null이면 건너뜀
+
+            // ✅ Faction이 다르고 Wall이 아닌 경우만 타겟으로 선정
+            if (damageable.faction != faction && damageable.faction != Faction.Wall)
             {
-                // Faction이 다르고 Wall이 아닌 경우만 타겟으로 선정
-                if (damageable.faction != faction && damageable.faction != Faction.Wall)
+                float distance = Vector2.Distance(transform.position, damageable.transform.position);
+                if (distance < closestDistance)
                 {
-                    float distance = Vector2.Distance(transform.position, damageable.transform.position);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestTarget = damageable;
-                    }
+                    closestDistance = distance;
+                    closestTarget = damageable;
                 }
             }
         }
@@ -312,29 +315,30 @@ public class ZombieScript : NPCBase
         if (closestTarget != null)
         {
             lastFindTargetTime = Time.time; // ✅ 타겟을 찾은 시점을 갱신
-            Debug.Log($"[ZombieScript] 가장 가까운 타겟: {closestTarget.gameObject.name}, 시간 갱신: {lastFindTargetTime}");
+            Debug.Log($"[SoliderScript] 가장 가까운 타겟: {closestTarget.gameObject.name}, 시간 갱신: {lastFindTargetTime}");
 
             // ✅ 탐색에 성공했고 현재 상태가 Track이 아닌 경우 TrackTask 실행
             if (alertState != AlertState.Track)
             {
                 StartTrackTask();
-                Debug.Log("[ZombieScript] 타겟을 감지했으므로 Track 상태로 전환.");
+                Debug.Log("[SoliderScript] 타겟을 감지했으므로 Track 상태로 전환.");
             }
         }
         else
         {
-            Debug.Log("[ZombieScript] 감지된 타겟이 없습니다.");
+            Debug.Log("[SoliderScript] 감지된 타겟이 없습니다.");
 
             // ✅ 타겟을 찾지 못했고 detectionTimeout이 지났다면 Stay 상태로 전환
             if (Time.time - lastFindTargetTime > detectionTimeout)
             {
                 StartStayTask();
-                Debug.Log("[ZombieScript] 타겟을 찾지 못해 Stay 상태로 전환.");
+                Debug.Log("[SoliderScript] 타겟을 찾지 못해 Stay 상태로 전환.");
             }
         }
 
         return closestTarget;
     }
+
 
 
 

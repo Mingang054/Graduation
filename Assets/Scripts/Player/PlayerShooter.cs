@@ -122,10 +122,10 @@ public class PlayerShooter : MonoBehaviour
         GameObject newProjectile = ProjectilePoolManager.Instance.GetProjectile(
             Faction.Friendly,  // 🔹 플레이어가 발사한 탄환
             2f,  // 삭제 시간
-            currentWeapon.projectileSpeed,
-            currentWeapon.damage,
-            currentWeapon.penetration,
-            currentWeapon.colliderSize
+            currentWeapon.projectileSpeed,  //발사체 속도
+            currentWeapon.damage,   //발사체 피해
+            currentWeapon.penetration,  //발사체 관통피해
+            currentWeapon.colliderSize  //발사체 충돌 크기 설정
         );
 
         if (newProjectile != null)

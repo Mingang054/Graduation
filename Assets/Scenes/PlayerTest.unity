@@ -290,6 +290,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZombieSet (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7327584833853700882, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9045017866990701594, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.974425
@@ -796,7 +800,7 @@ GameObject:
   - component: {fileID: 396586885}
   - component: {fileID: 396586886}
   m_Layer: 7
-  m_Name: TestEnemySolider
+  m_Name: Solider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -811,13 +815,13 @@ Transform:
   m_GameObject: {fileID: 396586883}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.08, y: -2.01, z: 0}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 440429288}
   - {fileID: 1163871785}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 649793434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &396586885
 BoxCollider2D:
@@ -874,7 +878,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 396586883}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f24400c71b6773744b17b547394062b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 015c4035ce9881641b0742f0e9a5aedd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   healthPointMax: 100
@@ -882,7 +886,17 @@ MonoBehaviour:
   reduction: 0
   isEssential: 0
   isDead: 0
-  faction: 2
+  faction: 0
+  npcData: {fileID: 11400000, guid: 7ffd01f5488c61e46954096c127ab71a, type: 2}
+  isAttacking: 0
+  alertState: 0
+  agent: {fileID: 649793433}
+  rushRate: 2
+  stopRate: 1
+  aroundRate: 4
+  bodyAnimator: {fileID: 0}
+  armAnimator: {fileID: 0}
+  attackCollider: {fileID: 0}
 --- !u!1 &427711670
 GameObject:
   m_ObjectHideFlags: 0
@@ -13961,6 +13975,61 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1 &649793432
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 649793434}
+  - component: {fileID: 649793433}
+  m_Layer: 0
+  m_Name: SoliderSet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!195 &649793433
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649793432}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.1
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 0.2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!4 &649793434
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 649793432}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.99561435, y: -2.801276, z: -0.024885317}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 396586884}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &682575864
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13972,6 +14041,10 @@ PrefabInstance:
     - target: {fileID: 7327584833853700882, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
       propertyPath: m_Name
       value: ZombieSet (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7327584833853700882, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9045017866990701594, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
       propertyPath: m_LocalPosition.x
@@ -14241,6 +14314,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ZombieSet
       objectReference: {fileID: 0}
+    - target: {fileID: 7327584833853700882, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9045017866990701594, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.16
@@ -14403,7 +14480,7 @@ SceneRoots:
   - {fileID: 3177503055147030873}
   - {fileID: 817483347}
   - {fileID: 1119999091}
-  - {fileID: 776733048959046853}
-  - {fileID: 396586884}
   - {fileID: 131627653}
   - {fileID: 682575864}
+  - {fileID: 776733048959046853}
+  - {fileID: 649793434}
