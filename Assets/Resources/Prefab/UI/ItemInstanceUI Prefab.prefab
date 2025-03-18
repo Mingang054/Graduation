@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 7930539669647594534}
   - component: {fileID: 6266197277699647670}
   m_Layer: 5
-  m_Name: BagInventorySlot
+  m_Name: ItemInstanceUI Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
