@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      solider_bullet_0_0: -9162543748346876049
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

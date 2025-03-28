@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      solider_arm_handgun_0: -8958755221049680785
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

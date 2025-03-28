@@ -1,9 +1,12 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SlotUI : MonoBehaviour
+public class SlotUI : MonoBehaviour, IPointerEnterHandler
 {
     public Vector2Int location;
+    public bool isMySlot = new bool();
     //아이템 배치 가능 여부 시각화를 위한 Image
     //해당 부분은 하나의 UI Imgage를 크기를 조절해가며 움직이는 것으로 구현시 Image와 MonoBehaviour 삭제
     private Image image;
@@ -15,4 +18,20 @@ public class SlotUI : MonoBehaviour
     {
         location = newlocation;
     }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // SlotUI 위를 마우스로 포인팅 시 현재 마우스가 위치한 Slot 갱신
+        NewBagInventoryManager.Instance.currentPointedSlot = location;
+        NewBagInventoryManager.Instance.currentPointedSlotIsMySlot = isMySlot;
+        Debug.Log($"[SlotUI] OnPointerEnter. location: {NewBagInventoryManager.Instance.currentPointedSlot}");
+        Debug.Log($"[SlotUI] OnPointerEnter. IsMySlot: {NewBagInventoryManager.Instance.currentPointedSlotIsMySlot}");
+
+    }
+    
+    public bool GetIsMySlot() {
+        // 
+        return isMySlot;
+    }
+    
 }

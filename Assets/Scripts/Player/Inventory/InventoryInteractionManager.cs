@@ -1,5 +1,5 @@
 using UnityEngine;
-
+//미사용
 public class InventoryInteractionManager : MonoBehaviour
 {
     public RectTransform currentGridParentRect; // 현재 조작 중인 Grid RectTransform

@@ -1,8 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 public class NewBagInventoryManager : MonoBehaviour
 {
+    public Vector2Int currentPointedSlot = new Vector2Int(-1, -1);
+    public bool currentPointedSlotIsMySlot = false;
+
+
     //--- My Inventory 관리 ---//
     public Vector2Int myInventoryVector = new Vector2Int(8, 12);
     public Dictionary<Vector2Int, Slot> mySlots = new Dictionary<Vector2Int, Slot>();
@@ -19,6 +24,10 @@ public class NewBagInventoryManager : MonoBehaviour
     public Transform myInventoryGrid;
     public Transform opponentInventory;
     public Transform opponentInventoryGrid;
+
+    //--SlotUI접근--//
+    public Dictionary<Vector2Int, SlotUI> mySlotsUI = new Dictionary<Vector2Int, SlotUI>();
+    public Dictionary<Vector2Int, SlotUI> opponentSlotsUI = new Dictionary<Vector2Int, SlotUI>();
 
     [SerializeField]
     private GameObject slotUIPrefab;
@@ -43,7 +52,7 @@ public class NewBagInventoryManager : MonoBehaviour
     private void Start()
     {
         InitMySlots();
-
+        InitOpSlots();
         // 테스트용 아이템 생성
         TestCreateItem();
     }
@@ -54,23 +63,27 @@ public class NewBagInventoryManager : MonoBehaviour
     //
     public void InitSlotUI()
     {
-        for (int y = 0; y < 12; y++)
+        for (int y = 1; y <= 12; y++)
         {
-            for (int x = 0; x < 8; x++)
+            for (int x = 1; x <= 8; x++)
             {
                 GameObject slotUIObject = Instantiate(slotUIPrefab, myInventoryGrid);
                 SlotUI slotUI = slotUIObject.GetComponent<SlotUI>();
                 slotUI.SetLocation(new Vector2Int(x, y));
+                slotUI.isMySlot = true;
+                mySlotsUI[slotUI.location] = slotUI;
             }
         }
 
-        for (int y = 0; y < 12; y++)
+        for (int y = 1; y <= 12; y++)
         {
-            for (int x = 0; x < 8; x++)
+            for (int x = 1; x <= 8; x++)
             {
                 GameObject slotUIObject = Instantiate(slotUIPrefab, opponentInventoryGrid);
                 SlotUI slotUI = slotUIObject.GetComponent<SlotUI>();
                 slotUI.SetLocation(new Vector2Int(x, y));
+                slotUI.isMySlot = false;
+                opponentSlotsUI[slotUI.location] = slotUI;
             }
         }
 
@@ -101,7 +114,19 @@ public class NewBagInventoryManager : MonoBehaviour
             }
         }
     }
-
+    public void InitOpSlots()
+    {
+        opponentSlots.Clear();
+        for (int y = 1; y <= opponentInventoryVector.y; y++)
+        {
+            for (int x = 1; x <= opponentInventoryVector.x; x++)
+            {
+                Vector2Int position = new Vector2Int(x, y);
+                opponentSlots[position] = new Slot(position);
+                Debug.Log($"내 슬롯 추가됨: {position}");
+            }
+        }
+    }
     //--- 아이템 생성 테스트 ---//
     private void TestCreateItem()
     {
@@ -192,7 +217,7 @@ public class NewBagInventoryManager : MonoBehaviour
     }
 
     //--- Slot 관리 ---//
-    private bool PlaceItemInSlot(ItemInstance itemInstance, Vector2Int location,
+    public bool PlaceItemInSlot(ItemInstance itemInstance, Vector2Int location,
                                  Dictionary<Vector2Int, Slot> slots, List<ItemInstance> items, Vector2Int inventorySize)
     {
         Vector2Int size = itemInstance.data.size;
@@ -223,7 +248,7 @@ public class NewBagInventoryManager : MonoBehaviour
         return PlaceItemInSlot(itemInstance, location.Value, targetSlot, targetItems, sizeOfInventory);
     }
 
-    private void FreeItemSlots(ItemInstance itemInstance)
+    public void FreeItemSlots(ItemInstance itemInstance)
     {
         FreeSlots(itemInstance.location, itemInstance.data.size);
     }
@@ -252,6 +277,7 @@ public class NewBagInventoryManager : MonoBehaviour
 
     public bool ValidSlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots, Vector2Int inventorySize)
     {
+        Debug.Log("ValidSlots called");
         foreach (Vector2Int position in GetSlotPositions(location, size, inventorySize))
         {
             if (!slots.TryGetValue(position, out var slot) || slot.GetOccupied())
