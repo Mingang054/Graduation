@@ -6,6 +6,15 @@ public class NewBagInventoryManager : MonoBehaviour
 {
     public Vector2Int currentPointedSlot = new Vector2Int(-1, -1);
     public bool currentPointedSlotIsMySlot = false;
+    public bool currentPointedSlotIsEquip = false;
+    public EquipmentSlotUI currentPointedEquipSlot = null;
+
+    //-- EquipmentSlot 관리 --//
+    public ItemInstanceUI firstWeapon;
+    public ItemInstanceUI secondWeapon;
+    public ItemInstanceUI thirdWeapon; //pistol타입만 허용
+    public ItemInstanceUI headArmor;
+    public ItemInstanceUI bodyArmor;
 
 
     //--- My Inventory 관리 ---//
@@ -130,8 +139,8 @@ public class NewBagInventoryManager : MonoBehaviour
     //--- 아이템 생성 테스트 ---//
     private void TestCreateItem()
     {
-        string testItemCode = "F202"; // 테스트 아이템 코드
-        int testItemCount = 2;        // 테스트 아이템 수량
+        string testItemCode = "W101"; // 테스트 아이템 코드
+        int testItemCount = 1;        // 테스트 아이템 수량
 
         // 팩토리에서 아이템 생성
         ItemInstance testItem = ItemFactory.CreateItem(testItemCode);
@@ -154,6 +163,27 @@ public class NewBagInventoryManager : MonoBehaviour
         {
             Debug.LogError($"아이템 생성 실패: 코드 '{testItemCode}'");
         }
+        testItem = ItemFactory.CreateItem(testItemCode);
+
+        if (testItem != null)
+        {
+            // 아이템 세부 사항 설정
+            ItemFactory.SetItemInstance(
+                testItem,
+                count: testItemCount,
+                location: new Vector2Int(3, 4), // 첫 번째 슬롯에 배치
+                durability: 100,               // 내구도 설정 (옵션)
+                charges: null                  // 사용 가능 횟수 없음
+            );
+
+            // MyInventory에 추가
+            AddItemToMyInventory(testItem);
+        }
+        else
+        {
+            Debug.LogError($"아이템 생성 실패: 코드 '{testItemCode}'");
+        }
+
     }
 
     //--- ItemInstance 추가 ---//
@@ -250,43 +280,107 @@ public class NewBagInventoryManager : MonoBehaviour
 
     public void FreeItemSlots(ItemInstance itemInstance)
     {
-        FreeSlots(itemInstance.location, itemInstance.data.size);
+        Vector2Int location = itemInstance.location;
+        Vector2Int size = itemInstance.data.size;
+
+        // 1) 아이템이 내 인벤토리에 속해 있었다면 mySlots 해제
+        if (myItems.Contains(itemInstance))
+        {
+            FreeSlots(location, size, mySlots);
+        }
+        // 2) 상대 인벤토리에 속해 있었다면 opponentSlots 해제
+        else if (opponentItems.Contains(itemInstance))
+        {
+            FreeSlots(location, size, opponentSlots);
+        }
+        else
+        {
+            Debug.LogWarning("FreeItemSlots: 이 아이템이 어느 인벤토리에도 속해 있지 않습니다.");
+        }
     }
 
-    private void OccupySlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots)
+
+    public void OccupySlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots)
     {
-        foreach (Vector2Int position in GetSlotPositions(location, size, new Vector2Int()))
+        Debug.Log($"[OccupySlots] 점유 시작: 시작 위치 = {location}, 크기 = {size}");
+
+        for (int y = location.y; y < location.y + size.y; y++)
         {
-            if (slots.TryGetValue(position, out var slot))
+            for (int x = location.x; x < location.x + size.x; x++)
             {
-                slot.SetOccupied(true);
+                Vector2Int position = new Vector2Int(x, y);
+                if (slots.TryGetValue(position, out var slot))
+                {
+                    slot.SetOccupied(true);
+                    Debug.Log($"[OccupySlots] 점유 슬롯: {position}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[OccupySlots] 슬롯 없음: {position}");
+                }
             }
         }
     }
 
-    private void FreeSlots(Vector2Int location, Vector2Int size)
+    private void FreeSlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> targetSlots)
     {
-        foreach (Vector2Int position in GetSlotPositions(location, size, new Vector2Int()))
+        Debug.Log($"[FreeSlots] 점유 해제 시작: 위치 = {location}, 크기 = {size}");
+
+        for (int y = location.y; y < location.y + size.y; y++)
         {
-            if (mySlots.TryGetValue(position, out var slot))
+            for (int x = location.x; x < location.x + size.x; x++)
             {
-                slot.SetOccupied(false);
+                Vector2Int pos = new Vector2Int(x, y);
+                if (targetSlots.TryGetValue(pos, out var slot))
+                {
+                    slot.SetOccupied(false);
+                    Debug.Log($"[FreeSlots] 해제된 슬롯: {pos}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[FreeSlots] 슬롯 없음: {pos}");
+                }
             }
         }
     }
+
+
 
     public bool ValidSlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots, Vector2Int inventorySize)
     {
-        Debug.Log("ValidSlots called");
-        foreach (Vector2Int position in GetSlotPositions(location, size, inventorySize))
+        Debug.Log("ValidSlots called (for-loop)");
+
+        for (int y = location.y; y < location.y + size.y; y++)
         {
-            if (!slots.TryGetValue(position, out var slot) || slot.GetOccupied())
+            for (int x = location.x; x < location.x + size.x; x++)
             {
-                return false;
+                // 인벤토리 범위를 넘으면 무시
+                if (x > inventorySize.x || y > inventorySize.y)
+                {
+                    Debug.LogWarning($"[ValidSlots] 검사 제외: 범위 초과 위치 ({x},{y})");
+                    continue;
+                }
+
+                Vector2Int pos = new Vector2Int(x, y);
+                Debug.Log($"[ValidSlots] 검사 중인 슬롯 위치: {pos}");
+
+                if (!slots.TryGetValue(pos, out var slot))
+                {
+                    Debug.LogWarning($"[ValidSlots] 슬롯 정보 없음: {pos}");
+                    return false;
+                }
+
+                if (slot.GetOccupied())
+                {
+                    Debug.LogWarning($"[ValidSlots] 슬롯 점유 중: {pos}");
+                    return false;
+                }
             }
         }
+
         return true;
     }
+
 
     private IEnumerable<Vector2Int> GetSlotPositions(Vector2Int location, Vector2Int size, Vector2Int inventorySize)
     {

@@ -24,8 +24,7 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler
         // SlotUI 위를 마우스로 포인팅 시 현재 마우스가 위치한 Slot 갱신
         NewBagInventoryManager.Instance.currentPointedSlot = location;
         NewBagInventoryManager.Instance.currentPointedSlotIsMySlot = isMySlot;
-        Debug.Log($"[SlotUI] OnPointerEnter. location: {NewBagInventoryManager.Instance.currentPointedSlot}");
-        Debug.Log($"[SlotUI] OnPointerEnter. IsMySlot: {NewBagInventoryManager.Instance.currentPointedSlotIsMySlot}");
+        NewBagInventoryManager.Instance.currentPointedSlotIsEquip = false;
 
     }
     

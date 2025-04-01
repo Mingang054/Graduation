@@ -77,3 +77,13 @@ public enum ConsumableType
     Medicine,  // 의약품
     Food       // 음식
 }
+
+public enum EquipSlotType{
+
+    head,
+    body,
+    firstWeapon,
+    secondWeapon,
+    thirdWeapon,
+    none
+}

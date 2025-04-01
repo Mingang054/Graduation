@@ -13,7 +13,7 @@ public class WeaponData : ItemData
     public float projectileSpeed;     // 투사체 속도
     public int pelletCount;           // 펠릿 수 (산탄총의 경우)
     public float barrelLength;          //투사체생성위치
-    public float timeToSwap;           //스왑시간
+    public float timeToSwap;           //스왑시간  (X)
     public float colliderSize;                  //투사체 크기
     public float dispersion;            //분산
     public float dispersionRate;        //분산도
