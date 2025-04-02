@@ -9,7 +9,7 @@ public class NewBagInventoryManager : MonoBehaviour
     public bool currentPointedSlotIsEquip = false;
     public EquipmentSlotUI currentPointedEquipSlot = null;
 
-    //-- EquipmentSlot 관리 --//
+    //-- EquipmentSlot 관리 --// Serialize
     public ItemInstanceUI firstWeapon;
     public ItemInstanceUI secondWeapon;
     public ItemInstanceUI thirdWeapon; //pistol타입만 허용

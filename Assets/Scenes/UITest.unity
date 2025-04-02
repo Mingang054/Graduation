@@ -235,6 +235,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   validItemType: 0
   equipSlotType: 3
+  equipedItem: {fileID: 0}
 --- !u!1 &1596643514 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 16899880007381232, guid: 170601f7205ab594da673229add427d0, type: 3}
@@ -259,6 +260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   validItemType: 0
   equipSlotType: 4
+  equipedItem: {fileID: 0}
 --- !u!1 &1628996683 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6758672728644679214, guid: 170601f7205ab594da673229add427d0, type: 3}
@@ -283,6 +285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   validItemType: 1
   equipSlotType: 1
+  equipedItem: {fileID: 0}
 --- !u!1 &2001093756 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5166461556229446487, guid: 170601f7205ab594da673229add427d0, type: 3}
@@ -307,6 +310,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   validItemType: 1
   equipSlotType: 0
+  equipedItem: {fileID: 0}
 --- !u!1 &2101056403 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5693268810750330377, guid: 170601f7205ab594da673229add427d0, type: 3}
@@ -331,6 +335,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   validItemType: 0
   equipSlotType: 2
+  equipedItem: {fileID: 0}
 --- !u!1001 &6890698083761666159
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -339,6 +344,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1567119427423334603, guid: 170601f7205ab594da673229add427d0, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1567119427423334603, guid: 170601f7205ab594da673229add427d0, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 3879243521963766637, guid: 170601f7205ab594da673229add427d0, type: 3}
       propertyPath: m_Name
       value: UI

@@ -5,7 +5,9 @@
 public class ItemInstance
 {
     public Vector2Int location;
-    public EquipSlotType currentEquipSlot = EquipSlotType.none;
+    public EquipmentSlotUI currentEquipSlotUI = null; //장착된 부위 역참조
+    public EquipSlotType currentEquipSlotType = EquipSlotType.none;
+
     public ItemData data { get; private set; }  // ScriptableObject 데이터 참조
     public int count { get; private set; }      // 수량
     public float totalWeight => count * data.weight;  // 총 무게 계산
