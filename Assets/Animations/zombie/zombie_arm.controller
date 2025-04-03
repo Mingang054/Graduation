@@ -52,6 +52,35 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+<<<<<<< HEAD
+=======
+--- !u!1102 &-8143644857802335842
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Zombie_attack
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 30bb2984e89d16f428e256fcbf2746aa, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
 --- !u!1101 &-7158697401175380662
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -153,6 +182,12 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: -9089502001925539078}
     m_Position: {x: 330, y: 30, z: 0}
+<<<<<<< HEAD
+=======
+  - serializedVersion: 1
+    m_State: {fileID: -8143644857802335842}
+    m_Position: {x: 365, y: 95, z: 0}
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 3329342481860628576}

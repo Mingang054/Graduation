@@ -43,7 +43,11 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void UpdateUI()
     {
+<<<<<<< HEAD
         if (itemInstance.currentEquipSlotType == EquipSlotType.none)
+=======
+        if (itemInstance.currentEquipSlot == EquipSlotType.none)
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
         {
             if (itemInstance != null)
             {
@@ -97,6 +101,10 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         rectTransform.sizeDelta =
             new Vector2(itemInstance.data.size.x * 96, itemInstance.data.size.y * 96);
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
     //============ 드래그 & 드롭 기능 ============//
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -162,20 +170,33 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
                 Vector2Int targetSlotLocation = CaculateTargetSlot();
                 bool isTargetMySlot = NewBagInventoryManager.Instance.currentPointedSlotIsMySlot;
+<<<<<<< HEAD
 
                 //사전에 위치 해제
                 if (itemInstance.currentEquipSlotUI == null)
                 NewBagInventoryManager.Instance.FreeItemSlots(itemInstance);
 
+=======
+                
+                //사전에 위치해제
+                NewBagInventoryManager.Instance.FreeItemSlots(itemInstance);
+
+
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
                 if (CanPlaceItem(targetSlotLocation, isTargetMySlot))
                 {
                     //배치 가능할 때(배치되는 위치가 EquipSlot이 아닐때) 배치 후 currentEquipSlot을 none으로 초기화
                     PlaceItem(targetSlotLocation, isTargetMySlot);
+<<<<<<< HEAD
                     itemInstance.currentEquipSlotType = EquipSlotType.none;
+=======
+                    itemInstance.currentEquipSlot = EquipSlotType.none;
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
                     Debug.Log($"[OnEndDrag] 배치 성공");
                 }
                 else
                 {
+<<<<<<< HEAD
                     // 배치에 실패하였고 ItemSlot에 있던 것이 아니라면
                     if (itemInstance.currentEquipSlotUI == null)
                     {
@@ -191,12 +212,29 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                     }
                     //원래 위치로 복귀??????????????
                     //if (itemInstance.currentEquipSlotType == EquipSlotType.none) {
+=======
+                    // 🔸3. 실패 시 → 해제했던 위치 다시 점유
+                    if (NewBagInventoryManager.Instance.myItems.Contains(itemInstance))
+                    {
+                        NewBagInventoryManager.Instance.OccupySlots(originLocation, itemInstance.data.size, NewBagInventoryManager.Instance.mySlots);
+                    }
+                    else if (NewBagInventoryManager.Instance.opponentItems.Contains(itemInstance))
+                    {
+                        NewBagInventoryManager.Instance.OccupySlots(originLocation, itemInstance.data.size, NewBagInventoryManager.Instance.opponentSlots);
+                    }
+                    //원래 위치로 복귀??????????????
+                    if (itemInstance.currentEquipSlot == EquipSlotType.none) {
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
                         //원래 위치가 착용구간이 아닐때
                         itemInstance.location = originLocation;
                         rectTransform.SetParent(originalParent, true);
                         rectTransform.anchoredPosition = originalPosition;
                         Debug.Log($"[OnEndDrag] 배치 실패 → 원래 위치로 복귀");
+<<<<<<< HEAD
                     //}
+=======
+                    }
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
 
                 }
 
@@ -216,10 +254,36 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 NewBagInventoryManager.Instance.currentPointedSlotIsMySlot = true;
                 NewBagInventoryManager.Instance.currentPointedSlotIsEquip = true;
 
+<<<<<<< HEAD
                 //배치가능여부 계산 및 배치
                 if (CanEquipItem(foundEquipUI))
                 {
                     EquipItem(foundEquipUI);
+=======
+                //배치가능여부 계산
+                if (CanEquipItem())
+                {
+                    rectTransform.SetParent(NewBagInventoryManager.Instance.currentPointedEquipSlot.transform, true);
+                    NewBagInventoryManager.Instance.currentPointedEquipSlot.equipedItem = GetComponent<ItemInstanceUI>();
+                    itemInstance.currentEquipSlot = NewBagInventoryManager.Instance.currentPointedEquipSlot.GetEquipSlotType();
+
+
+                    //기존 위치에 대한 점유해제 및 리스트 내 삭제
+                    var manager = NewBagInventoryManager.Instance;
+
+                    // (1) myItems 쪽에 있었던 경우
+                    if (manager.myItems.Contains(itemInstance))
+                    {
+                        manager.myItems.Remove(itemInstance);
+                        manager.FreeItemSlots(itemInstance); // 슬롯 점유 해제
+                    }
+                    // (2) opponentItems 쪽에 있었던 경우
+                    else if (manager.opponentItems != null && manager.opponentItems.Contains(itemInstance))
+                    {
+                        manager.opponentItems.Remove(itemInstance);
+                        manager.FreeItemSlots(itemInstance); // 슬롯 점유 해제
+                    }
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
                 }
                 else
                 {
@@ -254,6 +318,13 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         UpdateUI();
     }
 
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
     //============ CaculateTargetSlot 계산 ============//
 
     /// <summary>
@@ -276,6 +347,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     }
 
 
+<<<<<<< HEAD
     private bool CanEquipItem(EquipmentSlotUI foundEquipUI)
     {
         //슬롯이 비어있다면 false 반환
@@ -372,13 +444,30 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         // 피봇: 좌측 상단 (0,1)
         selfRect.pivot = new Vector2(0f, 1f);
     }
+=======
+    private bool CanEquipItem() {
+        if (NewBagInventoryManager.Instance.currentPointedEquipSlot.GetValidItemType() == itemInstance.data.itemType)
+        {
+            if (NewBagInventoryManager.Instance.currentPointedEquipSlot.equipedItem == null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
     /// <summary>
     /// 실제로 해당 targetPosition에 배치할 수 있는지 검사만 (점유 안함)
     /// </summary>
     private bool CanPlaceItem(Vector2Int targetPosition, bool isTargetMySlot)
     {
+<<<<<<< HEAD
         //인자는 이동의 목적지 고려
 
+=======
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
         var manager = NewBagInventoryManager.Instance;
 
         // 1) 어느 인벤토리로 갈지에 따라 딕셔너리와 사이즈 결정
@@ -412,6 +501,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     /// </summary>
     private void PlaceItem(Vector2Int targetPosition, bool isTargetMySlot)
     {
+<<<<<<< HEAD
         //inventoryManager와 연동
         var manager = NewBagInventoryManager.Instance;
 
@@ -441,6 +531,22 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         //...
 
 
+=======
+        var manager = NewBagInventoryManager.Instance;
+
+        // (A) 기존 인벤토리에서 이 아이템 제거만 (FreeItemSlots는 필요 없음!)
+        if (manager.myItems.Contains(itemInstance))
+        {
+            manager.myItems.Remove(itemInstance);
+            // manager.FreeItemSlots(itemInstance); // ★삭제
+        }
+        else if (manager.opponentItems != null && manager.opponentItems.Contains(itemInstance))
+        {
+            manager.opponentItems.Remove(itemInstance);
+            // manager.FreeItemSlots(itemInstance); // ★삭제
+        }
+
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
         // (B) 새 위치 점유
         // PlaceItemInSlot() 안에서 OccupySlots()가 자동으로 호출됨
         if (isTargetMySlot)

@@ -13991,7 +13991,11 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
+<<<<<<< HEAD
   m_IsActive: 1
+=======
+  m_IsActive: 0
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
 --- !u!195 &649793433
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -14310,13 +14314,28 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+<<<<<<< HEAD
+=======
+    - target: {fileID: 5520011634857078111, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
+      propertyPath: dieAnimator
+      value: 
+      objectReference: {fileID: 7272019394228697216, guid: cfaa883dbf553ae44a928c0f63d0f2d2, type: 3}
+    - target: {fileID: 5520011634857078111, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
+      propertyPath: effectAnimator
+      value: 
+      objectReference: {fileID: 8079714788755714348, guid: 98a860cddf8799a4f93daae470aa836c, type: 3}
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
     - target: {fileID: 7327584833853700882, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
       propertyPath: m_Name
       value: ZombieSet
       objectReference: {fileID: 0}
     - target: {fileID: 7327584833853700882, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
       propertyPath: m_IsActive
+<<<<<<< HEAD
       value: 0
+=======
+      value: 1
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
       objectReference: {fileID: 0}
     - target: {fileID: 9045017866990701594, guid: 1b8e3623c80670041a093e4c5336e345, type: 3}
       propertyPath: m_LocalPosition.x

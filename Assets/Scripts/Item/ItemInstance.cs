@@ -5,9 +5,13 @@
 public class ItemInstance
 {
     public Vector2Int location;
+<<<<<<< HEAD
     public EquipmentSlotUI currentEquipSlotUI = null; //장착된 부위 역참조
     public EquipSlotType currentEquipSlotType = EquipSlotType.none;
 
+=======
+    public EquipSlotType currentEquipSlot = EquipSlotType.none;
+>>>>>>> 8ba03cc5 ([UPDATE] 좀비 사망 애니메이션 및 이펙트 구현)
     public ItemData data { get; private set; }  // ScriptableObject 데이터 참조
     public int count { get; private set; }      // 수량
     public float totalWeight => count * data.weight;  // 총 무게 계산

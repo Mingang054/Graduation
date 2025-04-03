@@ -9,7 +9,11 @@ public class NewBagInventoryManager : MonoBehaviour
     public bool currentPointedSlotIsEquip = false;
     public EquipmentSlotUI currentPointedEquipSlot = null;
 
+<<<<<<< HEAD
     //-- EquipmentSlot °ü¸® --// Serialize
+=======
+    //-- EquipmentSlot °ü¸® --//
+>>>>>>> 8ba03cc5 ([UPDATE] ì¢€ë¹„ ì‚¬ë§ ì• ë‹ˆë©”ì´ì…˜ ë° ì´í™íŠ¸ êµ¬í˜„)
     public ItemInstanceUI firstWeapon;
     public ItemInstanceUI secondWeapon;
     public ItemInstanceUI thirdWeapon; //pistolÅ¸ÀÔ¸¸ Çã¿ë
