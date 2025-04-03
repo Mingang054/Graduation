@@ -68,3 +68,5 @@ desktop.ini
 
 # Git 자체 파일
 *.orig
+
+UpgradeLog.htm
