@@ -1,32 +1,105 @@
-ï»¿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 public class BagInventoryManager : MonoBehaviour
 {
-    //--- My Inventory ê´€ë¦¬ ---//
+
+    public Vector2Int currentPointedSlot = new Vector2Int(-1, -1);
+    public bool currentPointedSlotIsMySlot = false;
+    public bool currentPointedSlotIsEquip = false;
+    public EquipmentSlotUI currentPointedEquipSlot = null;
+
+    //-- EquipmentSlot °ü¸® --// Serialize
+    public Transform firstWeapon;
+    public Transform secondWeapon;
+    public Transform thirdWeapon; //pistolÅ¸ÀÔ¸¸ Çã¿ë
+    public Transform headArmor;
+    public Transform bodyArmor;
+
+
+    //--- My Inventory °ü¸® ---//
     public Vector2Int myInventoryVector = new Vector2Int(8, 12);
     public Dictionary<Vector2Int, Slot> mySlots = new Dictionary<Vector2Int, Slot>();
     public List<ItemInstance> myItems = new List<ItemInstance>();
 
-    //--- Opponent Inventory ê´€ë¦¬ ---//
+    //--- Opponent Inventory °ü¸® ---//
     public Vector2Int opponentInventoryVector;
     public Dictionary<Vector2Int, Slot> opponentSlots = new Dictionary<Vector2Int, Slot>();
     public List<ItemInstance> opponentItems;
 
-    //--- UI ê´€ë ¨ ---//
+    //--- UI °ü·Ã ---//
     public GameObject itemInstanceUIPrefab;
+    public Transform myInventory;
     public Transform myInventoryGrid;
+    public Transform opponentInventory;
     public Transform opponentInventoryGrid;
+
+    //--SlotUIÁ¢±Ù--//
+    public Dictionary<Vector2Int, SlotUI> mySlotsUI = new Dictionary<Vector2Int, SlotUI>();
+    public Dictionary<Vector2Int, SlotUI> opponentSlotsUI = new Dictionary<Vector2Int, SlotUI>();
+
+    [SerializeField]
+    private GameObject slotUIPrefab;
+
+    //½Ì±ÛÅæ ÆĞÅÏ Àû¿ë
+    public static BagInventoryManager Instance { get; private set; }
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Áßº¹ ÀÎ½ºÅÏ½º ¹æÁö
+        }
+        if (slotUIPrefab != null && myInventoryGrid!=null && opponentInventoryGrid!=null)
+        {
+            InitSlotUI();
+        }
+        InitMySlots();
+        InitOpSlots();
+    }
+
 
     private void Start()
     {
-        InitMySlots();
-
-        // í…ŒìŠ¤íŠ¸ìš© ì•„ì´í…œ ìƒì„±
-        TestCreateItem();
+        Loot loot = GetComponent<Loot>();
+        List<ItemInstance> item = loot.lootItems;
     }
 
-    //--- MyInventory ì´ˆê¸°í™” ---//
+
+    //---SlotUI ÃÊ±âÈ­---///
+    public void InitSlotUI()
+    {
+        for (int y = 1; y <= 12; y++)
+        {
+            for (int x = 1; x <= 8; x++)
+            {
+                GameObject slotUIObject = Instantiate(slotUIPrefab, myInventoryGrid);
+                SlotUI slotUI = slotUIObject.GetComponent<SlotUI>();
+                slotUI.SetLocation(new Vector2Int(x, y));
+                slotUI.isMySlot = true;
+                mySlotsUI[slotUI.location] = slotUI;
+            }
+        }
+
+        for (int y = 1; y <= 12; y++)
+        {
+            for (int x = 1; x <= 8; x++)
+            {
+                GameObject slotUIObject = Instantiate(slotUIPrefab, opponentInventoryGrid);
+                SlotUI slotUI = slotUIObject.GetComponent<SlotUI>();
+                slotUI.SetLocation(new Vector2Int(x, y));
+                slotUI.isMySlot = false;
+                opponentSlotsUI[slotUI.location] = slotUI;
+            }
+        }
+
+
+    }
+    //--- Inventory ÃÊ±âÈ­ ---//
     public void InitMySlots()
     {
         mySlots.Clear();
@@ -36,49 +109,86 @@ public class BagInventoryManager : MonoBehaviour
             {
                 Vector2Int position = new Vector2Int(x, y);
                 mySlots[position] = new Slot(position);
-                Debug.Log($"ë‚´ ìŠ¬ë¡¯ ì¶”ê°€ë¨: {position}");
+                Debug.Log($"³» ½½·Ô Ãß°¡µÊ: {position}");
+            }
+        }
+    }
+    public void InitOpSlots()
+    {
+        opponentSlots.Clear();
+        for (int y = 1; y <= opponentInventoryVector.y; y++)
+        {
+            for (int x = 1; x <= opponentInventoryVector.x; x++)
+            {
+                Vector2Int position = new Vector2Int(x, y);
+                opponentSlots[position] = new Slot(position);
+                Debug.Log($"³» ½½·Ô Ãß°¡µÊ: {position}");
             }
         }
     }
 
-    //--- ì•„ì´í…œ ìƒì„± í…ŒìŠ¤íŠ¸ ---//
+
+    /*
+    //--- ¾ÆÀÌÅÛ »ı¼º Å×½ºÆ® ---//
     private void TestCreateItem()
     {
-        string testItemCode = "F202"; // í…ŒìŠ¤íŠ¸ ì•„ì´í…œ ì½”ë“œ
-        int testItemCount = 2;        // í…ŒìŠ¤íŠ¸ ì•„ì´í…œ ìˆ˜ëŸ‰
+        string testItemCode = "W101"; // Å×½ºÆ® ¾ÆÀÌÅÛ ÄÚµå
+        int testItemCount = 1;        // Å×½ºÆ® ¾ÆÀÌÅÛ ¼ö·®
 
-        // íŒ©í† ë¦¬ì—ì„œ ì•„ì´í…œ ìƒì„±
+        // ÆÑÅä¸®¿¡¼­ ¾ÆÀÌÅÛ »ı¼º
         ItemInstance testItem = ItemFactory.CreateItem(testItemCode);
 
         if (testItem != null)
         {
-            // ì•„ì´í…œ ì„¸ë¶€ ì‚¬í•­ ì„¤ì •
+            // ¾ÆÀÌÅÛ ¼¼ºÎ »çÇ× ¼³Á¤
             ItemFactory.SetItemInstance(
                 testItem,
                 count: testItemCount,
-                location: new Vector2Int(2, 4), // ì²« ë²ˆì§¸ ìŠ¬ë¡¯ì— ë°°ì¹˜
-                durability: 100,               // ë‚´êµ¬ë„ ì„¤ì • (ì˜µì…˜)
-                charges: null                  // ì‚¬ìš© ê°€ëŠ¥ íšŸìˆ˜ ì—†ìŒ
+                location: new Vector2Int(2, 4), // Ã¹ ¹øÂ° ½½·Ô¿¡ ¹èÄ¡
+                durability: 100,               // ³»±¸µµ ¼³Á¤ (¿É¼Ç)
+                charges: null                  // »ç¿ë °¡´É È½¼ö ¾øÀ½
             );
 
-            // MyInventoryì— ì¶”ê°€
+            // MyInventory¿¡ Ãß°¡
             AddItemToMyInventory(testItem);
         }
         else
         {
-            Debug.LogError($"ì•„ì´í…œ ìƒì„± ì‹¤íŒ¨: ì½”ë“œ '{testItemCode}'");
+            Debug.LogError($"¾ÆÀÌÅÛ »ı¼º ½ÇÆĞ: ÄÚµå '{testItemCode}'");
         }
+
+        testItem = ItemFactory.CreateItem(testItemCode);
+
+        if (testItem != null)
+        {
+            // ¾ÆÀÌÅÛ ¼¼ºÎ »çÇ× ¼³Á¤
+            ItemFactory.SetItemInstance(
+                testItem,
+                count: testItemCount,
+                location: new Vector2Int(3, 4), // Ã¹ ¹øÂ° ½½·Ô¿¡ ¹èÄ¡
+                durability: 100,               // ³»±¸µµ ¼³Á¤ (¿É¼Ç)
+                charges: null                  // »ç¿ë °¡´É È½¼ö ¾øÀ½
+            );
+
+            // MyInventory¿¡ Ãß°¡
+            AddItemToMyInventory(testItem);
+        }
+        else
+        {
+            Debug.LogError($"¾ÆÀÌÅÛ »ı¼º ½ÇÆĞ: ÄÚµå '{testItemCode}'");
+        }
+
     }
 
-    //--- ItemInstance ì¶”ê°€ ---//
+    //--- ItemInstance Ãß°¡ ---//
     public void AddItemToMyInventory(ItemInstance itemInstance)
     {
         myItems.Add(itemInstance);
-        CreateItemUI(itemInstance, myInventoryGrid);
-        Debug.Log($"ë‚´ ì¸ë²¤í† ë¦¬ì— ì•„ì´í…œ ì¶”ê°€: {itemInstance.data.itemName}");
+        CreateItemUI(itemInstance, myInventory);
+        Debug.Log($"³» ÀÎº¥Åä¸®¿¡ ¾ÆÀÌÅÛ Ãß°¡: {itemInstance.data.itemName}");
     }
 
-    //--- ì½”ë“œ ê¸°ë°˜ì˜ ì•„ì´í…œ ìƒì„± ---//
+    //--- ÄÚµå ±â¹İÀÇ ¾ÆÀÌÅÛ »ı¼º ---//
     public void AddItemByCode(string itemCode, int count)
     {
         for (int i = 0; i < count; i++)
@@ -91,7 +201,7 @@ public class BagInventoryManager : MonoBehaviour
 
                 if (availableSlot == null)
                 {
-                    Debug.LogWarning($"'{itemCode}' ì•„ì´í…œì„ ì¶”ê°€í•  ê³µê°„ì´ ì—†ìŠµë‹ˆë‹¤.");
+                    Debug.LogWarning($"'{itemCode}' ¾ÆÀÌÅÛÀ» Ãß°¡ÇÒ °ø°£ÀÌ ¾ø½À´Ï´Ù.");
                     return;
                 }
 
@@ -101,7 +211,9 @@ public class BagInventoryManager : MonoBehaviour
         }
     }
 
-    //--- íŠ¹ì • ìœ„ì¹˜ì— ì•„ì´í…œ ë°°ì¹˜ (ë¡œë“œ ì‹œ ì‚¬ìš©) ---//
+
+
+    //--- Æ¯Á¤ À§Ä¡¿¡ ¾ÆÀÌÅÛ ¹èÄ¡ (·Îµå ½Ã »ç¿ë) ---//
     public void AddItemAtPosition(string itemCode, int count, Vector2Int position)
     {
         for (int i = 0; i < count; i++)
@@ -112,7 +224,7 @@ public class BagInventoryManager : MonoBehaviour
             {
                 if (!ValidSlots(position, newItem.data.size, mySlots, myInventoryVector))
                 {
-                    Debug.LogWarning($"ìœ„ì¹˜ {position}ì—ì„œ '{itemCode}' ì•„ì´í…œì„ ì¶”ê°€í•  ê³µê°„ì´ ë¶€ì¡±í•©ë‹ˆë‹¤.");
+                    Debug.LogWarning($"À§Ä¡ {position}¿¡¼­ '{itemCode}' ¾ÆÀÌÅÛÀ» Ãß°¡ÇÒ °ø°£ÀÌ ºÎÁ·ÇÕ´Ï´Ù.");
                     return;
                 }
 
@@ -122,30 +234,67 @@ public class BagInventoryManager : MonoBehaviour
         }
     }
 
-    //--- ItemInstance UI ìƒì„± ---//
+    //--- ItemInstance UI »ı¼º ---//
     public void CreateItemUI(ItemInstance itemInstance, Transform gridParent)
     {
         GameObject itemUIObject = Instantiate(itemInstanceUIPrefab, gridParent);
         ItemInstanceUI itemUI = itemUIObject.GetComponent<ItemInstanceUI>();
         itemUI.Initialize(itemInstance);
     }
+    */
+    //¿©±â±îÁö Å×½ºÆ® ¾ÆÀÌÅÛ »ı¼º ÄÚµå
+    
+    //--- opponentInventory ÀĞ¾î¿À±â ---//
+    public void SetOpponentItems(List<ItemInstance> setItems)
+    {
+        foreach (var slot in opponentSlots.Values)
+        {
+            slot.SetOccupied(false);
 
-    //--- Slot ê´€ë¦¬ ---//
-    private bool PlaceItemInSlot(ItemInstance itemInstance, Vector2Int location,
+        }
+        opponentItems = setItems;
+        //ItemPoolManager ¿¬µ¿ ÆÄÆ®
+        LoadOpponentItemsUI();
+        //¹Ì±¸Çö
+    }
+
+    //LoadItemUI//
+    public void LoadOpponentItemsUI()
+    {
+        if (opponentItems == null) { return; }
+        foreach (var itemInstance in opponentItems)
+        {
+            GameObject obj = ItemUIPoolManager.Instance.GetItemUI(itemInstance);
+            ItemInstanceUI itemInstanceUI = obj.GetComponent<ItemInstanceUI>(); 
+            //slot Á¡À¯
+            if (!PlaceItemInSlot(itemInstance, itemInstance.location, opponentSlots, opponentItems, opponentInventoryVector))
+            {
+                if (!PlaceFirstAvailableSlot(itemInstance, opponentItems)) { Debug.Log("¾ÆÀÌÅÛ ¹èÄ¡ ¹× Àç¹èÄ¡ ½ÇÆĞ"); }
+            }
+            itemInstanceUI.UpdateUI();
+        }
+
+    }
+    
+
+
+
+    //--- Slot °ü¸® ---//
+    public bool PlaceItemInSlot(ItemInstance itemInstance, Vector2Int location,
                                  Dictionary<Vector2Int, Slot> slots, List<ItemInstance> items, Vector2Int inventorySize)
     {
         Vector2Int size = itemInstance.data.size;
 
         if (!ValidSlots(location, size, slots, inventorySize))
         {
-            Debug.LogWarning($"ìœ„ì¹˜ {location}ì—ì„œ ì•„ì´í…œ '{itemInstance.data.itemName}'ì„(ë¥¼) ë°°ì¹˜í•  ê³µê°„ì´ ë¶€ì¡±í•©ë‹ˆë‹¤.");
+            Debug.LogWarning($"À§Ä¡ {location}¿¡¼­ ¾ÆÀÌÅÛ '{itemInstance.data.itemName}'À»(¸¦) ¹èÄ¡ÇÒ °ø°£ÀÌ ºÎÁ·ÇÕ´Ï´Ù.");
             return false;
         }
 
         OccupySlots(location, size, slots);
         itemInstance.location = location;
         items.Add(itemInstance);
-        Debug.Log($"ì•„ì´í…œ '{itemInstance.data.itemName}'ì´(ê°€) {location} ìœ„ì¹˜ì— ë°°ì¹˜ë˜ì—ˆìŠµë‹ˆë‹¤.");
+        Debug.Log($"¾ÆÀÌÅÛ '{itemInstance.data.itemName}'ÀÌ(°¡) {location} À§Ä¡¿¡ ¹èÄ¡µÇ¾ú½À´Ï´Ù.");
         return true;
     }
 
@@ -162,44 +311,109 @@ public class BagInventoryManager : MonoBehaviour
         return PlaceItemInSlot(itemInstance, location.Value, targetSlot, targetItems, sizeOfInventory);
     }
 
-    private void FreeItemSlots(ItemInstance itemInstance)
+    public void FreeItemSlots(ItemInstance itemInstance)
     {
-        FreeSlots(itemInstance.location, itemInstance.data.size);
+        Vector2Int location = itemInstance.location;
+        Vector2Int size = itemInstance.data.size;
+
+        // 1) ¾ÆÀÌÅÛÀÌ ³» ÀÎº¥Åä¸®¿¡ ¼ÓÇØ ÀÖ¾ú´Ù¸é mySlots ÇØÁ¦
+        if (myItems.Contains(itemInstance))
+        {
+            FreeSlots(location, size, mySlots);
+        }
+        // 2) »ó´ë ÀÎº¥Åä¸®¿¡ ¼ÓÇØ ÀÖ¾ú´Ù¸é opponentSlots ÇØÁ¦
+        else if (opponentItems.Contains(itemInstance))
+        {
+            FreeSlots(location, size, opponentSlots);
+        }
+        else
+        {
+            Debug.LogWarning("FreeItemSlots: ÀÌ ¾ÆÀÌÅÛÀÌ ¾î´À ÀÎº¥Åä¸®¿¡µµ ¼ÓÇØ ÀÖÁö ¾Ê½À´Ï´Ù.");
+        }
     }
 
-    private void OccupySlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots)
+
+    public void OccupySlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots)
     {
-        foreach (Vector2Int position in GetSlotPositions(location, size, new Vector2Int()))
+        Debug.Log($"[OccupySlots] Á¡À¯ ½ÃÀÛ: ½ÃÀÛ À§Ä¡ = {location}, Å©±â = {size}");
+
+        for (int y = location.y; y < location.y + size.y; y++)
         {
-            if (slots.TryGetValue(position, out var slot))
+            for (int x = location.x; x < location.x + size.x; x++)
             {
-                slot.SetOccupied(true);
+                Vector2Int position = new Vector2Int(x, y);
+                if (slots.TryGetValue(position, out var slot))
+                {
+                    slot.SetOccupied(true);
+                    Debug.Log($"[OccupySlots] Á¡À¯ ½½·Ô: {position}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[OccupySlots] ½½·Ô ¾øÀ½: {position}");
+                }
             }
         }
     }
 
-    private void FreeSlots(Vector2Int location, Vector2Int size)
+    private void FreeSlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> targetSlots)
     {
-        foreach (Vector2Int position in GetSlotPositions(location, size, new Vector2Int()))
+        Debug.Log($"[FreeSlots] Á¡À¯ ÇØÁ¦ ½ÃÀÛ: À§Ä¡ = {location}, Å©±â = {size}");
+
+        for (int y = location.y; y < location.y + size.y; y++)
         {
-            if (mySlots.TryGetValue(position, out var slot))
+            for (int x = location.x; x < location.x + size.x; x++)
             {
-                slot.SetOccupied(false);
+                Vector2Int pos = new Vector2Int(x, y);
+                if (targetSlots.TryGetValue(pos, out var slot))
+                {
+                    slot.SetOccupied(false);
+                    Debug.Log($"[FreeSlots] ÇØÁ¦µÈ ½½·Ô: {pos}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[FreeSlots] ½½·Ô ¾øÀ½: {pos}");
+                }
             }
         }
     }
 
-    private bool ValidSlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots, Vector2Int inventorySize)
+
+
+    public bool ValidSlots(Vector2Int location, Vector2Int size, Dictionary<Vector2Int, Slot> slots, Vector2Int inventorySize)
     {
-        foreach (Vector2Int position in GetSlotPositions(location, size, inventorySize))
+        Debug.Log("ValidSlots called (for-loop)");
+
+        for (int y = location.y; y < location.y + size.y; y++)
         {
-            if (!slots.TryGetValue(position, out var slot) || slot.GetOccupied())
+            for (int x = location.x; x < location.x + size.x; x++)
             {
-                return false;
+                // ÀÎº¥Åä¸® ¹üÀ§¸¦ ³ÑÀ¸¸é ¹«½Ã
+                if (x > inventorySize.x || y > inventorySize.y)
+                {
+                    Debug.LogWarning($"[ValidSlots] °Ë»ç Á¦¿Ü: ¹üÀ§ ÃÊ°ú À§Ä¡ ({x},{y})");
+                    continue;
+                }
+
+                Vector2Int pos = new Vector2Int(x, y);
+                Debug.Log($"[ValidSlots] °Ë»ç ÁßÀÎ ½½·Ô À§Ä¡: {pos}");
+
+                if (!slots.TryGetValue(pos, out var slot))
+                {
+                    Debug.LogWarning($"[ValidSlots] ½½·Ô Á¤º¸ ¾øÀ½: {pos}");
+                    return false;
+                }
+
+                if (slot.GetOccupied())
+                {
+                    Debug.LogWarning($"[ValidSlots] ½½·Ô Á¡À¯ Áß: {pos}");
+                    return false;
+                }
             }
         }
+
         return true;
     }
+
 
     private IEnumerable<Vector2Int> GetSlotPositions(Vector2Int location, Vector2Int size, Vector2Int inventorySize)
     {
@@ -226,30 +440,48 @@ public class BagInventoryManager : MonoBehaviour
         }
         return null;
     }
+
+    public void SetOpponentList(List<ItemInstance> lootList) {
+        opponentItems = new List<ItemInstance>();
+        foreach(ItemInstance item in opponentItems)
+        {
+            //itemInstanceUI »ı¼º ¹× Pool¿¡¼­ µğÅ¥
+        }
+    }
+
+
+
+
+
 }
 
-/*
+
+
+
+
+
+
+
 public class Slot
 {
-    public Vector2Int Location { get; } // ìŠ¬ë¡¯ ìœ„ì¹˜ ì •ë³´ (ì½ê¸° ì „ìš©)
-    public bool IsOccupied { get; private set; } // ìŠ¬ë¡¯ ì ìœ  ì—¬ë¶€ (ì½ê¸° ì „ìš©)
+    public Vector2Int Location { get; } // ½½·Ô À§Ä¡ Á¤º¸ (ÀĞ±â Àü¿ë)
+    public bool IsOccupied { get; private set; } // ½½·Ô Á¡À¯ ¿©ºÎ (ÀĞ±â Àü¿ë)
 
     public Slot(Vector2Int location)
     {
         Location = location;
-        IsOccupied = false; // ì´ˆê¸°í™” ì‹œ ì ìœ ë˜ì§€ ì•Šì€ ìƒíƒœ
+        IsOccupied = false; // ÃÊ±âÈ­ ½Ã Á¡À¯µÇÁö ¾ÊÀº »óÅÂ
     }
 
-    // ìŠ¬ë¡¯ ì ìœ  ìƒíƒœ ë³€ê²½ ë©”ì„œë“œ
+    // ½½·Ô Á¡À¯ »óÅÂ º¯°æ ¸Ş¼­µå
     public void SetOccupied(bool state)
     {
         IsOccupied = state;
     }
 
-    // ì ìœ  ìƒíƒœë¥¼ ë°˜í™˜í•˜ëŠ” ë©”ì„œë“œ
+    // Á¡À¯ »óÅÂ¸¦ ¹İÈ¯ÇÏ´Â ¸Ş¼­µå
     public bool GetOccupied()
     {
         return IsOccupied;
     }
 }
-*/

@@ -15,20 +15,20 @@ public class EquipmentSlotUI : MonoBehaviour
     {
 
         // SlotUI 위를 마우스로 포인팅 시 현재 마우스가 위치한 Slot 갱신
-        NewBagInventoryManager.Instance.currentPointedSlot = new Vector2Int(-2,-2);
-        NewBagInventoryManager.Instance.currentPointedSlotIsMySlot = true;
-        NewBagInventoryManager.Instance.currentPointedSlotIsEquip = true;
+        BagInventoryManager.Instance.currentPointedSlot = new Vector2Int(-2,-2);
+        BagInventoryManager.Instance.currentPointedSlotIsMySlot = true;
+        BagInventoryManager.Instance.currentPointedSlotIsEquip = true;
         //NewBagInventoryManager.Instance.currentPointedSlotType = equipSlotType;
 
 
-        Debug.Log($"[SlotUI] OnPointerEnter. location: {NewBagInventoryManager.Instance.currentPointedSlot}");
-        Debug.Log($"[SlotUI] OnPointerEnter. IsMySlot: {NewBagInventoryManager.Instance.currentPointedSlotIsMySlot}");
+        Debug.Log($"[SlotUI] OnPointerEnter. location: {BagInventoryManager.Instance.currentPointedSlot}");
+        Debug.Log($"[SlotUI] OnPointerEnter. IsMySlot: {BagInventoryManager.Instance.currentPointedSlotIsMySlot}");
 
     }   
 
     public void OnPointerExit(PointerEventData eventData) {
 
-        NewBagInventoryManager.Instance.currentPointedSlotIsEquip = false;
+        BagInventoryManager.Instance.currentPointedSlotIsEquip = false;
         //NewBagInventoryManager.Instance.currentPointedEquipSlot = GameObject.;
 
     }

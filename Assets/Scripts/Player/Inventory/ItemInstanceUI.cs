@@ -11,7 +11,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     public Image itemImage;
     public Text itemCountText;
 
-    private ItemInstance itemInstance;
+    public ItemInstance itemInstance;
     private RectTransform rectTransform;
     private Canvas canvas;
 
@@ -33,19 +33,18 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         }
     }
 
+    // init 기능 일부 ItemUIPoolManager로 이관
     public void Initialize(ItemInstance instance)
     {
         itemInstance = instance;
         UpdateUI();
-        UpdatePosition(itemInstance.location);
-        UpdateSize();
     }
 
     public void UpdateUI()
     {
-        if (itemInstance.currentEquipSlotType == EquipSlotType.none)
+        if (itemInstance != null)
         {
-            if (itemInstance != null)
+            if(itemInstance.currentEquipSlotType != EquipSlotType.none)
             {
                 UpdatePosition(itemInstance.location);
                 UpdateSize();
@@ -56,31 +55,31 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             }
             else
             {
-                itemImage.sprite = null;
-                itemImage.enabled = false;
-                itemCountText.text = "";
+                // 현재 오브젝트의 부모 Transform을 직접 얻습니다.
+                if (transform.parent == null)
+                    return;
+
+                // 부모와 자식의 RectTransform을 가져옵니다.
+                RectTransform parentRect = transform.parent as RectTransform;
+                RectTransform selfRect = transform as RectTransform;
+                if (parentRect == null || selfRect == null)
+                    return;
+                // 1. 부모의 중앙 기준으로 정렬하도록 anchor와 pivot을 중앙으로 설정합니다.
+                selfRect.anchorMin = new Vector2(0.5f, 0.5f);
+                selfRect.anchorMax = new Vector2(0.5f, 0.5f);
+                selfRect.pivot = new Vector2(0.5f, 0.5f);
+                // 2. 부모의 중앙으로 실제 위치 이동
+                selfRect.anchoredPosition = Vector2.zero;
             }
-            Debug.Log("UpdateUI.좌표: " + itemInstance?.location);
         }
         else
         {
-
-            // 현재 오브젝트의 부모 Transform을 직접 얻습니다.
-            if (transform.parent == null)
-                return;
-
-            // 부모와 자식의 RectTransform을 가져옵니다.
-            RectTransform parentRect = transform.parent as RectTransform;
-            RectTransform selfRect = transform as RectTransform;
-            if (parentRect == null || selfRect == null)
-                return;
-            // 1. 부모의 중앙 기준으로 정렬하도록 anchor와 pivot을 중앙으로 설정합니다.
-            selfRect.anchorMin = new Vector2(0.5f, 0.5f);
-            selfRect.anchorMax = new Vector2(0.5f, 0.5f);
-            selfRect.pivot = new Vector2(0.5f, 0.5f);
-            // 2. 부모의 중앙으로 실제 위치 이동
-            selfRect.anchoredPosition = Vector2.zero;
+            itemImage.sprite = null;
+            itemImage.enabled = false;
+            itemCountText.text = "";
         }
+
+
     }
 
     public void UpdatePosition(Vector2Int location)
@@ -157,15 +156,15 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             SlotUI foundSlotUI = foundObject.GetComponent<SlotUI>();
             if (foundSlotUI != null)
             {
-                NewBagInventoryManager.Instance.currentPointedSlot = foundSlotUI.location;
-                NewBagInventoryManager.Instance.currentPointedSlotIsMySlot = foundSlotUI.isMySlot;
+                BagInventoryManager.Instance.currentPointedSlot = foundSlotUI.location;
+                BagInventoryManager.Instance.currentPointedSlotIsMySlot = foundSlotUI.isMySlot;
 
                 Vector2Int targetSlotLocation = CaculateTargetSlot();
-                bool isTargetMySlot = NewBagInventoryManager.Instance.currentPointedSlotIsMySlot;
+                bool isTargetMySlot = BagInventoryManager.Instance.currentPointedSlotIsMySlot;
 
                 //사전에 위치 해제
                 if (itemInstance.currentEquipSlotUI == null)
-                NewBagInventoryManager.Instance.FreeItemSlots(itemInstance);
+                BagInventoryManager.Instance.FreeItemSlots(itemInstance);
 
                 if (CanPlaceItem(targetSlotLocation, isTargetMySlot))
                 {
@@ -180,13 +179,13 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                     if (itemInstance.currentEquipSlotUI == null)
                     {
                         
-                        if (NewBagInventoryManager.Instance.myItems.Contains(itemInstance))
+                        if (BagInventoryManager.Instance.myItems.Contains(itemInstance))
                         {
-                            NewBagInventoryManager.Instance.OccupySlots(originLocation, itemInstance.data.size, NewBagInventoryManager.Instance.mySlots);
+                            BagInventoryManager.Instance.OccupySlots(originLocation, itemInstance.data.size, BagInventoryManager.Instance.mySlots);
                         }
-                        else if (NewBagInventoryManager.Instance.opponentItems.Contains(itemInstance))
+                        else if (BagInventoryManager.Instance.opponentItems.Contains(itemInstance))
                         {
-                            NewBagInventoryManager.Instance.OccupySlots(originLocation, itemInstance.data.size, NewBagInventoryManager.Instance.opponentSlots);
+                            BagInventoryManager.Instance.OccupySlots(originLocation, itemInstance.data.size, BagInventoryManager.Instance.opponentSlots);
                         }
                     }
                     //원래 위치로 복귀??????????????
@@ -211,10 +210,10 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             EquipmentSlotUI foundEquipUI = foundObject.GetComponent<EquipmentSlotUI>();
             if (foundEquipUI != null) {
 
-                NewBagInventoryManager.Instance.currentPointedEquipSlot = foundEquipUI;//
+                BagInventoryManager.Instance.currentPointedEquipSlot = foundEquipUI;//
 
-                NewBagInventoryManager.Instance.currentPointedSlotIsMySlot = true;
-                NewBagInventoryManager.Instance.currentPointedSlotIsEquip = true;
+                BagInventoryManager.Instance.currentPointedSlotIsMySlot = true;
+                BagInventoryManager.Instance.currentPointedSlotIsEquip = true;
 
                 //배치가능여부 계산 및 배치
                 if (CanEquipItem(foundEquipUI))
@@ -236,8 +235,8 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 //UPDATEUI 외 다른 방식 적용
                 canvasGroup.blocksRaycasts = true;
                 
-                NewBagInventoryManager.Instance.currentPointedSlotIsEquip = false;
-                NewBagInventoryManager.Instance.currentPointedEquipSlot = null;
+                BagInventoryManager.Instance.currentPointedSlotIsEquip = false;
+                BagInventoryManager.Instance.currentPointedEquipSlot = null;
                 UpdateUI();
                 return;
             }
@@ -264,7 +263,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     /// 
     private Vector2Int CaculateTargetSlot()
     {
-        var manager = NewBagInventoryManager.Instance;
+        var manager = BagInventoryManager.Instance;
         Vector2Int hoveredSlot = manager.currentPointedSlot;
 
         // 아이템 크기가 (3,2)라면, 우측하단이 hoveredSlot 위치에 닿았을 때
@@ -322,7 +321,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         //게임 로드 시에도 사용가능
 
     //기존 위치에 대한 점유해제 및 리스트 내 삭제
-    var manager = NewBagInventoryManager.Instance;
+    var manager = BagInventoryManager.Instance;
 
         // (1) myItems 쪽에 있었던 경우
         if (manager.myItems.Contains(itemInstance))
@@ -379,7 +378,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     {
         //인자는 이동의 목적지 고려
 
-        var manager = NewBagInventoryManager.Instance;
+        var manager = BagInventoryManager.Instance;
 
         // 1) 어느 인벤토리로 갈지에 따라 딕셔너리와 사이즈 결정
         Dictionary<Vector2Int, Slot> targetSlots;
@@ -413,7 +412,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     private void PlaceItem(Vector2Int targetPosition, bool isTargetMySlot)
     {
         //inventoryManager와 연동
-        var manager = NewBagInventoryManager.Instance;
+        var manager = BagInventoryManager.Instance;
 
         //itemInstance 원래 위치 분기 부분 작성 필요
         

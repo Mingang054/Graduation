@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: {x: 2, y: 1}
   itemName: Pisstool
-  itemCode: W101
+  itemCode: W102
   itemSprite: {fileID: 21300000, guid: 99b63c4a223085843a45df31a94dc215, type: 3}
   price: 500
   weight: 1.5
