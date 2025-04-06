@@ -35,7 +35,7 @@ public class BagInventoryManager : MonoBehaviour
     public Transform opponentInventory;
     public Transform opponentInventoryGrid;
 
-    //--SlotUI접근--//
+    //--SlotUI 접근 (location 확인용)--//
     public Dictionary<Vector2Int, SlotUI> mySlotsUI = new Dictionary<Vector2Int, SlotUI>();
     public Dictionary<Vector2Int, SlotUI> opponentSlotsUI = new Dictionary<Vector2Int, SlotUI>();
 
@@ -67,6 +67,7 @@ public class BagInventoryManager : MonoBehaviour
     {
         Loot loot = GetComponent<Loot>();
         List<ItemInstance> item = loot.lootItems;
+        SetOpponentItems(item);
     }
 
 
@@ -243,14 +244,45 @@ public class BagInventoryManager : MonoBehaviour
     }
     */
     //여기까지 테스트 아이템 생성 코드
-    
+
     //--- opponentInventory 읽어오기 ---//
+    public void ResetOpponentItems()
+    {
+        // 1) 슬롯 점유 해제
+        for (int y = 1; y <= opponentInventoryVector.y; y++)
+        {
+            for (int x = 1; x <= opponentInventoryVector.x; x++)
+            {
+                opponentSlots[new Vector2Int(x, y)].SetOccupied(false);
+            }
+        }
+
+        // 2) opponentInventory 하위 자식 오브젝트 반환 (한 단계만)
+        foreach (Transform child in opponentInventory)
+        {
+            // 오브젝트가 ItemInstanceUI 컴포넌트를 가지고 있는지 확인
+            ItemInstanceUI ui = child.GetComponent<ItemInstanceUI>();
+            if (ui != null)
+            {
+                ItemUIPoolManager.Instance.ReturnItemUI(child.gameObject);
+            }
+        }
+
+        // 3) opponentItems 참조 제거
+        opponentItems = null;
+    }
+
+
     public void SetOpponentItems(List<ItemInstance> setItems)
     {
-        foreach (var slot in opponentSlots.Values)
+        ResetOpponentItems();
+        //기존 등록된 Item 해제
+        for (int y = 1; y<= opponentInventoryVector.y; y++)
         {
-            slot.SetOccupied(false);
-
+            for(int x = 1; x<= opponentInventoryVector.x; x++)
+            {
+                opponentSlots[new Vector2Int(x, y)].SetOccupied(false);
+            }
         }
         opponentItems = setItems;
         //ItemPoolManager 연동 파트
@@ -259,23 +291,26 @@ public class BagInventoryManager : MonoBehaviour
     }
 
     //LoadItemUI//
+
+    //-- opponentInvneoty에 있는 아이템 UI로 로딩 --//
     public void LoadOpponentItemsUI()
     {
-        if (opponentItems == null) { return; }
+        if (opponentItems == null) return;
+
         foreach (var itemInstance in opponentItems)
         {
-            GameObject obj = ItemUIPoolManager.Instance.GetItemUI(itemInstance);
-            ItemInstanceUI itemInstanceUI = obj.GetComponent<ItemInstanceUI>(); 
-            //slot 점유
-            if (!PlaceItemInSlot(itemInstance, itemInstance.location, opponentSlots, opponentItems, opponentInventoryVector))
-            {
-                if (!PlaceFirstAvailableSlot(itemInstance, opponentItems)) { Debug.Log("아이템 배치 및 재배치 실패"); }
-            }
-            itemInstanceUI.UpdateUI();
-        }
+            // 이미 리스트에 존재하는 아이템이므로, 위치만 복구
+            OccupySlots(itemInstance.location, itemInstance.data.size, opponentSlots);
 
+            // UI 연결
+            GameObject obj = ItemUIPoolManager.Instance.GetItemUI(itemInstance);
+            obj.transform.SetParent(opponentInventory);
+            ItemInstanceUI itemInstanceUI = obj.GetComponent<ItemInstanceUI>();
+            itemInstanceUI.UpdateUI();
+            obj.SetActive(true);
+        }
     }
-    
+
 
 
 

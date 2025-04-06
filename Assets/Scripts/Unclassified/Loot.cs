@@ -4,13 +4,13 @@ using UnityEngine;
 
 
 //코드 파생시켜서 다양한 상자로 만들기
-public class Loot : MonoBehaviour
+public class Loot : Interactable        
 {
     public List<ItemInstance> lootItems;
     
-    private void Start()
+    private void Awake()
     {
-
+        interactType = InteractType.Lootable;
         List<ItemInitData> itemToCreate = new List<ItemInitData>();
         //생성될 아이템 명시
         itemToCreate.Add(new ItemInitData
@@ -59,7 +59,10 @@ public class Loot : MonoBehaviour
     {
         return lootItems;
     }
-
+    public string GetLootName()
+    {
+        return interactionName;
+    }
 
 
     public void DeleteAll() {

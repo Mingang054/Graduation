@@ -7,6 +7,8 @@ using System.Threading;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance { get; private set; }
+
     // Input Action Asset 
     public InputActionAsset inputActions;
 
@@ -91,10 +93,21 @@ public class UIManager : MonoBehaviour
         escapeAction.canceled -= OnEscapeCanceled;
     }
 
+    void Awake()
+    {
+        // 싱글톤 인스턴스 설정
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지하려면 활성화
+    }
 
 
-
-    private void OnInventoryStarted(InputAction.CallbackContext context)
+    public void OnInventoryStarted(InputAction.CallbackContext context)
     {
         // Hold 여부 초기화
         isTabHold = true;
@@ -102,7 +115,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-private void OnInventoryPerformed(InputAction.CallbackContext context)
+    public void OnInventoryPerformed(InputAction.CallbackContext context)
     {
         // 현재 UI가 Vest Inventory인 경우
         if (currentUI == vestInventoryUI)
@@ -141,7 +154,7 @@ private void OnInventoryPerformed(InputAction.CallbackContext context)
         }
     }
 
-    private void OnInventoryCanceled(InputAction.CallbackContext context)
+    public void OnInventoryCanceled(InputAction.CallbackContext context)
     {
         // Task 중단
         tabHoldTaskTokenSource?.Cancel();
@@ -172,7 +185,7 @@ private void OnInventoryPerformed(InputAction.CallbackContext context)
     {
         isEscapeHandled = false;
     }
-    private void EnableVestInventory()
+    public void EnableVestInventory()
     {
         if (currentUI != null)
         {
@@ -182,7 +195,7 @@ private void OnInventoryPerformed(InputAction.CallbackContext context)
         vestInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Vest Inventory Enabled");
     }
-    private void EnableBagInventory()
+    public void EnableBagInventory()
     {
         if (currentUI != null)
         {
@@ -192,7 +205,7 @@ private void OnInventoryPerformed(InputAction.CallbackContext context)
         bagInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Bag Inventory Enabled");
     }
-    private void EnablePause()
+    public void EnablePause()
     {
         if (currentUI != null)
         {
@@ -213,6 +226,11 @@ private void OnInventoryPerformed(InputAction.CallbackContext context)
         {
             currentUI.SetActive(false);
             currentUI = null;
+        }
+        if (BagInventoryManager.Instance.opponentItems != null)
+        {
+            BagInventoryManager.Instance.ResetOpponentItems();
+
         }
     }
     private void DisableVestInventory()

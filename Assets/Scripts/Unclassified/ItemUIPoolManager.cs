@@ -70,6 +70,7 @@ public class ItemUIPoolManager : MonoBehaviour
         if (itemUI == null) { Debug.Log("itemInstanceUI가 아닙니다"); return; }
         itemUI.itemInstance = null;
         itemUI.UpdateUI();      //itemInstance == null이면 이미지 및 스트링 제거
+        item.transform.SetParent(transform, false); ;          // PoolManager의 자식으로 전환
         item.SetActive(false);
         poolQueue.Enqueue(item);
         

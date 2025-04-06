@@ -22,6 +22,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     private void Awake()
     {
+        itemInstance = null;
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
 
@@ -44,12 +45,12 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     {
         if (itemInstance != null)
         {
-            if(itemInstance.currentEquipSlotType != EquipSlotType.none)
+            if(itemInstance.currentEquipSlotType == EquipSlotType.none)
             {
+                itemImage.sprite = itemInstance.data.itemSprite;
                 UpdatePosition(itemInstance.location);
                 UpdateSize();
 
-                itemImage.sprite = itemInstance.data.itemSprite;
                 itemImage.enabled = true;
                 itemCountText.text = itemInstance.count > 1 ? itemInstance.count.ToString() : "";
             }
@@ -73,7 +74,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             }
         }
         else
-        {
+        {   //UI풀로 Return 등에 적용
             itemImage.sprite = null;
             itemImage.enabled = false;
             itemCountText.text = "";
@@ -100,37 +101,46 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log($"[OnBeginDrag] 드래그 시작: {itemInstance.data.itemName} (현재 위치: {itemInstance.location})");
+        // 🔧 canvas가 null이면 한 번 찾아줌
+        if (canvas == null)
+        {
+            canvas = GetComponentInParent<Canvas>();
+            if (canvas == null)
+            {
+                Debug.LogError("[OnBeginDrag] canvas를 찾을 수 없습니다!");
+                return;
+            }
+        }
+
+        if (rectTransform == null)
+        {
+            rectTransform = GetComponent<RectTransform>();
+        }
+
+        Debug.Log($"[OnBeginDrag] 드래그 시작: {itemInstance?.data.itemName ?? "null"} (현재 위치: {itemInstance?.location})");
 
         // 1) 드래그 전 상태 저장
         originalParent = transform.parent;
-        originLocation = itemInstance.location; // 이 위치로 복귀할 수도 있음
+        originLocation = itemInstance.location;
         originalPosition = rectTransform.anchoredPosition;
 
-        // 2) 아이템을 임시로 슬롯에서 해제한다고 표시(-1,-1)
-        //itemInstance.location = new Vector2Int(-1, -1);
-        // 3-1) UI의 이미지 위치를 마우스 위치로 정렬
+        // 2) UI 위치 보정
         rectTransform.pivot = new Vector2(1f, 0f);
-        RectTransform canvasRect = canvas.transform as RectTransform;
-        Vector3 globalMousePos;
         if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
             canvas.transform as RectTransform,
             eventData.position,
             canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
-            out globalMousePos))
+            out Vector3 globalMousePos))
         {
-            // 오프셋 적용: (48f, -48f)
             Vector3 offset = new Vector3(48f, -48f, 0f);
             rectTransform.position = globalMousePos + offset;
         }
-        
 
-        // 4) 최상위 Canvas로 이동
+        // 3) 부모 이동 및 Raycast 차단
         rectTransform.SetParent(canvas.transform, true);
-
-        // 5) 드래그 중에는 RaycastTarget 막아서 SlotUI가 OnPointerEnter 등 받을 수 있게
         canvasGroup.blocksRaycasts = false;
     }
+
 
     public void OnDrag(PointerEventData eventData)
     {

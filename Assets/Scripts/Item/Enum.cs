@@ -87,3 +87,14 @@ public enum EquipSlotType{
     thirdWeapon,
     none
 }
+
+
+//--- 상호 작용 ---//
+
+public enum InteractType
+{
+    Lootable,
+    Trigger,
+    none
+
+}
