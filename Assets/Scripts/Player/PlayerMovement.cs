@@ -33,11 +33,12 @@ public class PlayerMovement : MonoBehaviour
         private set { sprintSpeed = Mathf.Clamp(value, 0f, 20f); }
     }
 
+
     private Vector2 moveInput;
     private Rigidbody2D playerRigidbody2D;
     private Camera mainCamera;
 
-    private float previousDirection = 1f; // 이전 방향 저장
+    //private float previousDirection = 1f; // 이전 방향 저장
     private Vector3 previousMousePosition;
     private bool wasWalking = false;
     private bool wasSprinting = false;
@@ -85,7 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        OptimizeFlipObject(); // 마우스 위치 변화 시에만 반전 처리
+        //OptimizeFlipObject(); // 마우스 위치 변화 시에만 반전 처리
     }
 
     void FixedUpdate()
@@ -144,7 +145,8 @@ public class PlayerMovement : MonoBehaviour
         WalkSpeed = newSpeed; // 속성의 private set을 통해 값 설정
     }
 
-    private void OptimizeFlipObject()
+
+    /*private void OptimizeFlipObject()    //PlayerShooter로 이관
     {
         // 마우스 위치를 월드 좌표로 변환
         Vector3 mousePosition = Input.mousePosition;
@@ -158,9 +160,12 @@ public class PlayerMovement : MonoBehaviour
         if (currentDirection != previousDirection)
         {
             previousDirection = currentDirection;
-            transform.localScale = new Vector3(currentDirection, 1, 1);
+
+            Vector3 scale = playerToFlip.localScale;
+            scale.x = Mathf.Abs(scale.x) * currentDirection;
+            playerToFlip.localScale = scale;
         }
-    }
+    }*/
 
 
     private void OptimizeUpdateAnimator()

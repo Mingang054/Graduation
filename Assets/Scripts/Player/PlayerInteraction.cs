@@ -1,15 +1,16 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using TMPro;
 
 public class PlayerInteraction : MonoBehaviour
 {
     public float interactionRange;
     public LayerMask interactableLayer;
     private GameObject currentTarget;
-    [SerializeField] private Text targetName;
-
+    [SerializeField] private TMP_Text targetName;
+    [SerializeField] private Text legacyTargetName;         //ì„ì‹œìš©
     private InputAction interactAction;
 
     private void Awake()
@@ -22,13 +23,13 @@ public class PlayerInteraction : MonoBehaviour
 
     private async void Start()
     {
-        // ½ÃÀÛ ½Ã °¨Áö ·çÇÁ ½ÇÇà
+        // ì‹œì‘ ì‹œ ê°ì§€ ë£¨í”„ ì‹¤í–‰
         await StartDetectionLoop();
     }
 
     private void Update()
     {
-        // ÀÔ·Â Ã¼Å©´Â ¸Å ÇÁ·¹ÀÓ ¼öÇà
+        // ì…ë ¥ ì²´í¬ëŠ” ë§¤ í”„ë ˆì„ ìˆ˜í–‰
         if (interactAction.WasPerformedThisFrame() && currentTarget != null)
         {
             GetInteractable(currentTarget);
@@ -41,8 +42,10 @@ public class PlayerInteraction : MonoBehaviour
     {
         while (true)
         {
-            DetectClosestInteractable();
-            await Task.Delay(100); // 1ÃÊ¸¶´Ù °¨Áö
+
+            DetectClosestInteractableLegacy();
+            //DetectClosestInteractable();
+            await Task.Delay(100); // 1ì´ˆë§ˆë‹¤ ê°ì§€
         }
     }
 
@@ -67,7 +70,7 @@ public class PlayerInteraction : MonoBehaviour
         currentTarget = closest;
 
 
-        // ÀÌ¸§ Ç¥½Ã Ã³¸®
+        // ì´ë¦„ í‘œì‹œ ì²˜ë¦¬
         if (targetName != null)
         {
             if (currentTarget != null)
@@ -110,8 +113,45 @@ public class PlayerInteraction : MonoBehaviour
 
     private void InteractTrigger(InteractableTrigger trigger)
     {
-        // Æ®¸®°Å Àü¿ë ÀÌº¥Æ® ½ÇÇà µî
+        // íŠ¸ë¦¬ê±° ì „ìš© ì´ë²¤íŠ¸ ì‹¤í–‰ ë“±
         Debug.Log("Interact with Trigger!");
     }
 
+
+
+    private void DetectClosestInteractableLegacy()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, interactionRange, interactableLayer);
+
+        float closestDistance = float.MaxValue;
+        GameObject closest = null;
+
+        foreach (Collider2D hit in hits)
+        {
+            float dist = Vector2.Distance(transform.position, hit.transform.position);
+            if (dist < closestDistance)
+            {
+                closest = hit.gameObject;
+                closestDistance = dist;
+            }
+        }
+
+        currentTarget = closest;
+
+
+        // ì´ë¦„ í‘œì‹œ ì²˜ë¦¬
+        if (legacyTargetName != null)
+        {
+            if (currentTarget != null)
+            {
+                Interactable interactable = currentTarget.GetComponent<Interactable>();
+                legacyTargetName.text = interactable != null ? interactable.interactionName : "";
+            }
+            else
+            {
+                legacyTargetName.text = "";
+            }
+        }
+
+    }
 }

@@ -13,6 +13,10 @@ public class PlayerShooter : MonoBehaviour
 
     public WeaponData currentWeapon;
 
+
+    [SerializeField]                //
+    private Transform playerToFlip;
+
     // 🔹 캐릭터 반전 관련 변수
     private Vector3 previousMousePosition;
     private float previousDirection = 1f;
@@ -156,7 +160,7 @@ public class PlayerShooter : MonoBehaviour
         Vector3 direction = (mousePosition - armTransform.position).normalized;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        if (transform.localScale.x < 0) // 왼쪽 바라볼 때 반전 보정
+        if (playerToFlip.transform.localScale.x < 0) // 왼쪽 바라볼 때 반전 보정
         {
             angle -= 180f;
         }
@@ -169,13 +173,13 @@ public class PlayerShooter : MonoBehaviour
     {
         Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0;
-        Vector3 direction = mousePosition - transform.position;
+        Vector3 direction = mousePosition - playerToFlip.transform.position;
         float currentDirection = Mathf.Sign(direction.x);
 
         if (currentDirection != previousDirection)
         {
             previousDirection = currentDirection;
-            transform.localScale = new Vector3(currentDirection, 1, 1);
+            playerToFlip.transform.localScale = new Vector3(currentDirection, 1, 1);
         }
     }
 }
