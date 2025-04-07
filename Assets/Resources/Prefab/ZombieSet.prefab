@@ -104,6 +104,8 @@ MonoBehaviour:
   isAttacking: 0
   alertState: 3
   agent: {fileID: 3937691205454330788}
+  effectAnimator: {fileID: 0}
+  dieAnimator: {fileID: 0}
   bodyAnimator: {fileID: 707837030900578682}
   armAnimator: {fileID: 2911763463618176238}
   attackCollider: {fileID: 6785445182373347413}
@@ -233,7 +235,7 @@ Animator:
   m_GameObject: {fileID: 6604042339584046405}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4a8d22d36be10254ab0437425add1ee5, type: 2}
+  m_Controller: {fileID: 9100000, guid: f0149996ec54bb84ebb30b216c75183b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
