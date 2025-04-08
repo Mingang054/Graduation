@@ -107,8 +107,8 @@ public class PlayerInteraction : MonoBehaviour
 
     private void InteractLoot(Loot loot)
     {
-        BagInventoryManager.Instance.SetOpponentItems(loot.lootItems);
         UIManager.Instance.EnableBagInventory();
+        BagInventoryManager.Instance.SetOpponentItems(loot.lootItems);
     }
 
     private void InteractTrigger(InteractableTrigger trigger)

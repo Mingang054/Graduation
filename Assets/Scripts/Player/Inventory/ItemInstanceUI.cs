@@ -20,6 +20,11 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     private Vector2Int originLocation;
     private Vector2 originalPosition;
 
+    private void OnEnable()
+    {
+        if (itemInstance != null && itemInstance.data!=null) { itemImage.sprite = itemInstance.data.itemSprite; }
+        UpdateUI();
+    }
     private void Awake()
     {
         itemInstance = null;

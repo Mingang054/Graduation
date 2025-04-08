@@ -43,6 +43,7 @@ public class UIManager : MonoBehaviour
         // UI 관련 Action 할당
         inventoryAction = actionMap?.FindAction("Inventory");
         escapeAction = actionMap?.FindAction("Escape");
+        
 
         // ActionMap 및 Action 할당 에러 (디버그)
         if (actionMap == null)
