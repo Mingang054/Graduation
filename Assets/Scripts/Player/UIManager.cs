@@ -11,6 +11,9 @@ public class UIManager : MonoBehaviour
 
     // Input Action Asset 
     public InputActionAsset inputActions;
+    //
+    public CursorUI cursorUI;
+    public Image cursorImage;
 
     // UI GameObjects
     public GameObject vestInventoryUI;      // Vest Inventory
@@ -195,6 +198,8 @@ public class UIManager : MonoBehaviour
         currentUI = vestInventoryUI;
         vestInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Vest Inventory Enabled");
+        //UI
+        cursorUI.SetUIAsUICursor();
     }
     public void EnableBagInventory()
     {
@@ -205,6 +210,8 @@ public class UIManager : MonoBehaviour
         currentUI = bagInventoryUI;
         bagInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Bag Inventory Enabled");
+        //UI
+        cursorUI.SetUIAsUICursor();
     }
     public void EnablePause()
     {
@@ -216,6 +223,8 @@ public class UIManager : MonoBehaviour
         pauseMenuUI.SetActive(true); // 새로운 UI 활성화
         Time.timeScale = 0; // 게임 시간 정지
         Debug.Log("Pause Menu Enabled");
+        //UI
+        cursorUI.SetUIAsUICursor();
     }
     private void DisableCurrentUI()
     {
@@ -233,6 +242,8 @@ public class UIManager : MonoBehaviour
             BagInventoryManager.Instance.ResetOpponentItems();
 
         }
+        //UI
+        cursorUI.SetUIAsAimCursor();
     }
     private void DisableVestInventory()
     {
@@ -242,6 +253,8 @@ public class UIManager : MonoBehaviour
             vestInventoryUI.SetActive(false);
             Debug.Log("Vest Inventory Disabled");
         }
+        //UI
+        cursorUI.SetUIAsAimCursor();
     }
     private void DisableBagInventory()
     {
@@ -251,6 +264,8 @@ public class UIManager : MonoBehaviour
             bagInventoryUI.SetActive(false);
             Debug.Log("Bag Inventory Disabled");
         }
+        //UI
+        cursorUI.SetUIAsAimCursor();
     }
     private void DisablePause()
     {
@@ -261,6 +276,8 @@ public class UIManager : MonoBehaviour
             Time.timeScale = 1; // 게임 시간 재개
             Debug.Log("Pause Menu Disabled");
         }
+        //UI
+        cursorUI.SetUIAsAimCursor();
     }
 
     private async UniTask TrackTabHoldProgress(CancellationToken cancellationToken)
@@ -302,6 +319,7 @@ public class UIManager : MonoBehaviour
     }
 
 
+    
 }
 
 
