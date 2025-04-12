@@ -5,6 +5,14 @@ using UnityEngine.Audio;
 public class PlayerStatus : DamageableEntity
 {
 
+    public float healthMax;
+    public float staminaMax;
+    
+    public float weightMax;
+
+    public float money;
+
+
 
     public NPCData npcData;
     private Animator animator;

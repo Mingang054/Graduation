@@ -4,16 +4,19 @@ using UnityEngine;
 public class Weapon : ItemInstance
 {
     public float durability { get; private set; }  // 내구도
-    public bool loaded;
-    public bool loadedIsAP;
-    public Stack<bool> magStack;                    //isAP
-    public int magCount;
+    public bool isChamber;   //약실에 탄 유무
+    //public bool loadedIsAP;
+    public bool isJam = false;
+
+    public bool isMag;  //탄창 유무
+    public int magCount;    //탄수
+    //public Stack<bool> magStack;                    //isAP
 
     public Weapon(WeaponData data, int initialCount = 1, float initialDurability = 100)
         : base(data, initialCount)
     {
         this.durability = Mathf.Clamp(initialDurability, 0, 100);
-        magStack = null;
+        //magStack = null;
         magCount = 0;
     }
 
@@ -33,6 +36,37 @@ public class Weapon : ItemInstance
         durability = Mathf.Clamp(newDurability, 0, 100);
         Debug.Log($"{data.itemName} 내구도 설정: {durability}");
     }
+
+
+    // LoadInChamber 사용시
+    /*
+        if(isLoaded){
+            if(magCount>0){LoadInChamber();}
+            else{isLoaded = false;}
+        
+        }else {Debug.Log("약실에 탄이 없습니다.");}
+     */
+    public void PullReceiver()
+    {
+        if (isChamber)
+        {
+            if (magCount > 0) 
+            { 
+                isChamber = true;
+                magCount--; 
+            }else 
+            {
+                isChamber = false; 
+            }
+
+        }
+        else { Debug.Log("약실에 탄이 없습니다."); }
+        if (isJam) { isJam = false; }
+        
+        
+    }
+
+    /*
     public void InsertMag(bool isAP)
     {
         magStack.Push(isAP);
@@ -48,4 +82,5 @@ public class Weapon : ItemInstance
     {
         magCount = magStack.Count;
     }
+    */
 }

@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using TMPro;
+using Cysharp.Threading.Tasks;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private TMP_Text targetName;
     [SerializeField] private Text legacyTargetName;         //임시용
     private InputAction interactAction;
+
+    private UniTask detectionLoop = UniTask.CompletedTask;
 
     private void Awake()
     {
@@ -24,7 +27,7 @@ public class PlayerInteraction : MonoBehaviour
     private async void Start()
     {
         // 시작 시 감지 루프 실행
-        await StartDetectionLoop();
+        detectionLoop = StartDetectionLoop();
     }
 
     private void Update()
@@ -37,8 +40,7 @@ public class PlayerInteraction : MonoBehaviour
     }
 
 
-
-    private async Task StartDetectionLoop()
+    private async UniTask StartDetectionLoop()
     {
         while (true)
         {
@@ -153,5 +155,13 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
+    }
+    private void OnEnable()
+    {
+        //
+    }
+    private void OnDisable()
+    {
+        detectionLoop = UniTask.CompletedTask;
     }
 }

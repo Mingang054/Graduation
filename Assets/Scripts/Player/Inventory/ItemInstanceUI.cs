@@ -106,44 +106,48 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // 🔧 canvas가 null이면 한 번 찾아줌
-        if (canvas == null)
+        if(eventData.button == PointerEventData.InputButton.Left)
         {
-            canvas = GetComponentInParent<Canvas>();
+            // 🔧 canvas가 null이면 한 번 찾아줌
             if (canvas == null)
             {
-                Debug.LogError("[OnBeginDrag] canvas를 찾을 수 없습니다!");
-                return;
+                canvas = GetComponentInParent<Canvas>();
+                if (canvas == null)
+                {
+                    Debug.LogError("[OnBeginDrag] canvas를 찾을 수 없습니다!");
+                    return;
+                }
             }
+
+            if (rectTransform == null)
+            {
+                rectTransform = GetComponent<RectTransform>();
+            }
+
+            Debug.Log($"[OnBeginDrag] 드래그 시작: {itemInstance?.data.itemName ?? "null"} (현재 위치: {itemInstance?.location})");
+
+            // 1) 드래그 전 상태 저장
+            originalParent = transform.parent;
+            originLocation = itemInstance.location;
+            originalPosition = rectTransform.anchoredPosition;
+
+            // 2) UI 위치 보정
+            rectTransform.pivot = new Vector2(1f, 0f);
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
+                canvas.transform as RectTransform,
+                eventData.position,
+                canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+                out Vector3 globalMousePos))
+            {
+                Vector3 offset = new Vector3(48f, -48f, 0f);
+                rectTransform.position = globalMousePos + offset;
+            }
+
+            // 3) 부모 이동 및 Raycast 차단
+            rectTransform.SetParent(canvas.transform, true);
+            canvasGroup.blocksRaycasts = false;
         }
 
-        if (rectTransform == null)
-        {
-            rectTransform = GetComponent<RectTransform>();
-        }
-
-        Debug.Log($"[OnBeginDrag] 드래그 시작: {itemInstance?.data.itemName ?? "null"} (현재 위치: {itemInstance?.location})");
-
-        // 1) 드래그 전 상태 저장
-        originalParent = transform.parent;
-        originLocation = itemInstance.location;
-        originalPosition = rectTransform.anchoredPosition;
-
-        // 2) UI 위치 보정
-        rectTransform.pivot = new Vector2(1f, 0f);
-        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
-            canvas.transform as RectTransform,
-            eventData.position,
-            canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
-            out Vector3 globalMousePos))
-        {
-            Vector3 offset = new Vector3(48f, -48f, 0f);
-            rectTransform.position = globalMousePos + offset;
-        }
-
-        // 3) 부모 이동 및 Raycast 차단
-        rectTransform.SetParent(canvas.transform, true);
-        canvasGroup.blocksRaycasts = false;
     }
 
 
@@ -312,6 +316,8 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             // 3번 무기 슬롯일 때 권총만 허용
             if (equipSlotType == EquipSlotType.thirdWeapon && weapon.category != WeaponCategory.Pistol)
                 return false;
+
+            //Equip
         }
 
         // 방어구
@@ -335,8 +341,8 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     private void EquipItem(EquipmentSlotUI foundEquipUI) {
         //게임 로드 시에도 사용가능
 
-    //기존 위치에 대한 점유해제 및 리스트 내 삭제
-    var manager = BagInventoryManager.Instance;
+        //기존 위치에 대한 점유해제 및 리스트 내 삭제
+        var manager = BagInventoryManager.Instance;
 
         // (1) myItems 쪽에 있었던 경우
         if (manager.myItems.Contains(itemInstance))
@@ -360,10 +366,49 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         foundEquipUI.equipedItem = this;
         itemInstance.currentEquipSlotUI = foundEquipUI;
         itemInstance.currentEquipSlotType = foundEquipUI.GetEquipSlotType();
+                Weapon weapon = itemInstance as Weapon;
+        switch (foundEquipUI.GetEquipSlotType())
+        {
+            case EquipSlotType.firstWeapon:
+                manager.firstWeapon = weapon;
+                VestInventory.Instance.firstWeaponOnVest.IsEquiped = true;
+                break;
+            case EquipSlotType.secondWeapon:
+                manager.secondWeapon = weapon;
+                VestInventory.Instance.secondWeaponOnVest.IsEquiped = true;
+                break;
+            case EquipSlotType.thirdWeapon:
+                manager.thirdWeapon = weapon;
+                VestInventory.Instance.thirdWeaponOnVest.IsEquiped = true;
+                break;
+            default:
+                break;
+        }
         return;
     }
     private void UnEquip()
     {
+        switch (itemInstance.currentEquipSlotType)
+        {
+            case EquipSlotType.firstWeapon:
+                BagInventoryManager.Instance.firstWeapon = null;
+                VestInventory.Instance.firstWeaponOnVest.IsEquiped = false;
+                VestInventory.Instance.firstWeaponOnVest.UpdateUI();
+                break;
+            case EquipSlotType.secondWeapon:
+                BagInventoryManager.Instance.secondWeapon = null;
+                VestInventory.Instance.secondWeaponOnVest.IsEquiped = false;
+                VestInventory.Instance.secondWeaponOnVest.UpdateUI();
+                break;
+            case EquipSlotType.thirdWeapon:
+                BagInventoryManager.Instance.thirdWeapon = null;
+                VestInventory.Instance.thirdWeaponOnVest.IsEquiped = false;
+                VestInventory.Instance.thirdWeaponOnVest.UpdateUI();
+                break;
+            default:
+                break ;
+        }
+
         if(itemInstance.currentEquipSlotUI != null) { 
             itemInstance.currentEquipSlotUI.equipedItem = null;
             itemInstance.currentEquipSlotUI = null;

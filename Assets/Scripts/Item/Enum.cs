@@ -58,6 +58,7 @@ public enum AmmoType
     Heavy,    // ´ëÇü Åº¾à
     Anti,     // ´ë´ëÇü
     Shell,    // »êÅºÃÑ Åº¾à
+    Magnum,     //¸®º¼¹ö Åº¾à
     Explosive // À¯Åº
 }
 
@@ -97,4 +98,13 @@ public enum InteractType
     Trigger,
     none
 
+}
+
+public enum VestPlaceableType
+{
+    Mag,
+    Medical,
+    Docs,
+    Radio,
+    none
 }

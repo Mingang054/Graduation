@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using static UnityEditor.FilePathAttribute;
 
@@ -9,13 +10,22 @@ public class BagInventoryManager : MonoBehaviour
     public bool currentPointedSlotIsMySlot = false;
     public bool currentPointedSlotIsEquip = false;
     public EquipmentSlotUI currentPointedEquipSlot = null;
+    
+    
+    //-- 현재 사용중인 무기
+    public EquipSlotType currentUsingWeapon;
+    public Weapon currentWeapon;
 
     //-- EquipmentSlot 관리 --// Serialize
-    public Transform firstWeapon;
-    public Transform secondWeapon;
-    public Transform thirdWeapon; //pistol타입만 허용
-    public Transform headArmor;
-    public Transform bodyArmor;
+    public Transform firstWeaponUI;
+    public Transform secondWeaponUI;
+    public Transform thirdWeaponUI; //pistol타입만 허용
+    public Transform headArmorUI;
+    public Transform bodyArmorUI;
+    //-- Equipweapon
+    public Weapon firstWeapon;
+    public Weapon secondWeapon;
+    public Weapon thirdWeapon; //pistol타입만 허용
 
 
     //--- My Inventory 관리 ---//
@@ -127,121 +137,82 @@ public class BagInventoryManager : MonoBehaviour
     }
 
 
-    /*
-    //--- 아이템 생성 테스트 ---//
-    private void TestCreateItem()
+    //--- MyInventory 읽어오기 ---//(미구현)
+
+    public void LoadMyInventory()       //인자 json
     {
-        string testItemCode = "W101"; // 테스트 아이템 코드
-        int testItemCount = 1;        // 테스트 아이템 수량
-
-        // 팩토리에서 아이템 생성
-        ItemInstance testItem = ItemFactory.CreateItem(testItemCode);
-
-        if (testItem != null)
-        {
-            // 아이템 세부 사항 설정
-            ItemFactory.SetItemInstance(
-                testItem,
-                count: testItemCount,
-                location: new Vector2Int(2, 4), // 첫 번째 슬롯에 배치
-                durability: 100,               // 내구도 설정 (옵션)
-                charges: null                  // 사용 가능 횟수 없음
-            );
-
-            // MyInventory에 추가
-            AddItemToMyInventory(testItem);
-        }
-        else
-        {
-            Debug.LogError($"아이템 생성 실패: 코드 '{testItemCode}'");
-        }
-
-        testItem = ItemFactory.CreateItem(testItemCode);
-
-        if (testItem != null)
-        {
-            // 아이템 세부 사항 설정
-            ItemFactory.SetItemInstance(
-                testItem,
-                count: testItemCount,
-                location: new Vector2Int(3, 4), // 첫 번째 슬롯에 배치
-                durability: 100,               // 내구도 설정 (옵션)
-                charges: null                  // 사용 가능 횟수 없음
-            );
-
-            // MyInventory에 추가
-            AddItemToMyInventory(testItem);
-        }
-        else
-        {
-            Debug.LogError($"아이템 생성 실패: 코드 '{testItemCode}'");
-        }
-
+        ResetMyItems();
+        myItems = new List<ItemInstance>();
+        //json파일 파싱
+        SetMyItems(myItems);
     }
 
-    //--- ItemInstance 추가 ---//
-    public void AddItemToMyInventory(ItemInstance itemInstance)
+    public void ResetMyItems()  //Load 단계 외 구동 금지
     {
-        myItems.Add(itemInstance);
-        CreateItemUI(itemInstance, myInventory);
-        Debug.Log($"내 인벤토리에 아이템 추가: {itemInstance.data.itemName}");
-    }
 
-    //--- 코드 기반의 아이템 생성 ---//
-    public void AddItemByCode(string itemCode, int count)
-    {
-        for (int i = 0; i < count; i++)
+        // 1) 슬롯 점유 해제
+        for (int y = 1; y <= myInventoryVector.y; y++)
         {
-            ItemInstance newItem = ItemFactory.CreateItem(itemCode);
-
-            if (newItem != null)
+            for (int x = 1; x <= myInventoryVector.x; x++)
             {
-                Vector2Int? availableSlot = FindFirstAvailableSlot(newItem.data.size, mySlots, myInventoryVector);
-
-                if (availableSlot == null)
-                {
-                    Debug.LogWarning($"'{itemCode}' 아이템을 추가할 공간이 없습니다.");
-                    return;
-                }
-
-                ItemFactory.SetItemInstance(newItem, 1, availableSlot.Value);
-                AddItemToMyInventory(newItem);
+                mySlots[new Vector2Int(x, y)].SetOccupied(false);
             }
         }
-    }
 
-
-
-    //--- 특정 위치에 아이템 배치 (로드 시 사용) ---//
-    public void AddItemAtPosition(string itemCode, int count, Vector2Int position)
-    {
-        for (int i = 0; i < count; i++)
+        // 2) opponentInventory 하위 자식 오브젝트 반환 (한 단계만)
+        foreach (Transform child in myInventory)
         {
-            ItemInstance newItem = ItemFactory.CreateItem(itemCode);
-
-            if (newItem != null)
+            // 오브젝트가 ItemInstanceUI 컴포넌트를 가지고 있는지 확인
+            ItemInstanceUI ui = child.GetComponent<ItemInstanceUI>();
+            if (ui != null)
             {
-                if (!ValidSlots(position, newItem.data.size, mySlots, myInventoryVector))
-                {
-                    Debug.LogWarning($"위치 {position}에서 '{itemCode}' 아이템을 추가할 공간이 부족합니다.");
-                    return;
-                }
-
-                ItemFactory.SetItemInstance(newItem, 1, position);
-                AddItemToMyInventory(newItem);
+                ItemUIPoolManager.Instance.ReturnItemUI(child.gameObject);
             }
         }
+
+        // 3) opponentItems 참조 제거
+        myItems = null;
+    }
+    
+    public void SetMyItems(List<ItemInstance> setItems)
+    {
+
+        ResetMyItems();
+        //기존 등록된 Item 해제
+        for (int y = 1; y <= myInventoryVector.y; y++)
+        {
+            for (int x = 1; x <= myInventoryVector.x; x++)
+            {
+                mySlots[new Vector2Int(x, y)].SetOccupied(false);
+            }
+        }
+        myItems = setItems;
+        //ItemPoolManager 연동 파트
+        LoadMyItemsUI();
+        //미구현
+    }
+    public void LoadMyItemsUI()
+    {
+        if (myItems == null) return;
+
+        foreach (var itemInstance in myItems)
+        {
+            // 이미 리스트에 존재하는 아이템이므로, 위치만 복구
+            OccupySlots(itemInstance.location, itemInstance.data.size, mySlots);
+
+            // UI 연결
+            GameObject obj = ItemUIPoolManager.Instance.GetItemUI(itemInstance);
+            obj.transform.SetParent(myInventory);
+            ItemInstanceUI itemInstanceUI = obj.GetComponent<ItemInstanceUI>();
+            itemInstanceUI.UpdateUI();
+            obj.SetActive(true);
+        }
+
     }
 
-    //--- ItemInstance UI 생성 ---//
-    public void CreateItemUI(ItemInstance itemInstance, Transform gridParent)
-    {
-        GameObject itemUIObject = Instantiate(itemInstanceUIPrefab, gridParent);
-        ItemInstanceUI itemUI = itemUIObject.GetComponent<ItemInstanceUI>();
-        itemUI.Initialize(itemInstance);
-    }
-    */
-    //여기까지 테스트 아이템 생성 코드
+
+
+
 
     //--- opponentInventory 읽어오기 ---//
     public void ResetOpponentItems()
@@ -270,7 +241,6 @@ public class BagInventoryManager : MonoBehaviour
         opponentItems = null;
     }
 
-
     public void SetOpponentItems(List<ItemInstance> setItems)
     {
         ResetOpponentItems();
@@ -287,8 +257,6 @@ public class BagInventoryManager : MonoBehaviour
         LoadOpponentItemsUI();
         //미구현
     }
-
-    //LoadItemUI//
 
     //-- opponentInvneoty에 있는 아이템 UI로 로딩 --//
     public void LoadOpponentItemsUI()
@@ -313,6 +281,8 @@ public class BagInventoryManager : MonoBehaviour
 
 
     //--- Slot 관리 ---//
+
+    //item이동시 사용 (초기화X)
     public bool PlaceItemInSlot(ItemInstance itemInstance, Vector2Int location,
                                  Dictionary<Vector2Int, Slot> slots, List<ItemInstance> items, Vector2Int inventorySize)
     {
@@ -482,6 +452,19 @@ public class BagInventoryManager : MonoBehaviour
         }
     }
 
+
+
+    //-- 스왑 구현(미구현)
+
+    public void SetPlayerWeapon()
+    {
+        //currentUsingWeapon = ;
+        //currentWeapon = ;
+    }
+    public void SetPlayerArmor()
+    {
+        //단순 합연산
+    }
 
 
 

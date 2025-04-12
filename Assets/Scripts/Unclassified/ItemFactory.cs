@@ -29,9 +29,11 @@ public static class ItemFactory
         if (itemInstance is Weapon weapon)
         {
             weapon.SetDurability(initData.durability ?? 100f);
-            weapon.loaded = initData.loaded ?? false;
-            weapon.loadedIsAP = initData.loadedIsAP ?? false;
+            weapon.isChamber = initData.loaded ?? false;
+            //weapon.loadedIsAP = initData.loadedIsAP ?? false;
 
+            weapon.magCount = 0;
+            /*
             weapon.magStack = new Stack<bool>();
             weapon.magCount = initData.magCount ?? 0;
             if (initData.magazineData != null)
@@ -42,6 +44,7 @@ public static class ItemFactory
                 }
                 weapon.SyncMagAndCount();
             }
+            */
         }
 
         // 5. 방어구일 경우 내구도 설정
