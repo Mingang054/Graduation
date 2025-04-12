@@ -21,7 +21,7 @@ MonoBehaviour:
   maxStack: 1
   itemType: 0
   description: 
-  category: 0
+  category: 2
   damage: 35
   penetration: 10
   damageAP: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
   weaponUnloadBody: {fileID: -822869010032040879, guid: 079682ba364907a48a9bd7be3c56155e, type: 3}
   weaponLoadBar: {fileID: -3447600402928057874, guid: 827080ca66256c24db534b87926b7bb7, type: 3}
   roadCount: []
-  bullet: {fileID: 0}
-  ammoType: 0
+  bullet: {fileID: -2346302928887187388, guid: d0b3f1e155d19e343bfc23591304c1d7, type: 3}
+  ammoType: 1
   durability: 100
   wearRate: 0.2

@@ -129,7 +129,7 @@ public class VestInventory : MonoBehaviour
 
     public void LoadAmmo()
     {
-                WeaponData a = weaponOnHand.currentWeapon.data as WeaponData;
+        WeaponData a = weaponOnHand.currentWeapon.data as WeaponData;
         switch (a.ammoType)
         {
             default:        //통상 방식
@@ -152,6 +152,7 @@ public class VestInventory : MonoBehaviour
                 }
                 break;
         }
+        weaponOnHand.UpdateUI();
         
         
         

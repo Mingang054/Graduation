@@ -108,6 +108,10 @@ public class PlayerShooter : MonoBehaviour
     private void FireProjectile()
     {
         // 🔹 마우스 위치를 가져와 정규화된 방향 벡터 계산
+        Vector3 mousePos = GetMouseWorldOnPlane(weaponPivotTransform.position.z);
+
+        Vector2 fireDir = (mousePos - weaponPivotTransform.position).normalized;
+
         Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0; // 2D 환경에서 Z 축 제거
         Vector2 fireDirection = (mousePosition - weaponPivotTransform.position).normalized;
@@ -144,7 +148,13 @@ public class PlayerShooter : MonoBehaviour
         }
     }
 
-
+    private Vector3 GetMouseWorldOnPlane(float worldZ)
+    {
+        Vector3 sp = Input.mousePosition;
+        // “카메라에서 이 거리” = 원하는 월드 z – 카메라 z
+        sp.z = worldZ - mainCamera.transform.position.z;
+        return mainCamera.ScreenToWorldPoint(sp);
+    }
 
 
 
@@ -152,21 +162,20 @@ public class PlayerShooter : MonoBehaviour
     // 🔹 마우스 방향을 바라보도록 팔 회전
     private void RotateArmToMouse()
     {
-        Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        if (mousePosition == previousMousePosition) return;
-        previousMousePosition = mousePosition;
+        Vector3 mousePos = GetMouseWorldOnPlane(armTransform.position.z);
 
-        mousePosition.z = 0;
-        Vector3 direction = (mousePosition - armTransform.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        if ((mousePos - previousMousePosition).sqrMagnitude < 0.0001f) return;
+        previousMousePosition = mousePos;
 
-        if (playerToFlip.transform.localScale.x < 0) // 왼쪽 바라볼 때 반전 보정
-        {
+        Vector2 dir = (mousePos - armTransform.position).normalized;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+        if (playerToFlip.transform.localScale.x < 0)   // 좌우 반전 보정
             angle -= 180f;
-        }
 
         armTransform.rotation = Quaternion.Euler(0, 0, angle);
     }
+
 
     // 🔹 캐릭터 좌우 반전
     private void FlipCharacter()

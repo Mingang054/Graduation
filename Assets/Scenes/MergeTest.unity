@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 76652483}
   - component: {fileID: 76652482}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Cursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8567186622430992613, guid: 3e8e0d0a499a19b449ad487feadc2ce4, type: 3}
+  m_Sprite: {fileID: 58537775430694542, guid: b55ebd7b4bbab6f4dbe57de626fc2ec8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14759,6 +14759,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2189096720314162060, guid: 8f307127c88551e439d8fe180a622b5d, type: 3}
   m_PrefabInstance: {fileID: 3177503055147030873}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &527432465 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3161206631284458397, guid: 8f307127c88551e439d8fe180a622b5d, type: 3}
+  m_PrefabInstance: {fileID: 3177503055147030873}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &609787006
 GameObject:
   m_ObjectHideFlags: 0
@@ -15412,6 +15417,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d68354c0d8a41854c230a42d8a7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponBody: {fileID: 0}
+  loadBar: {fileID: 0}
   MagPlace: {fileID: 1182131544}
 --- !u!224 &851702827
 RectTransform:
@@ -17549,7 +17556,7 @@ GameObject:
   - component: {fileID: 1881010919}
   - component: {fileID: 1881010918}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: CursorCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17568,7 +17575,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 76652481}
-  m_Father: {fileID: 1386831611}
+  m_Father: {fileID: 527432465}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -17589,6 +17596,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cursorRT: {fileID: 76652481}
   canvas: {fileID: 1881010921}
+  aimCursor: {fileID: 58537775430694542, guid: b55ebd7b4bbab6f4dbe57de626fc2ec8, type: 3}
+  uiCursor: {fileID: -8567186622430992613, guid: 3e8e0d0a499a19b449ad487feadc2ce4, type: 3}
+  image: {fileID: 76652482}
 --- !u!114 &1881010919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17683,6 +17693,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b829d68354c0d8a41854c230a42d8a7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponBody: {fileID: 0}
+  loadBar: {fileID: 0}
   MagPlace: {fileID: 434164627}
 --- !u!224 &1893116628
 RectTransform:
@@ -18226,6 +18238,14 @@ PrefabInstance:
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
       objectReference: {fileID: 0}
+    - target: {fileID: 1467542230621395060, guid: 170601f7205ab594da673229add427d0, type: 3}
+      propertyPath: cursorUI
+      value: 
+      objectReference: {fileID: 1881010918}
+    - target: {fileID: 1467542230621395060, guid: 170601f7205ab594da673229add427d0, type: 3}
+      propertyPath: cursorImage
+      value: 
+      objectReference: {fileID: 76652482}
     - target: {fileID: 1567119427423334603, guid: 170601f7205ab594da673229add427d0, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -18321,9 +18341,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4716367131528428011, guid: 170601f7205ab594da673229add427d0, type: 3}
       insertIndex: 3
       addedObject: {fileID: 1502837518}
-    - targetCorrespondingSourceObject: {fileID: 4716367131528428011, guid: 170601f7205ab594da673229add427d0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1881010917}
     - targetCorrespondingSourceObject: {fileID: 4219027482768376511, guid: 170601f7205ab594da673229add427d0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1090376836}
@@ -18523,6 +18540,9 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 465347548752875213, guid: 8f307127c88551e439d8fe180a622b5d, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3161206631284458397, guid: 8f307127c88551e439d8fe180a622b5d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1881010917}
     - targetCorrespondingSourceObject: {fileID: 5091282022844027288, guid: 8f307127c88551e439d8fe180a622b5d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2098305591}

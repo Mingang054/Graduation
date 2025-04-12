@@ -381,7 +381,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 { Destroy(VestInventory.Instance.weaponOnHand1); }
 
                 VestInventory.Instance.weaponOnHand1 = ob.GetComponent<WeaponOnHand>();
-
+                VestInventory.Instance.weaponOnHand1.currentWeapon = itemInstance as Weapon;
                 manager.firstWeapon = weapon;
                 VestInventory.Instance.firstWeaponOnVest.IsEquiped = true;
                 VestInventory.Instance.thirdWeaponOnVest.IsUsing = false;
@@ -392,6 +392,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 { Destroy(VestInventory.Instance.weaponOnHand2); }
 
                 VestInventory.Instance.weaponOnHand2 = ob.GetComponent<WeaponOnHand>();
+                VestInventory.Instance.weaponOnHand2.currentWeapon = itemInstance as Weapon;
 
                 manager.secondWeapon = weapon;
                 VestInventory.Instance.secondWeaponOnVest.IsEquiped = true;
@@ -403,6 +404,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 { Destroy(VestInventory.Instance.weaponOnHand3); }
 
                 VestInventory.Instance.weaponOnHand3 = ob.GetComponent<WeaponOnHand>();
+                VestInventory.Instance.weaponOnHand3.currentWeapon = itemInstance as Weapon;
 
                 manager.thirdWeapon = weapon;
                 VestInventory.Instance.thirdWeaponOnVest.IsEquiped = true;

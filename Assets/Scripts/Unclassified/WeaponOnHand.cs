@@ -1,23 +1,20 @@
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class WeaponOnHand : MonoBehaviour
 {
+    //public GameObject receiverStopper;
     public Image weaponBody;
     public Image loadBar;
-    //public GameObject receiverStopper;
     public GameObject MagPlace;
 
     public Weapon currentWeapon;
 
 
-    private void UpdateUI()
+    public void UpdateUI()
     {
         if (currentWeapon.data is WeaponData weaponData)
         {
-            if (weaponData.ammoType != AmmoType.Shell &&weaponData.ammoType != AmmoType.Magnum) {
-                
-            }
 
             switch (weaponData.reloadMode)
             {

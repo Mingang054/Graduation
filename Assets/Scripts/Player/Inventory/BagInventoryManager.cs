@@ -325,7 +325,7 @@ public class BagInventoryManager : MonoBehaviour
             FreeSlots(location, size, mySlots);
         }
         // 2) 상대 인벤토리에 속해 있었다면 opponentSlots 해제
-        else if (opponentItems.Contains(itemInstance))
+        else if (opponentItems.Contains(itemInstance))  
         {
             FreeSlots(location, size, opponentSlots);
         }

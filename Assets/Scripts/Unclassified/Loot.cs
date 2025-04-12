@@ -33,7 +33,7 @@ public class Loot : Interactable
         });
         itemToCreate.Add(new ItemInitData
         {
-            itemCode = "W102",
+            itemCode = "W002",
             count = 1,
             location = new Vector2Int(1, 11),
             durability = 80f,

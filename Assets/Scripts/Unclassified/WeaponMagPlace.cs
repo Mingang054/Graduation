@@ -6,7 +6,7 @@ public class WeaponMagPlace : MonoBehaviour, IPointerClickHandler
 {
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left && VestInventory.Instance.gripTargetType == VestPlaceableType.Mag)
+        if (eventData.button == PointerEventData.InputButton.Left)
         {   
             
             VestInventory.Instance.LoadAmmo();
