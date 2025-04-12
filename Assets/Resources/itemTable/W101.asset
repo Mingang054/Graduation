@@ -35,10 +35,14 @@ MonoBehaviour:
   colliderSize: 0
   dispersion: 0
   dispersionRate: 0
+  magCountMax: 0
+  WeaponPrefab: {fileID: 0}
   reloadMode: 0
   fireMode: 0
   attackMode: 1
   attackClip: {fileID: 0}
+  loadClip: {fileID: 0}
+  loadbarClip: {fileID: 0}
   bullet: {fileID: 0}
   ammoType: 1
   durability: 0

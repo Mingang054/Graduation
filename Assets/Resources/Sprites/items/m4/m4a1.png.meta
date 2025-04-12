@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8eb2e6526a613554f8ce7e1b1d982c8d
+guid: b3bdc39ceadcf6c40ba48684213813b8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -331871257049378394
-    second: MagPouch2_0
+      213: -6523142373678959762
+    second: m4a1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MagPouch2_0
+      name: m4a1_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 17
-        width: 251
-        height: 409
+        x: 1
+        y: 94
+        width: 1007
+        height: 387
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6a1d86c99d4f46bf0800000000000000
-      internalID: -331871257049378394
+      spriteID: e63319d72942975a0800000000000000
+      internalID: -6523142373678959762
       vertices: []
       indices: 
       edges: []
@@ -160,8 +160,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      MagPouch2_0: -331871257049378394
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Cysharp.Threading.Tasks.Triggers;
+using System.Collections.Generic;
 using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -366,21 +367,48 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         foundEquipUI.equipedItem = this;
         itemInstance.currentEquipSlotUI = foundEquipUI;
         itemInstance.currentEquipSlotType = foundEquipUI.GetEquipSlotType();
-                Weapon weapon = itemInstance as Weapon;
+
+        Weapon weapon = itemInstance as Weapon;
+        WeaponData weaponData = weapon.data as WeaponData;
+
+        GameObject ob = Instantiate(weaponData.WeaponPrefab, VestInventory.Instance.hand);
+        ob.SetActive(false);
+        
         switch (foundEquipUI.GetEquipSlotType())
         {
             case EquipSlotType.firstWeapon:
+                if (VestInventory.Instance.weaponOnHand1 != null) 
+                { Destroy(VestInventory.Instance.weaponOnHand1); }
+
+                VestInventory.Instance.weaponOnHand1 = ob.GetComponent<WeaponOnHand>();
+
                 manager.firstWeapon = weapon;
                 VestInventory.Instance.firstWeaponOnVest.IsEquiped = true;
+                VestInventory.Instance.thirdWeaponOnVest.IsUsing = false;
                 break;
+
             case EquipSlotType.secondWeapon:
+                if (VestInventory.Instance.weaponOnHand2 != null)
+                { Destroy(VestInventory.Instance.weaponOnHand2); }
+
+                VestInventory.Instance.weaponOnHand2 = ob.GetComponent<WeaponOnHand>();
+
                 manager.secondWeapon = weapon;
                 VestInventory.Instance.secondWeaponOnVest.IsEquiped = true;
+                VestInventory.Instance.thirdWeaponOnVest.IsUsing = false;
                 break;
+
             case EquipSlotType.thirdWeapon:
+                if (VestInventory.Instance.weaponOnHand3 != null)
+                { Destroy(VestInventory.Instance.weaponOnHand3); }
+
+                VestInventory.Instance.weaponOnHand3 = ob.GetComponent<WeaponOnHand>();
+
                 manager.thirdWeapon = weapon;
                 VestInventory.Instance.thirdWeaponOnVest.IsEquiped = true;
+                VestInventory.Instance.thirdWeaponOnVest.IsUsing = false;
                 break;
+
             default:
                 break;
         }
@@ -391,20 +419,29 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         switch (itemInstance.currentEquipSlotType)
         {
             case EquipSlotType.firstWeapon:
+                if (VestInventory.Instance.weaponOnHand1 != null)
+                { Destroy(VestInventory.Instance.weaponOnHand1); }
                 BagInventoryManager.Instance.firstWeapon = null;
                 VestInventory.Instance.firstWeaponOnVest.IsEquiped = false;
                 VestInventory.Instance.firstWeaponOnVest.UpdateUI();
                 break;
+
             case EquipSlotType.secondWeapon:
+                if (VestInventory.Instance.weaponOnHand2 != null)
+                { Destroy(VestInventory.Instance.weaponOnHand2); }
                 BagInventoryManager.Instance.secondWeapon = null;
                 VestInventory.Instance.secondWeaponOnVest.IsEquiped = false;
                 VestInventory.Instance.secondWeaponOnVest.UpdateUI();
                 break;
+
             case EquipSlotType.thirdWeapon:
+                if (VestInventory.Instance.weaponOnHand3 != null)
+                { Destroy(VestInventory.Instance.weaponOnHand3); }
                 BagInventoryManager.Instance.thirdWeapon = null;
                 VestInventory.Instance.thirdWeaponOnVest.IsEquiped = false;
                 VestInventory.Instance.thirdWeaponOnVest.UpdateUI();
                 break;
+
             default:
                 break ;
         }

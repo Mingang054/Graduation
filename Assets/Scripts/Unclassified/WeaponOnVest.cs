@@ -8,6 +8,7 @@ public class WeaponOnVest : MonoBehaviour ,IDragHandler, IBeginDragHandler, IEnd
     [SerializeField]
     public EquipSlotType equipslot;
     public bool IsEquiped ;
+    public bool IsUsing;
 
     public float triggerOffset = 40f;
     public float maxOffset = 50f;
@@ -24,6 +25,10 @@ public class WeaponOnVest : MonoBehaviour ,IDragHandler, IBeginDragHandler, IEnd
         cg = GetComponent<CanvasGroup>();
     }
 
+    void Start()
+    {
+        UpdateUI();
+    }
     public void OnBeginDrag(PointerEventData e)
     {
         if (e.button != PointerEventData.InputButton.Left) return;
@@ -46,23 +51,33 @@ public class WeaponOnVest : MonoBehaviour ,IDragHandler, IBeginDragHandler, IEnd
         if (e.button != PointerEventData.InputButton.Left) return;
 
         if (offset >= triggerOffset)
+        {
             onPulled?.Invoke();
+            VestInventory.Instance.SwapWeapon(this);
+        }
 
         rt.anchoredPosition = originPos;   // 즉시 복귀
         offset = 0f;
         if (cg) cg.blocksRaycasts = true;  // Raycast 복원
+        UpdateUI();
     }   
 
 
     public void UpdateUI()
     {
-        if (IsEquiped)
+        if (IsEquiped && IsUsing)
         {
-                    
+            //레이캐스트 무효
+
+        }
+        else if ( IsEquiped)
+        {
+            //레이캐스트 가능
+
         }
         else
         {
-
+            //레이캐스트 무효
         }
         //
     }

@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using NUnit.Framework;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+
 
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Items/Weapon")]
 public class WeaponData : ItemData
@@ -18,12 +22,25 @@ public class WeaponData : ItemData
     public float dispersion;            //분산
     public float dispersionRate;        //분산도
 
+    public int magCountMax;
+
+    public GameObject WeaponPrefab;
+
     public ReloadType reloadMode;     // 장전 방식 (탄창, 한 발씩 장전)
     public FireMode fireMode;         // 발사 방식 (반자동, 자동)
     public AttackMode attackMode;     // 공격 방식 (히트스캔, 투사체 등)
-    public AudioClip attackClip;       
 
+
+    public AudioClip attackClip;
+    public AudioClip loadClip;
+    public AudioClip loadbarClip;
+
+    public Sprite weaponBody;
+    public Sprite weaponUnloadBody;
+    public Sprite weaponLoadBar;
+    public List<Sprite> roadCount;
     public Sprite bullet;
+
     public AmmoType ammoType;          // 탄약 종류 (탄창과 호환성 검사)
     public float durability;          // 내구도
     public float wearRate;            // 마모 계수

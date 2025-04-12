@@ -1,8 +1,10 @@
 using JetBrains.Annotations;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,13 +16,18 @@ public class VestInventory : MonoBehaviour
 
     // 관리용
     private InputAction rightClickAction;
-
+    public Transform hand;
 
     //상호작용 대상
     public PlayerStatus playerStatus;
     public BagInventoryManager BIM;
 
-    public WeaponOnHand weaponOnHand;
+    public WeaponOnHand weaponOnHand; //current
+    public WeaponOnHand weaponOnHand1;
+    public WeaponOnHand weaponOnHand2;
+    public WeaponOnHand weaponOnHand3;
+
+
     [SerializeField]
     public WeaponOnVest firstWeaponOnVest;
     [SerializeField]
@@ -122,19 +129,28 @@ public class VestInventory : MonoBehaviour
 
     public void LoadAmmo()
     {
-        if (!weaponOnHand.currentWeapon.isMag)  //탄창이 없으면 바로 탄창 삽입 
+                WeaponData a = weaponOnHand.currentWeapon.data as WeaponData;
+        switch (a.ammoType)
         {
-            if (isGrip)
-            {
-                //미구현파트 WeaponOnHand 연동
-                UseGrip();
-            }
-        }
-        else                                    //탄창이 있으면 탄창을 버림
-        {
-            weaponOnHand.currentWeapon.isMag = false;
-            weaponOnHand.currentWeapon.magCount = 0;
-            //탄 회수 부분 추가
+            default:        //통상 방식
+                if (!weaponOnHand.currentWeapon.isMag)  //탄창이 없으면 바로 탄창 삽입 
+                {
+                    if (isGrip)
+                    {
+                            //미구현파트 WeaponOnHand 연동
+                        weaponOnHand.currentWeapon.isMag = true;
+                   
+                        weaponOnHand.currentWeapon.magCount = a.magCountMax;    
+                        UseGrip();
+                    }
+                }
+                else                                    //탄창이 있으면 탄창을 버림
+                {
+                    weaponOnHand.currentWeapon.isMag = false;
+                    weaponOnHand.currentWeapon.magCount = 0;
+                    //탄 회수 부분 추가
+                }
+                break;
         }
         
         
@@ -214,9 +230,41 @@ public class VestInventory : MonoBehaviour
         
     }
 
-    public void SwapWeapon()
+    public void SwapWeapon(WeaponOnVest onVest)
     {
+        if (onVest.IsEquiped)
+        {
+            if (weaponOnHand != null)
+            {
+                weaponOnHand.gameObject.SetActive(false);
+            }
 
+            switch (onVest.equipslot)
+            {
+                case EquipSlotType.firstWeapon:
+                    if (BagInventoryManager.Instance.firstWeapon != null)
+                    {
+                        weaponOnHand = weaponOnHand1;
+                    }
+                    break;
+                case EquipSlotType.secondWeapon:
+                    if (BagInventoryManager.Instance.secondWeapon != null)
+                    {
+                        weaponOnHand = weaponOnHand2;
+                    }
+                    break;
+                case EquipSlotType.thirdWeapon:
+                    if (BagInventoryManager.Instance.thirdWeapon!= null)
+                    {
+                        weaponOnHand = weaponOnHand3;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            weaponOnHand.gameObject.SetActive(true);
+
+        }
     }
 
 

@@ -77,6 +77,5 @@ public class ItemInitData
     public float? durability;
     public bool? loaded;
     public bool? loadedIsAP;
-    public List<bool> magazineData;
     public int? magCount;
 }

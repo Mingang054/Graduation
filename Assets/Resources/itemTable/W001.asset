@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70d64c24626f444438ea3b2bd7db8003, type: 3}
+  m_Name: W001
+  m_EditorClassIdentifier: 
+  size: {x: 4, y: 2}
+  itemName: AR-15
+  itemCode: W001
+  itemSprite: {fileID: -6523142373678959762, guid: b3bdc39ceadcf6c40ba48684213813b8, type: 3}
+  price: 10000
+  weight: 4
+  maxStack: 1
+  itemType: 0
+  description: 
+  category: 0
+  damage: 35
+  penetration: 10
+  damageAP: 0
+  penetrationAP: 0
+  fireRate: 10
+  fireDelay: 0
+  projectileSpeed: 8
+  pelletCount: 1
+  barrelLength: 0.5
+  timeToSwap: 0
+  colliderSize: 0.02
+  dispersion: 1
+  dispersionRate: 0.2
+  magCountMax: 30
+  WeaponPrefab: {fileID: 1298467152704717261, guid: c2c74add1b7992047b07828c7b3ba484, type: 3}
+  reloadMode: 0
+  fireMode: 1
+  attackMode: 1
+  attackClip: {fileID: 8300000, guid: 0a87247874a9c7442b709184de26c71e, type: 3}
+  loadClip: {fileID: 8300000, guid: a39d168e2dbd0a346900d5721ce88035, type: 3}
+  loadbarClip: {fileID: 8300000, guid: 8f6d71b140c62754392ad810332bd02f, type: 3}
+  weaponBody: {fileID: -7804787076940987865, guid: c5b9525fc35957049bc9c06b408d598c, type: 3}
+  weaponUnloadBody: {fileID: -822869010032040879, guid: 079682ba364907a48a9bd7be3c56155e, type: 3}
+  weaponLoadBar: {fileID: -3447600402928057874, guid: 827080ca66256c24db534b87926b7bb7, type: 3}
+  roadCount: []
+  bullet: {fileID: 0}
+  ammoType: 0
+  durability: 100
+  wearRate: 0.2

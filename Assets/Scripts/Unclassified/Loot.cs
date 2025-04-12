@@ -15,13 +15,12 @@ public class Loot : Interactable
         //생성될 아이템 명시
         itemToCreate.Add(new ItemInitData
         {
-            itemCode = "W101",
+            itemCode = "W001",
             count = 1,
             location = new Vector2Int(4, 4),
             durability = 80f,
             loaded = false,
-            loadedIsAP = false,
-            magazineData = new List<bool> { true, false, false, true }
+            loadedIsAP = false
         });
         itemToCreate.Add(new ItemInitData
         {
@@ -30,8 +29,7 @@ public class Loot : Interactable
             location = new Vector2Int(6, 6),
             durability = 80f,
             loaded = false,
-            loadedIsAP = false,
-            magazineData = new List<bool> { true, false, false, true }
+            loadedIsAP = false
         });
         itemToCreate.Add(new ItemInitData
         {
@@ -40,8 +38,7 @@ public class Loot : Interactable
             location = new Vector2Int(1, 11),
             durability = 80f,
             loaded = false,
-            loadedIsAP = false,
-            magazineData = new List<bool> { true, false, false, true }
+            loadedIsAP = false
         });
 
         //아이템 생성
