@@ -11,7 +11,11 @@ public class CursorUI : MonoBehaviour
     [SerializeField] public Sprite uiCursor;
 
     [SerializeField] private Image image;
-   
+
+    private void Awake()
+    {
+        UnityEngine.Cursor.visible = false;
+    }
     void Update()
     {
         // Overlay 캔버스일 땐 좌표 변환 필요 없이 바로 대입

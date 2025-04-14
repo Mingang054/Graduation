@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerShooter : MonoBehaviour
@@ -7,10 +8,18 @@ public class PlayerShooter : MonoBehaviour
     public Transform armTransform; // 팔(Arm) Transform
     private Camera mainCamera;
 
+
+    [SerializeField]
+    GameObject zoomObject;
+    //--  --//
     private float lastFireTime;
     private bool triggered = false;
-    private InputAction fireAction;
 
+    private InputAction fireAction;
+    private InputAction zoomAction;
+
+    public Vector3 mouseWorld = Vector3.zero;
+    //
     public WeaponData currentWeapon;
 
 
@@ -31,36 +40,42 @@ public class PlayerShooter : MonoBehaviour
         var playerInput = new InputActionMap("Player");
         fireAction = playerInput.AddAction("Fire1", binding: "<Mouse>/leftButton");
 
+        zoomAction = playerInput.AddAction("Fire2", binding: "<Mouse>/rightButton");
+
         fireAction.started += OnFireStarted;
         fireAction.performed += OnFirePerformed;
         fireAction.canceled += OnFireCanceled;
+        zoomAction.started += OnZoomStarted;
+        zoomAction.canceled += OnZoomCanceled;
     }
 
     private void OnEnable()
     {
         fireAction.Enable();
+        zoomAction.Enable();
     }
 
     private void OnDisable()
     {
         fireAction.Disable();
+        zoomAction.Disable();
     }
 
     private void Update()
     {
-        if (currentWeapon == null) return;
+        /* ① 마우스 월드 좌표 한 번만 계산 (z=0 평면) */
+        mouseWorld = GetMouseWorldOnPlane(0f);
 
+        /* ② 팔 회전 & 캐릭터 플립 (좌표 캐시 사용) */
         RotateArmToMouse();
         FlipCharacter();
-    }
 
-    private void FixedUpdate()
-    {
+        /* ③ 연사 체크 */
         if (triggered && Time.time >= lastFireTime + currentWeapon.fireRate)
         {
             TryFire();
         }
-        else if (!currentWeapon.fireMode.Equals(FireMode.FullAuto)) // 반자동 모드일 경우 한 번만 발사
+        else if (!currentWeapon.fireMode.Equals(FireMode.FullAuto))
         {
             triggered = false;
         }
@@ -108,13 +123,13 @@ public class PlayerShooter : MonoBehaviour
     private void FireProjectile()
     {
         // 🔹 마우스 위치를 가져와 정규화된 방향 벡터 계산
-        Vector3 mousePos = GetMouseWorldOnPlane(weaponPivotTransform.position.z);
+        //Vector3 mousePosition = GetMouseWorldOnPlane(weaponPivotTransform.position.z);
 
-        Vector2 fireDir = (mousePos - weaponPivotTransform.position).normalized;
+        Vector2 fireDirection = (mouseWorld - weaponPivotTransform.position).normalized;
 
-        Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0; // 2D 환경에서 Z 축 제거
-        Vector2 fireDirection = (mousePosition - weaponPivotTransform.position).normalized;
+        //Vector3 mousePositio = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        //mousePosition.z = 0; // 2D 환경에서 Z 축 제거
+        //Vector2 fireDirectio = (mousePosition - weaponPivotTransform.position).normalized;
 
         // 🔹 새로운 발사 위치 계산 (마우스 방향으로 barrelLength 만큼 떨어진 위치)
         Vector3 firePosition = weaponPivotTransform.position + (Vector3)(fireDirection * currentWeapon.barrelLength);
@@ -154,6 +169,7 @@ public class PlayerShooter : MonoBehaviour
         // “카메라에서 이 거리” = 원하는 월드 z – 카메라 z
         sp.z = worldZ - mainCamera.transform.position.z;
         return mainCamera.ScreenToWorldPoint(sp);
+        
     }
 
 
@@ -162,33 +178,38 @@ public class PlayerShooter : MonoBehaviour
     // 🔹 마우스 방향을 바라보도록 팔 회전
     private void RotateArmToMouse()
     {
-        Vector3 mousePos = GetMouseWorldOnPlane(armTransform.position.z);
+        if ((mouseWorld - previousMousePosition).sqrMagnitude < 0.0001f) return;
+        previousMousePosition = mouseWorld;
 
-        if ((mousePos - previousMousePosition).sqrMagnitude < 0.0001f) return;
-        previousMousePosition = mousePos;
-
-        Vector2 dir = (mousePos - armTransform.position).normalized;
+        Vector2 dir = (mouseWorld - armTransform.position).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-        if (playerToFlip.transform.localScale.x < 0)   // 좌우 반전 보정
-            angle -= 180f;
-
+        if (playerToFlip.localScale.x < 0) angle -= 180f;
         armTransform.rotation = Quaternion.Euler(0, 0, angle);
     }
-
 
     // 🔹 캐릭터 좌우 반전
     private void FlipCharacter()
     {
-        Vector3 mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0;
-        Vector3 direction = mousePosition - playerToFlip.transform.position;
-        float currentDirection = Mathf.Sign(direction.x);
-
-        if (currentDirection != previousDirection)
+        Vector3 direction = mouseWorld - playerToFlip.position;
+        float currentSign = Mathf.Sign(direction.x);
+        if (currentSign != previousDirection)
         {
-            previousDirection = currentDirection;
-            playerToFlip.transform.localScale = new Vector3(currentDirection, 1, 1);
+            previousDirection = currentSign;
+            playerToFlip.localScale = new Vector3(currentSign, 1, 1);
         }
     }
+
+    private void OnZoomStarted(InputAction.CallbackContext context)
+    {
+        if (UIManager.Instance.currentUI == null)
+        {
+            zoomObject.SetActive(true);
+        }
+    }
+
+    private void OnZoomCanceled(InputAction.CallbackContext context)
+    {
+        zoomObject.SetActive(false);
+    }
+
 }

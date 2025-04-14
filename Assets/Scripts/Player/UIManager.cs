@@ -20,7 +20,7 @@ public class UIManager : MonoBehaviour
     public GameObject bagInventoryUI;       // Bag Inventory
     public GameObject pauseMenuUI;          // Pause Menu
 
-    private GameObject currentUI;           // 현재 활성화된 UI
+    public GameObject currentUI;           // 현재 활성화된 UI
 
     private InputAction inventoryAction;    // Tab 키
     private InputAction escapeAction;       // Esc 키
@@ -231,6 +231,7 @@ public class UIManager : MonoBehaviour
         if (currentUI == pauseMenuUI)
         {
             DisablePause();
+            currentUI = null;
         }
         else if (currentUI != null)
         {
