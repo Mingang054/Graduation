@@ -183,7 +183,7 @@ public class ZombieScript : NPCBase
         {
             var dmg = col.GetComponent<DamageableEntity>();
             if (dmg != null && dmg == currentTarget)
-                dmg.OnHitDamage(npcData.damage, npcData.penetration, col.transform.position, Vector2.zero);
+                dmg.OnHitDamage(npcData.damage, npcData.penetration, col.transform.position, Vector2.zero, faction);
         }
     }
 

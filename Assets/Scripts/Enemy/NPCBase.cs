@@ -83,9 +83,9 @@ public class NPCBase : DamageableEntity
     }
 
 
-    public override void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal)
+    public override void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal, Faction projectileFaction)
     {
-        base.OnHitDamage(damage, penetration, hitPoint, hitNormal);
+        base.OnHitDamage(damage, penetration, hitPoint, hitNormal, projectileFaction);
 
         // ✅ 피격 오디오 재생 (null 체크)
         if (npcData.onHitAudio != null && audioSource != null)

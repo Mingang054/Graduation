@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class DamageableEntity  : MonoBehaviour, IDamageable
 {
+    public string npcCode;
     public float healthPointMax= 100;                   //최대체력
     public float healthPoint { get; protected set; }     //체력
     public float armorPoint = 0f;                        //방어내구도
@@ -35,7 +36,7 @@ public class DamageableEntity  : MonoBehaviour, IDamageable
 
 
 
-    public virtual void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal)
+    public virtual void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal, Faction projectileFaction)
     {
         float penetratedArmor = armorPoint - penetration;
         float penetratedDamage;
@@ -53,13 +54,22 @@ public class DamageableEntity  : MonoBehaviour, IDamageable
 
 
         healthPoint -= penetratedDamage; 
-        if (healthPoint <= 0f && !isDead) { Die(); }
+        if (healthPoint <= 0f && !isDead) { 
+            Die();
+            if(projectileFaction == Faction.Friendly)
+            {
+                //퀘스트 반영용 코드 작성
+            }
+        }
+        
+        
     }
 
     public virtual void Die()
     {
         if(isEssential)
         {
+            //사망없음
             return;
         }
         //onDeath이벤트 실행되게

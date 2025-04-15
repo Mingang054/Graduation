@@ -1,13 +1,17 @@
 ﻿using System.Xml.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 
 public class PlayerStatus : DamageableEntity
 {
-
-    public float healthMax;
-    public float staminaMax;
-    
+    /*-- Damageable 코드 포함
+    public string npcCode;
+    public float healthPointMax = 100;                   //최대체력
+    public float healthPoint { get; protected set; }     //체력
+    public float armorPoint = 0f;                        //방어내구도
+    public float reduction = 0f;                    //피해감소
+    */
     public float weightMax;
 
     public float money;
@@ -19,10 +23,6 @@ public class PlayerStatus : DamageableEntity
     private Collider2D npcCollider;
     private AudioSource audioSource;
 
-    public bool isAttacking = false;
-
-
-    public AlertState alertState;
 
 
 
@@ -46,8 +46,16 @@ public class PlayerStatus : DamageableEntity
     {
     }
 
+    public override void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal, Faction projectileFaction)
+    {
+        
+        base.OnHitDamage(damage, penetration, hitPoint, hitNormal, projectileFaction);
+    }
 
-
+    public void UpdateStatusUI()
+    { 
+        //
+    }
 
     public void initNPC()
     {
@@ -57,7 +65,6 @@ public class PlayerStatus : DamageableEntity
             return;
         }
 
-        alertState = AlertState.Stay;   //경계상태 초기화
         // ✅ 체력 및 방어력 설정
         healthPointMax = npcData.health;
         healthPoint = npcData.health;

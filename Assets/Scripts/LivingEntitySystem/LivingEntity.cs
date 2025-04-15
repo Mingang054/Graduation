@@ -23,7 +23,7 @@ public class LivingEntity : MonoBehaviour, IDamageable
         healthPoint = startingHealthPoint;
     }
 
-    public virtual void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal)
+    public virtual void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal, Faction projectileFaction)
     {
         float penetratedArmor= armor - penetration;
         if (penetratedArmor < 0f) { penetratedArmor = 0f; }

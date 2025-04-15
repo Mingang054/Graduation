@@ -48,7 +48,7 @@ public class Projectile : MonoBehaviour
             Vector2 hitPoint = other.ClosestPoint(transform.position); // 충돌 지점
             Vector2 hitNormal = (transform.position - other.transform.position).normalized; // 충돌 방향
 
-            target.OnHitDamage(damage, penetration, hitPoint, hitNormal);
+            target.OnHitDamage(damage, penetration, hitPoint, hitNormal, faction);
 
             gameObject.SetActive(false);
             ProjectilePoolManager.Instance.ReturnProjectile(gameObject);

@@ -27,6 +27,7 @@ public enum TrackType
 
 public enum Faction 
 {
+    None,
     Wall,
     Friendly,
     Slavika,
