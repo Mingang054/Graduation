@@ -50,7 +50,7 @@ public enum AttackMode
     MultiProjectile // ดูม฿ ล๕ป็รผ (ป๊ลบรั)
 }
 
-//ลบมพ
+//ลบมพ,
 public enum AmmoType
 {
     Light,    // ผาวü ลบพเ (ฑวรั, ฑโฐüดÜรั)

@@ -1,41 +1,42 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public static class ItemFactory
 {
     public static ItemInstance CreateItem(ItemInitData initData)
     {
-        // 1. ¾ÆÀÌÅÛ µ¥ÀÌÅÍ Ã£±â
+        // 1. ì•„ì´í…œ ë°ì´í„° ì°¾ê¸°
         ItemData itemData = ItemDB.Instance.GetItemDataByCode(initData.itemCode);
         if (itemData == null)
         {
-            Debug.LogWarning($"¾ÆÀÌÅÛ ÄÚµå '{initData.itemCode}'¿¡ ÇØ´çÇÏ´Â µ¥ÀÌÅÍ¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"ì•„ì´í…œ ì½”ë“œ '{initData.itemCode}'ì— í•´ë‹¹í•˜ëŠ” ë°ì´í„°ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return null;
         }
 
-        // 2. ¾ÆÀÌÅÛ ÀÎ½ºÅÏ½º »ı¼º
+        // 2. ì•„ì´í…œ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
         ItemInstance itemInstance = CreateItemInstance(itemData);
         if (itemInstance == null)
         {
-            Debug.LogError($"'{initData.itemCode}' ¾ÆÀÌÅÛ ÀÎ½ºÅÏ½º »ı¼º ½ÇÆĞ");
+            Debug.LogError($"'{initData.itemCode}' ì•„ì´í…œ ì¸ìŠ¤í„´ìŠ¤ ìƒì„± ì‹¤íŒ¨");
             return null;
         }
 
-        // 3. °øÅë ¼Ó¼º ¼³Á¤
+        // 3. ê³µí†µ ì†ì„± ì„¤ì •
         itemInstance.SetCount(initData.count);
         itemInstance.location = initData.location;
 
-        // 4. ¹«±âÀÏ °æ¿ì Ãß°¡ ¼³Á¤
+        // 4. ë¬´ê¸°ì¼ ê²½ìš° ì¶”ê°€ ì„¤ì •
         if (itemInstance is Weapon weapon)
         {
             weapon.SetDurability(initData.durability ?? 100f);
             weapon.isChamber = initData.loaded ?? false;
             //weapon.loadedIsAP = initData.loadedIsAP ?? false;
 
-            weapon.magCount = 0;
-            /*
-            weapon.magStack = new Stack<bool>();
+            // ğŸ”¹ íƒ„ì°½/íƒ„ ìˆ˜ ì„¸íŒ…
             weapon.magCount = initData.magCount ?? 0;
+            weapon.isMag = weapon.magCount > 0;   // íƒ„ì°½ ìœ ë¬´ í”Œë˜ê·¸ë„ ê°™ì´
+            /*
+            
             if (initData.magazineData != null)
             {
                 foreach (bool isAP in initData.magazineData)
@@ -47,7 +48,7 @@ public static class ItemFactory
             */
         }
 
-        // 5. ¹æ¾î±¸ÀÏ °æ¿ì ³»±¸µµ ¼³Á¤
+        // 5. ë°©ì–´êµ¬ì¼ ê²½ìš° ë‚´êµ¬ë„ ì„¤ì •
         else if (itemInstance is Armor armor)
         {
             armor.SetDurability(initData.durability ?? 50f);
@@ -62,7 +63,7 @@ public static class ItemFactory
         if (itemData is ArmorData armorData) return new Armor(armorData);
         if (itemData is ConsumableData consumableData) return new Consumable(consumableData);
 
-        Debug.LogError($"[ItemFactory] ¾Ë ¼ö ¾ø´Â ¾ÆÀÌÅÛ Å¸ÀÔ: {itemData.GetType()}");
+        Debug.LogError($"[ItemFactory] ì•Œ ìˆ˜ ì—†ëŠ” ì•„ì´í…œ íƒ€ì…: {itemData.GetType()}");
         return null;
     }
 }
@@ -73,9 +74,8 @@ public class ItemInitData
     public int count;
     public Vector2Int location;
 
-    // ¹«±â,¹æ¾î±¸ÀÏ °æ¿ì¿¡¸¸ »ç¿ë
+    // ë¬´ê¸°,ë°©ì–´êµ¬ì¼ ê²½ìš°ì—ë§Œ ì‚¬ìš©
     public float? durability;
     public bool? loaded;
-    public bool? loadedIsAP;
     public int? magCount;
 }

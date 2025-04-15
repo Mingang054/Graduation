@@ -22,7 +22,8 @@ public class WeaponData : ItemData
     public float dispersion;            //분산
     public float dispersionRate;        //분산도
 
-    public int magCountMax;
+    public int magCountMax;             //탄창식은 구현문제 상 탄약 종류에 의존
+                                        //light 15, middle...
 
     public GameObject WeaponPrefab;
 
@@ -35,13 +36,17 @@ public class WeaponData : ItemData
     public AudioClip loadClip;
     public AudioClip loadbarClip;
 
-    public Sprite weaponBody;
-    public Sprite weaponUnloadBody;
-    public Sprite weaponLoadBar;
-    public List<Sprite> roadCount;
+    //플레이어 오브젝트에서 나타날 무기와 팔의 모습
+    public Sprite weaponArm;
+    
+    public Sprite weaponBody;           //탄창 있는 스프라이트
+    public Sprite weaponUnloadBody;     //탄창 없는 스프라이트
+    public Sprite weaponLoadBar;        //장전바의 모습
+    public List<Sprite> roadCount;      //리볼버 등의 장전 모습
     public Sprite bullet;
 
-    public AmmoType ammoType;          // 탄약 종류 (탄창과 호환성 검사)
+    public AmmoType ammoType;          // 탄약 종류
+                                       
     public float durability;          // 내구도
     public float wearRate;            // 마모 계수
 }

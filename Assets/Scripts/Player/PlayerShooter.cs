@@ -1,4 +1,5 @@
 ﻿
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,8 +21,8 @@ public class PlayerShooter : MonoBehaviour
 
     public Vector3 mouseWorld = Vector3.zero;
     //
-    public WeaponData currentWeapon;
-
+    public Weapon newWeaponTest; //VestInventory의 WeaponOnHand가 바뀔때 관련함수 호출
+    public WeaponData currentWeaponData;
 
     [SerializeField]                //
     private Transform playerToFlip;
@@ -70,15 +71,21 @@ public class PlayerShooter : MonoBehaviour
         RotateArmToMouse();
         FlipCharacter();
 
-        /* ③ 연사 체크 */
-        if (triggered && Time.time >= lastFireTime + currentWeapon.fireRate)
+
+        /* ③ 사격 체크 */
+        if (newWeaponTest == null || currentWeaponData == null) return;
+
+        if (triggered && Time.time >= lastFireTime + currentWeaponData.fireRate)
         {
-            TryFire();
+            TryFire();                          // Semi‑Auto, Full‑Auto 모두 여기서 처리
         }
-        else if (!currentWeapon.fireMode.Equals(FireMode.FullAuto))
+
+        /* 🔹 Semi‑Auto일 땐 트리거를 즉시 해제해 중복 발사 방지 */
+        if (currentWeaponData.fireMode != FireMode.FullAuto)
         {
             triggered = false;
         }
+
     }
 
     // 🔹 마우스 클릭 시작 (사격 준비)
@@ -89,12 +96,13 @@ public class PlayerShooter : MonoBehaviour
 
     // 🔹 마우스 클릭 중 (반자동 or 연사)
     private void OnFirePerformed(InputAction.CallbackContext context)
-    {
-        if (currentWeapon.fireMode == FireMode.SemiAuto)
+    {/*
+        if (currentWeaponData != null && currentWeaponData.fireMode == FireMode.SemiAuto)
         {
-            TryFire();
-            triggered = false; // 한 번만 발사하도록 설정
+            //TryFire();
+            //triggered = false; // 한 번만 발사하도록 설정
         }
+        */
     }
 
     // 🔹 마우스 클릭 해제 (발사 중지)
@@ -105,37 +113,39 @@ public class PlayerShooter : MonoBehaviour
 
     private void TryFire()
     {
-        if (currentWeapon == null) return;
+        if (currentWeaponData == null || !newWeaponTest.isChamber)
+        {
+            triggered = false;
+            return;
+        }
 
         lastFireTime = Time.time;
 
         // 🔹 발사 성공 시 효과음 재생
-        if (currentWeapon.attackClip != null)
+        if (currentWeaponData.attackClip != null)
         {
-            audioSource.PlayOneShot(currentWeapon.attackClip);
+            audioSource.PlayOneShot(currentWeaponData.attackClip);
         }
 
-        for (int i = 0; i < currentWeapon.pelletCount; i++)
+        for (int i = 0; i < currentWeaponData.pelletCount; i++)
         {
             FireProjectile();
         }
+
+        newWeaponTest.PullReceiver();
+
+        
     }
     private void FireProjectile()
     {
         // 🔹 마우스 위치를 가져와 정규화된 방향 벡터 계산
-        //Vector3 mousePosition = GetMouseWorldOnPlane(weaponPivotTransform.position.z);
-
         Vector2 fireDirection = (mouseWorld - weaponPivotTransform.position).normalized;
 
-        //Vector3 mousePositio = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        //mousePosition.z = 0; // 2D 환경에서 Z 축 제거
-        //Vector2 fireDirectio = (mousePosition - weaponPivotTransform.position).normalized;
-
         // 🔹 새로운 발사 위치 계산 (마우스 방향으로 barrelLength 만큼 떨어진 위치)
-        Vector3 firePosition = weaponPivotTransform.position + (Vector3)(fireDirection * currentWeapon.barrelLength);
+        Vector3 firePosition = weaponPivotTransform.position + (Vector3)(fireDirection * currentWeaponData.barrelLength);
 
         // 🔹 분산도 적용
-        float uncertainty = Random.Range(-currentWeapon.dispersion, currentWeapon.dispersion);
+        float uncertainty = Random.Range(-currentWeaponData.dispersion, currentWeaponData.dispersion);
         Quaternion rotation = Quaternion.Euler(0, 0, uncertainty);
 
         // 🔹 최종 발사 방향 (분산 적용)
@@ -145,10 +155,10 @@ public class PlayerShooter : MonoBehaviour
         GameObject newProjectile = ProjectilePoolManager.Instance.GetProjectile(
             Faction.Friendly,  // 🔹 플레이어가 발사한 탄환
             2f,  // 삭제 시간
-            currentWeapon.projectileSpeed,  //발사체 속도
-            currentWeapon.damage,   //발사체 피해
-            currentWeapon.penetration,  //발사체 관통피해
-            currentWeapon.colliderSize  //발사체 충돌 크기 설정
+            currentWeaponData.projectileSpeed,  //발사체 속도
+            currentWeaponData.damage,   //발사체 피해
+            currentWeaponData.penetration,  //발사체 관통피해
+            currentWeaponData.colliderSize  //발사체 충돌 크기 설정
         );
 
         if (newProjectile != null)
@@ -161,6 +171,7 @@ public class PlayerShooter : MonoBehaviour
 
             newProjectile.GetComponent<Projectile>().Launch(finalDirection);
         }
+
     }
 
     private Vector3 GetMouseWorldOnPlane(float worldZ)
@@ -190,7 +201,7 @@ public class PlayerShooter : MonoBehaviour
     // 🔹 캐릭터 좌우 반전
     private void FlipCharacter()
     {
-        Vector3 direction = mouseWorld - playerToFlip.position;
+            Vector3 direction = mouseWorld - playerToFlip.position;
         float currentSign = Mathf.Sign(direction.x);
         if (currentSign != previousDirection)
         {
@@ -212,4 +223,20 @@ public class PlayerShooter : MonoBehaviour
         zoomObject.SetActive(false);
     }
 
+    public void SetWeapon(Weapon newWeapon)
+    {
+        if (newWeapon == null)
+        {
+            newWeaponTest = null;
+            currentWeaponData = null;
+        }
+        newWeaponTest = newWeapon;
+        
+        currentWeaponData = newWeapon.data as WeaponData;
+
+    }
+    public void SetNoWeapon() {
+        newWeaponTest = null;
+        currentWeaponData = null;
+    }
 }

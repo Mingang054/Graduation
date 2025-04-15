@@ -2,168 +2,181 @@
 using UnityEngine.AI;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-
+using System;
+/// <summary>
+/// 2D 톱다운 병사 AI (Stay → Track → Search ↔ Fire)
+/// </summary>
 public class SoliderScript : NPCBase
 {
+    /* ───────────────────── 1. 컴포넌트 & 기본 필드 ───────────────────── */
+    [Header("Unity Components")]
     [SerializeField] private NavMeshAgent agent;
-    private Transform target;
+    [SerializeField] private Animator bodyAnimator;
+    [SerializeField] private Transform armTransform;
+    [SerializeField] private Animator armAnimator;
+    [SerializeField] private Collider2D attackCollider;
+
+    private float prevFacing = 1f;               // 직전 좌우 방향  (1:오른쪽, -1:왼쪽)
+    private Vector3 prevAim = Vector3.zero;     // 직전 팔 회전 기준 벡터
 
     private DamageableEntity currentTarget;
     private float currentDistance = Mathf.Infinity;
+    private float lastFindTargetTime;
+    private const float detectionTimeout = 20f;
 
-    // target 갱신과 함께 시간 갱신, 가장 최근에 목표를 찾은 시간
-    private float lastFindTargetTime = 0f;
-    // target 갱신에 실패한 경우 추적을 중지하는데 걸리는 시간
-    private float detectionTimeout = 20f;
-
-
-    //FireTask 실행용 플래그
-    private bool isFiring = false;
-    // 공격 선딜레이, 연사 속도, 후딜레이
-    
+    [Header("Combat Settings")]
+    private bool isFiring;                       // 🔑 FireTask 실행 중 여부
     private int attackPreDelayTime = 500;
-    private int attackRateOfFireTime = 200;
     private int attackPostDelayTime = 1000;
     private int reloadCount = 15;
-    private int reloadMax = 15;
+    private const int reloadMax = 15;
 
-
-    //확률
+    [Header("AI Random Weights")]
     public int rushRate = 2;
     public int stopRate = 1;
     public int aroundRate = 4;
 
+    private bool isContact = false;
 
+    /* ───────────────────── 2. UniTask 핸들러 & CTS ───────────────────── */
+    private UniTask currentStateTask = UniTask.CompletedTask; // Stay / Track
+    private UniTask currentSearchTask = UniTask.CompletedTask; // Search 루프
+    private UniTask currentMoveTask = UniTask.CompletedTask; // Rush / Stop / Around
+    private UniTask currentFireTask = UniTask.CompletedTask; // Fire 루틴
 
-    [SerializeField] Animator bodyAnimator;
-    [SerializeField] Animator armAnimator;
+    private CancellationTokenSource lifeCTS;    // Enable~Disable/Destroy 전역
+    private CancellationTokenSource stateCTS;   // Stay / Track
+    private CancellationTokenSource searchCTS;  // Search
+    private CancellationTokenSource moveCTS;    // Rush / Stop / Around
+    private CancellationTokenSource fireCTS;    // Fire
 
-    // 상태변환 관련 태스크 (3개 상태 관련 루틴 중 하나만 등록)
-    // target 탐색 태스크 (Die가 아닐 때 반복)
-    private UniTask currentStateTask = UniTask.CompletedTask;
-    private UniTask searchTask = UniTask.CompletedTask;
-    private UniTask currentAttackTask = UniTask.CompletedTask;
-    private UniTask shooterTask = UniTask.CompletedTask;
+    private float lastUpdate = 0f;
 
-    private string currentStateName = string.Empty;
-    private CancellationTokenSource stateCancelToken = new CancellationTokenSource();
-    private CancellationTokenSource searchCancelToken = new CancellationTokenSource();
-
-    public Collider2D attackCollider;
-
+    /* ───────────────────── 3. Unity 라이프사이클 ───────────────────── */
     public override void Awake()
     {
         base.Awake();
+
         faction = npcData.faction;
         agent.speed = npcData.speed;
         agent.updateRotation = false;
         agent.updateUpAxis = false;
         agent.avoidancePriority = 50;
-        agent.isStopped = false;
     }
 
-    public void Start()
+    private void Update()
     {
-        StartStayTask();
-        StartSearchTask();
+        if (isContact && currentTarget!=null) { 
+            if (Time.time - lastUpdate > 0.05f) //성능 부하 테스트 후 조준 부분을 사격태스크로 이관
+            {
+                UpdateFacingAndAim(currentTarget.transform.position);
+                lastUpdate = Time.time;
+            }
+        }
     }
-
-    public override void Die()
+    private void OnEnable()
     {
-        base.Die(); // ✅ 부모 클래스의 Die() 실행 (기본 기능 유지)
+        InitAllCTS();
 
-        Debug.Log("[SoliderScript] 사망 처리 - 모든 동작 중지");
-
-        // ✅ NavMeshAgent 정지
-        if (agent != null)
-        {
-            agent.isStopped = true;
-            agent.enabled = false;
-        }
-
-        // ✅ 실행 중인 모든 태스크 즉시 중지 (CompleteTask 활용)
-        if (currentStateTask.Status == UniTaskStatus.Pending)
-            currentStateTask = UniTask.CompletedTask;
-
-        if (searchTask.Status == UniTaskStatus.Pending)
-            searchTask = UniTask.CompletedTask;
-
-        if (currentAttackTask.Status == UniTaskStatus.Pending)
-            currentAttackTask = UniTask.CompletedTask;
-
-
-        // ✅ CancellationToken을 통한 중지
-        stateCancelToken.Cancel();
-        searchCancelToken.Cancel();
-
-        Debug.Log("[SoliderScript] 모든 태스크 중지 완료");
+        StartStayTask();    // 기본 상태
+        StartSearchTask();  // 탐색 루프 (상시)
     }
 
+    private void OnDisable() => CancelAllTasks();
+    private void OnDestroy() => CancelAllTasks();
 
-
-
-
-    private async UniTask SearchTask(CancellationToken token)
+    private void InitAllCTS()
     {
-        while (true)
-        {
-            float detectionRange = (alertState == AlertState.Stay) ? npcData.detectionRange / 2f : npcData.detectionRange;
-
-            DamageableEntity foundTarget = FindClosestTarget(detectionRange);
-
-
-            await UniTask.Delay(1500);
-        }
+        lifeCTS = new CancellationTokenSource();
+        stateCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
+        searchCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
+        moveCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
+        fireCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
     }
 
-    private async UniTask FireTask(CancellationToken token)
+    private void CancelAndDispose(ref CancellationTokenSource cts)
     {
-        await UniTask.Delay(attackPreDelayTime, cancellationToken: token);
-        if (currentDistance < npcData.fireRange / 2)
-        {
-            reloadCount -= 6;
-            //6발 연사
-            FireProjectile();
-            Debug.Log("근접사격");
-        }
-        else
-        {
-            reloadCount -= 3;
-            //3발 연사
-            FireProjectile();
-            Debug.Log("정밀사격");
-        }
-        if (reloadCount <= 0)
-        {
-            //재장전(일정시간 대기 후
-            await UniTask.Delay(6000, cancellationToken: token);
-            reloadCount = reloadMax;
-        }
-        await UniTask.Delay(attackPostDelayTime, cancellationToken: token);
-        StartSearchTask();
+        if (cts == null) return;
+        if (!cts.IsCancellationRequested) cts.Cancel();
+        cts.Dispose();
+        cts = null;
     }
 
+    private void CancelAllTasks()
+    {
+        CancelAndDispose(ref lifeCTS);
+        CancelAndDispose(ref stateCTS);
+        CancelAndDispose(ref searchCTS);
+        CancelAndDispose(ref moveCTS);
+        CancelAndDispose(ref fireCTS);
 
+        currentStateTask = UniTask.CompletedTask;
+        currentSearchTask = UniTask.CompletedTask;
+        currentMoveTask = UniTask.CompletedTask;
+        currentFireTask = UniTask.CompletedTask;
+    }
 
+    /* ───────────────────── 4. 상태 루틴 시작 / 전환 ───────────────────── */
+    private void StartStayTask()
+    {
+        isContact = false;
+        CancelAndDispose(ref stateCTS);
+        stateCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
 
+        alertState = AlertState.Stay;
+        currentTarget = null;
+        currentStateTask = StayRoutine(stateCTS.Token);
+    }
 
+    private void StartTrackTask()
+    {
+        isContact = true;
+        CancelAndDispose(ref stateCTS);
+        stateCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
 
+        alertState = AlertState.Track;
+        currentStateTask = TrackRoutine(stateCTS.Token);
+    }
 
+    private void StartSearchTask()
+    {
+        CancelAndDispose(ref searchCTS);
+        searchCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
 
+        currentSearchTask = SearchLoop(searchCTS.Token);
+    }
 
+    private void StartMoveTask(System.Func<CancellationToken, UniTask> routineStarter)
+    {
+        CancelAndDispose(ref moveCTS);
+        moveCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
 
-    // StateTask 관련 루틴 (기본 루프 추가, 취소 가능하게 변경)
+        currentMoveTask = routineStarter(moveCTS.Token);
+    }
+
+    private void StartFireTask()
+    {
+        if (isFiring) return;      // 중복 방지
+        isFiring = true;
+
+        CancelAndDispose(ref fireCTS);
+        fireCTS = CancellationTokenSource.CreateLinkedTokenSource(lifeCTS.Token);
+
+        currentFireTask = FireRoutine(fireCTS.Token);
+    }
+
+    /* ───────────────────── 5. UniTask 루틴 ───────────────────── */
     private async UniTask StayRoutine(CancellationToken token)
     {
         while (!token.IsCancellationRequested)
         {
-            if (Random.Range(0, 4) == 0) // 0~3 사이의 랜덤 값 생성
+            if (UnityEngine.Random.Range(0, 4) == 0)
             {
-                MoveToRandomPosition(transform, npcData.fireRange/2);
+                MoveToRandomPosition(transform, npcData.fireRange / 2);
+                ResetArmRotation();
+                FlipByAgentVelocity();
             }
+
             await UniTask.Delay(2000, cancellationToken: token);
         }
     }
@@ -172,317 +185,250 @@ public class SoliderScript : NPCBase
     {
         while (!token.IsCancellationRequested)
         {
-            ChooseRandomAction();
+            ChooseRandomMoveAction();
             await UniTask.Delay(2000, cancellationToken: token);
         }
     }
 
+    private async UniTask SearchLoop(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            if (!isFiring)   // 🔑 Fire 중이 아닐 때만 탐색
+            {
+                float range = (alertState == AlertState.Stay)
+                             ? npcData.detectionRange / 2f
+                             : npcData.detectionRange;
 
-    // 공격상태 이동 루틴
-    // AttackTask 관련 루틴 (취소 가능하게 변경)
+                FindClosestTarget(range);
+            }
+
+            await UniTask.Delay(1500, cancellationToken: token);
+        }
+    }
+
+    private async UniTask FireRoutine(CancellationToken token)
+    {
+        Debug.Log("🔥 FireRoutine 시작");
+
+        try
+        {
+            await UniTask.Delay(attackPreDelayTime, cancellationToken: token);
+
+            if (currentTarget == null) return;
+            
+            //for문 내 횟수, Delay 내 횟수를 변수로 치환 
+            if (currentDistance < npcData.fireRange / 2)
+            {
+                reloadCount -= 6;
+                for (int i = 0; i < 6; i++) {
+                    await UniTask.Delay(200, cancellationToken: token);
+                    FireProjectile();
+                }
+            }
+            else
+            {
+                reloadCount -= 3;
+                for (int i = 0; i < 3; i++)
+                {
+                    await UniTask.Delay(300, cancellationToken: token);
+                    FireProjectile();
+                }
+            }
+
+            if (reloadCount <= 0)
+            {
+                await UniTask.Delay(6000, cancellationToken: token); // 재장전
+                reloadCount = reloadMax;
+            }
+
+            await UniTask.Delay(attackPostDelayTime, cancellationToken: token);
+        }
+        catch (OperationCanceledException) { }
+        finally
+        {
+            isFiring = false;      // 🔑 Fire 종료
+            Debug.Log("✅ FireRoutine 종료, isFiring = false");
+        }
+    }
+
+    /* ───────────────────── 6. 이동 루틴 (Rush/Stop/Around) ───────────────────── */
+    private void ChooseRandomMoveAction()
+    {
+        int total = rushRate + stopRate + aroundRate;
+        int rand = UnityEngine.Random.Range(0, total);
+
+        if (rand < rushRate) StartMoveTask(RushRoutine);
+        else if (rand < rushRate + stopRate) StartMoveTask(StopRoutine);
+        else StartMoveTask(AroundRoutine);
+    }
+
     private async UniTask RushRoutine(CancellationToken token)
     {
-
-        if (currentTarget != null && agent.isOnNavMesh)
-        {
-            float distanceToTarget = Vector2.Distance(transform.position, currentTarget.transform.position);
-
-            agent.isStopped = false;
+        if (currentTarget && agent.isOnNavMesh)
             agent.SetDestination(currentTarget.transform.position);
-            MoveToRandomPosition(currentTarget.transform,npcData.fireRange/2);
 
-
-        }
-
-        //여기까지 작업중
-
-
-        ///////토큰 과 서순 명확하게 해야함
         await UniTask.Delay(1000, cancellationToken: token);
-        StartTrackTask();
     }
 
     private async UniTask StopRoutine(CancellationToken token)
     {
-        //단순 정지대기
+        agent.isStopped = true;
         await UniTask.Delay(1000, cancellationToken: token);
-        StartTrackTask();
+        agent.isStopped = false;
     }
 
     private async UniTask AroundRoutine(CancellationToken token)
     {
-
         MoveToRandomPosition(transform, npcData.fireRange);
         await UniTask.Delay(1000, cancellationToken: token);
-        StartTrackTask();
     }
 
-    // 루틴 시작 함수
-
-    private void StartSearchTask()
-    {
-        isFiring = false;
-        if (currentStateTask.Status == UniTaskStatus.Pending)
-        {
-            searchCancelToken.Cancel(); // 기존 태스크 취소
-            searchCancelToken = new CancellationTokenSource(); // 새로운 토큰 생성
-        }
-        Debug.Log("[SoliderScript] SearchTask 시작!");
-        searchTask = SearchTask(searchCancelToken.Token);
-    }
-    
-    private void StartFireTask()
-    {
-        isFiring = true;
-        if (currentStateTask.Status == UniTaskStatus.Pending)
-        {
-            searchCancelToken.Cancel(); // 기존 태스크 취소
-            searchCancelToken = new CancellationTokenSource(); // 새로운 토큰 생성
-        }
-        Debug.Log("[SoliderScript] FireTask 시작!");
-        searchTask = FireTask(searchCancelToken.Token);
-    }
-
-    // StateTask
-    private void StartStayTask()
-    {
-        Debug.Log("[SoliderScript] StayTask 시작!");
-
-        if (currentStateTask.Status == UniTaskStatus.Pending)
-        {
-            stateCancelToken.Cancel(); // 기존 태스크 취소
-            stateCancelToken = new CancellationTokenSource(); // 새로운 토큰 생성
-        }
-        alertState = AlertState.Stay;
-        currentTarget = null;
-        currentStateTask = StayRoutine(stateCancelToken.Token);
-    }
-
-    private void StartTrackTask()
-    {
-        Debug.Log("[SoliderScript] TrackTask 시작!");
-
-        if (currentStateTask.Status == UniTaskStatus.Pending)
-        {
-            stateCancelToken.Cancel(); // 기존 태스크 취소
-            stateCancelToken = new CancellationTokenSource(); // 새로운 토큰 생성
-        }
-        alertState = AlertState.Track;
-        currentStateTask = TrackRoutine(stateCancelToken.Token);
-    }
-
-    // AttackTask
-    private void StartRushTask()
-    {
-        Debug.Log("[SoliderScript] RushTask 시작!");
-
-        if (currentAttackTask.Status == UniTaskStatus.Pending)
-        {
-            stateCancelToken.Cancel(); // 기존 태스크 취소
-            stateCancelToken = new CancellationTokenSource(); // 새로운 토큰 생성
-        }
-        currentAttackTask = RushRoutine(stateCancelToken.Token);
-    }
-
-    private void StartStopTask()
-    {
-        Debug.Log("[SoliderScript] StopTask 시작!");
-
-        if (currentAttackTask.Status == UniTaskStatus.Pending)
-        {
-            stateCancelToken.Cancel(); // 기존 태스크 취소
-            stateCancelToken = new CancellationTokenSource(); // 새로운 토큰 생성
-        }
-        currentAttackTask = StopRoutine(stateCancelToken.Token);
-    }
-
-    private void StartAroundTask()
-    {
-        Debug.Log("[SoliderScript] AroundTask 시작!");
-
-        if (currentAttackTask.Status == UniTaskStatus.Pending)
-        {
-            stateCancelToken.Cancel(); // 기존 태스크 취소
-            stateCancelToken = new CancellationTokenSource(); // 새로운 토큰 생성
-        }
-        currentAttackTask = AroundRoutine(stateCancelToken.Token);
-    }
-
-
-
-
-    // 탐색
+    /* ───────────────────── 7. 타겟 탐색 / 사격 보조 ───────────────────── */
     private DamageableEntity FindClosestTarget(float detectionRange)
     {
-        // 🔹 FireTask 실행 중이면 새로운 타겟을 설정하지 않음
-        if (isFiring)
+        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position,
+                                                       detectionRange,
+                                                       LayerMask.GetMask("DamageableEntity"));
+
+        DamageableEntity closest = null;
+        float closestDist = Mathf.Infinity;
+
+        foreach (var col in cols)
         {
-            Debug.Log("[SoliderScript] FireTask 실행 중 - 새로운 타겟 설정 안 함.");
-            return currentTarget; // 기존 타겟 유지
-        }
+            if (!col) continue;
+            var dmg = col.GetComponent<DamageableEntity>();
+            if (!dmg || dmg.gameObject == gameObject) continue;
+            if (dmg.faction == faction || dmg.faction == Faction.Wall) continue;
 
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, detectionRange, LayerMask.GetMask("DamageableEntity"));
-        DamageableEntity closestTarget = null;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (var collider in colliders)
-        {
-            if (collider == null) continue;
-
-            DamageableEntity damageable = collider.GetComponent<DamageableEntity>();
-            if (damageable == null || damageable.gameObject == gameObject) continue;
-
-            if (damageable.faction != faction && damageable.faction != Faction.Wall)
+            float dist = Vector2.Distance(transform.position, dmg.transform.position);
+            if (dist < closestDist)
             {
-                float distance = Vector2.Distance(transform.position, damageable.transform.position);
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestTarget = damageable;
-                }
+                closest = dmg;
+                closestDist = dist;
             }
         }
 
-        if (closestTarget != null)
+        if (closest)
         {
-            if (alertState != AlertState.Track)
-            {
-                StartTrackTask();
-            }
+            if (alertState != AlertState.Track) StartTrackTask();
+
             lastFindTargetTime = Time.time;
+            currentTarget = closest;
+            currentDistance = closestDist;
 
-            // 🔹 새로운 타겟 저장 시 현재 거리도 함께 저장
-            currentTarget = closestTarget;
-            currentDistance = closestDistance;
-
-            // 🔹 타겟이 사격 범위 내에 있으면 FireTask 시작
-            if (currentDistance <= npcData.fireRange)
-            {
-                StartFireTask();
-                Debug.Log($"[SoliderScript] 타겟이 사격 범위 내에 있음! FireTask 시작 (거리: {currentDistance})");
-            }
+            if (currentDistance <= npcData.fireRange) StartFireTask();
         }
         else if (Time.time - lastFindTargetTime > detectionTimeout)
         {
             StartStayTask();
         }
 
-        return closestTarget;
+        return closest;
     }
 
-
-    //TrackTask에서 행동 Task를 선택하는 함수
-    private void ChooseRandomAction()
+    private void MoveToRandomPosition(Transform reference, float range)
     {
-        (int limit, System.Action startRoutine)[] actions =
-        {
-            (rushRate, StartRushTask),
-            (rushRate + stopRate, StartStopTask),
-            (rushRate + stopRate + aroundRate, StartAroundTask)
-        };
-
-        int randomValue = Random.Range(0, actions[^1].limit);
-
-        foreach (var (limit, startRoutine) in actions)
-        {
-            if (randomValue < limit)
-            {
-                startRoutine();
-                break;
-            }
-        }
+        if (!reference) return;
+        Vector3 pos = GetValidRandomPosition(reference.position, range, 5);
+        if (pos != Vector3.zero && agent.isOnNavMesh)
+            agent.SetDestination(pos);
     }
 
-
-
-
-    private void MoveToRandomPosition(Transform referenceObject, float range)
+    private Vector3 GetValidRandomPosition(Vector3 origin, float range, int attempts)
     {
-        if (referenceObject == null)
+        for (int i = 0; i < attempts; i++)
         {
-            //Debug.LogWarning("[SoliderScript] 기준 오브젝트가 없음.");
-            return;
+            Vector3 offset = new(UnityEngine.Random.Range(-range, range), UnityEngine.Random.Range(-range, range), 0);
+            Vector3 pos = origin + offset;
+            if (NavMesh.SamplePosition(pos, out NavMeshHit hit, 1f, NavMesh.AllAreas))
+                return hit.position;
         }
-
-        Vector3 randomPosition = GetValidRandomPosition(referenceObject.position, range, 5);
-
-        if (randomPosition != Vector3.zero)
-        {
-            agent.SetDestination(randomPosition);
-            //Debug.Log($"[SoliderScript] {referenceObject.name} 기준으로 이동 가능 위치 발견: {randomPosition}");
-        }
-        else if (currentTarget != null)
-        {
-            agent.SetDestination(currentTarget.transform.position);
-            //Debug.Log($"[SoliderScript] 랜덤 위치 실패 → currentTarget({currentTarget.name}) 위치로 이동");
-        }
-        else
-        {
-            //Debug.Log("[SoliderScript] 이동할 수 있는 위치를 찾지 못함.");
-        }
-    }
-
-    private Vector3 GetValidRandomPosition(Vector3 origin, float range, int maxAttempts)
-    {
-        for (int i = 0; i < maxAttempts; i++)
-        {
-            Vector3 randomOffset = new Vector3(Random.Range(-range, range), Random.Range(-range, range), 0);
-            Vector3 potentialPosition = origin + randomOffset;
-
-            if (NavMesh.SamplePosition(potentialPosition, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
-            {
-                return hit.position; // 이동 가능한 위치 반환
-            }
-        }
-        return Vector3.zero; // 실패 시 currentTarget 위치 사용
+        return Vector3.zero;
     }
 
     private void FireProjectile()
     {
-        if (currentTarget == null)
-        {
-            Debug.Log("[SoliderScript] FireProjectile 중단 - 타겟 없음.");
-            return;
-        }
+        if (!currentTarget) return;
 
-        // 🔹 ProjectilePoolManager 최적화
-        var poolManager = ProjectilePoolManager.Instance;
+        var pool = ProjectilePoolManager.Instance;
 
-        // 🔹 타겟 위치를 가져와 정규화된 방향 벡터 계산
-        Vector3 targetPosition = currentTarget.transform.position;
-        Vector2 fireDirection = (targetPosition - transform.position).normalized;
+        Vector3 targetPos = currentTarget.transform.position;
+        Vector2 dir = (targetPos - transform.position).normalized;
+        Vector3 firePos = transform.position + (Vector3)(dir * 0.5f);
 
-        // 🔹 동적 총열 길이 값 적용
-        //float barrelLength = npcData.barrelLength > 0 ? npcData.barrelLength : 0.5f;
-        Vector3 firePosition = transform.position + (Vector3)(fireDirection * 0.5f);
+        float angOff = UnityEngine.Random.Range(-1f, 1f) * Mathf.Deg2Rad;
+        Vector2 finalDir = new(
+            dir.x * Mathf.Cos(angOff) - dir.y * Mathf.Sin(angOff),
+            dir.x * Mathf.Sin(angOff) + dir.y * Mathf.Cos(angOff));
 
-        // 🔹 최적화된 분산도 적용 (2D 환경에 적합)
-        float angleOffset = Random.Range(-1f, 1f);
-        float radianOffset = angleOffset * Mathf.Deg2Rad;
-        Vector2 finalDirection = new Vector2(
-            fireDirection.x * Mathf.Cos(radianOffset) - fireDirection.y * Mathf.Sin(radianOffset),
-            fireDirection.x * Mathf.Sin(radianOffset) + fireDirection.y * Mathf.Cos(radianOffset)
-        );
+        GameObject proj = pool.GetProjectile(
+            npcData.faction, 2f, 8f, npcData.damage, npcData.penetration, 0.05f);
 
-        // 🔹 오브젝트 풀에서 탄환 가져오기
-        GameObject newProjectile = poolManager.GetProjectile(
-            npcData.faction, 2f, 2f, npcData.damage, npcData.penetration, 0.05f
-        );
+        if (!proj) return;
 
-        if (newProjectile == null)
-        {
-            Debug.LogWarning("[SoliderScript] 탄환 생성 실패 - ProjectilePool이 가득 찼을 수 있음.");
-            return;
-        }
-
-        newProjectile.transform.position = firePosition;
-
-        // 🔹 발사 방향을 기반으로 회전 설정 (이동 방향에 맞춰 자동 조정)
-        float angle = Mathf.Atan2(finalDirection.y, finalDirection.x) * Mathf.Rad2Deg;
-        newProjectile.transform.rotation = Quaternion.Euler(0, 0, angle);
-
-        newProjectile.GetComponent<Projectile>().Launch(finalDirection);
+        proj.transform.position = firePos;
+        proj.transform.rotation = Quaternion.Euler(0, 0,
+                                 Mathf.Atan2(finalDir.y, finalDir.x) * Mathf.Rad2Deg);
+        proj.GetComponent<Projectile>().Launch(finalDir);
     }
 
+    /* ───────────────────── 8. 사망 처리 ───────────────────── */
+    public override void Die()
+    {
+        base.Die();
+        if (agent)
+        {
+            agent.isStopped = true;
+            agent.enabled = false;
+        }
+        CancelAllTasks();
+    }
 
+    /*--비주얼처리--*/
+
+
+    private void UpdateFacingAndAim(Vector3 targetPos)
+    {
+        /* 1) 좌우 Flip -------------------------------------------------- */
+        float sign = Mathf.Sign(targetPos.x - transform.position.x); // 왼쪽:-1, 오른쪽:+1
+        if (sign != prevFacing)
+        {
+            prevFacing = sign;
+            // 스프라이트가 오른쪽이 기본이면 (sign,1,1), 왼쪽이 기본이면 (-sign,1,1)
+            transform.localScale = new Vector3(sign, 1, 1);
+        }
+
+        /* 2) 팔 회전 ---------------------------------------------------- */
+        Vector3 dir = (targetPos - armTransform.position);
+        if ((dir - prevAim).sqrMagnitude > 0.0001f)     // 변화가 있을 때만 계산
+        {
+            prevAim = dir;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            if (sign < 0) angle -= 180f;                // 왼쪽일 땐 뒤집기 보정
+            armTransform.rotation = Quaternion.Euler(0, 0, angle);
+        }
+    }
+
+    //팔 초기화
+    private void ResetArmRotation()
+    {
+        armTransform.localRotation = Quaternion.identity;  // (0,0,0)
+        prevAim = Vector3.zero;                            // 캐시도 초기화
+    }
+    //Navmesh 이동방향 기준 방향 초기화
+    private void FlipByAgentVelocity(float threshold = 0.05f)
+    {
+        if (!agent || !agent.isOnNavMesh) return;
+
+        float vx = agent.velocity.x;
+        if (Mathf.Abs(vx) < threshold) return;             // 거의 정지면 무시
+
+        float sign = Mathf.Sign(vx);                       // 왼쪽:-1, 오른쪽:+1
+        if (sign != prevFacing)
+        {
+            prevFacing = sign;
+            transform.localScale = new Vector3(sign, 1, 1);
+        }
+    }
 }

@@ -4,6 +4,7 @@ using UnityEngine.InputSystem.Interactions;
 using Cysharp.Threading.Tasks;
 using UnityEngine.UI;
 using System.Threading;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class UIManager : MonoBehaviour
     public GameObject pauseMenuUI;          // Pause Menu
 
     public GameObject currentUI;           // 현재 활성화된 UI
+
+    //임시
+    public AmmoUpdater ammoUpdater;
+
 
     private InputAction inventoryAction;    // Tab 키
     private InputAction escapeAction;       // Esc 키
@@ -108,8 +113,18 @@ public class UIManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지하려면 활성화
+    
     }
-
+    private void Start()
+    {   
+        //인벤토리 초기화실행
+        EnableBagInventory();
+        DisableBagInventory();
+        EnableVestInventory();
+        DisableVestInventory();
+        EnablePause();
+        DisablePause();
+    }
 
     public void OnInventoryStarted(InputAction.CallbackContext context)
     {

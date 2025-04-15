@@ -10,7 +10,7 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler
     public VestPlaceableType placeableType { get; private set; }
 
     public int count; //물건개수
-    // Weapon
+    // Weaponv
     public int magMax;      //2개
     //public int magCount;    //실제 개수
     public AmmoType ammoType;

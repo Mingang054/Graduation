@@ -20,16 +20,16 @@ public class Loot : Interactable
             location = new Vector2Int(4, 4),
             durability = 80f,
             loaded = false,
-            loadedIsAP = false
-        });
+            magCount = 25
+
+});
         itemToCreate.Add(new ItemInitData
         {
             itemCode = "F202",
             count = 1,
             location = new Vector2Int(6, 6),
             durability = 80f,
-            loaded = false,
-            loadedIsAP = false
+            loaded = false
         });
         itemToCreate.Add(new ItemInitData
         {
@@ -38,7 +38,7 @@ public class Loot : Interactable
             location = new Vector2Int(1, 11),
             durability = 80f,
             loaded = false,
-            loadedIsAP = false
+            magCount = 12
         });
 
         //아이템 생성

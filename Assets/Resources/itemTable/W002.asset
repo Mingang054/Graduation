@@ -26,7 +26,7 @@ MonoBehaviour:
   penetration: 6
   damageAP: 0
   penetrationAP: 0
-  fireRate: 5
+  fireRate: 0.25
   fireDelay: 0
   projectileSpeed: 7
   pelletCount: 1
@@ -43,6 +43,7 @@ MonoBehaviour:
   attackClip: {fileID: 8300000, guid: 1209929bba5264147ba80df93bcc4aeb, type: 3}
   loadClip: {fileID: 8300000, guid: b9807233cec98624cadd488535fdf23f, type: 3}
   loadbarClip: {fileID: 8300000, guid: cb65f955e0e118a46b4c78775aa1905a, type: 3}
+  weaponArm: {fileID: 0}
   weaponBody: {fileID: 5576054796633054120, guid: 36cc01ee749b12944b4a2ea3b3a68c19, type: 3}
   weaponUnloadBody: {fileID: -3030257955745713747, guid: b8db1772a08bc09458243ced3631e911, type: 3}
   weaponLoadBar: {fileID: -7083479760921904867, guid: 8da9b17004eb14a41825d42deb0b72c7, type: 3}

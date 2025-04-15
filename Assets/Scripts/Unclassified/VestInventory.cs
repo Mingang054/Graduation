@@ -13,6 +13,9 @@ public class VestInventory : MonoBehaviour
 {
     //½Ì±ÛÅæ
     public static VestInventory Instance { get; private set; }
+    [SerializeField]
+    public PlayerShooter shooter;
+
 
     // °ü¸®¿ë
     private InputAction rightClickAction;
@@ -264,8 +267,9 @@ public class VestInventory : MonoBehaviour
                     break;
             }
             weaponOnHand.gameObject.SetActive(true);
-
         }
+        shooter.SetWeapon(weaponOnHand.currentWeapon);
+        
     }
 
 

@@ -17,7 +17,6 @@ public class Weapon : ItemInstance
     {
         this.durability = Mathf.Clamp(initialDurability, 0, 100);
         //magStack = null;
-        magCount = 0;
     }
 
     // 내구도 감소
@@ -48,24 +47,21 @@ public class Weapon : ItemInstance
      */
     public void PullReceiver()
     {
-        if (isChamber)
+        if (magCount> 0)
         {
-            if (magCount > 0) 
-            { 
-                isChamber = true;
-                magCount--; 
-            }else 
-            {
-                isChamber = false; 
-            }
-
+            isChamber = true;
+            magCount--;
         }
-        else { Debug.Log("약실에 탄이 없습니다."); }
+        else
+        {
+            Debug.Log("약실에 들어갈 탄이 없습니다.");
+            isChamber = false;
+        }
+            
         if (isJam) { isJam = false; }
-        
-        
-    }
 
+        UIManager.Instance.ammoUpdater.UpdateAmmoUI(magCount);
+    }
     /*
     public void InsertMag(bool isAP)
     {
