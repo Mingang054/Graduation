@@ -58,6 +58,7 @@ public class DamageableEntity  : MonoBehaviour, IDamageable
             Die();
             if(projectileFaction == Faction.Friendly)
             {
+
                 //퀘스트 반영용 코드 작성
             }
         }

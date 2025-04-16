@@ -84,7 +84,7 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler
             VestInventory.Instance.GetGrip(this);
         }else if (eventData.button == PointerEventData.InputButton.Right)
         {
-            //
+            // Vest의 isGrip부분 확인하고 맞으면 작동x
         }
         
         

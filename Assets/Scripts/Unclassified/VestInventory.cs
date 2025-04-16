@@ -84,7 +84,7 @@ public class VestInventory : MonoBehaviour
                     isGripCount++;
 
                     gripTarget.UpdateUI();
-
+                    //수정, Shell 대신 장전 방식 single인지 체크
                 } else if (isGripCount < isGripCountMax && gripTarget.ammoType == AmmoType.Shell)
                 {
                     originPlaceabkeStack.TryPeek(out VestPlacable origin);
