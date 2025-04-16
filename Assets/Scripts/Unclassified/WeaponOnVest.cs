@@ -7,7 +7,7 @@ public class WeaponOnVest : MonoBehaviour ,IDragHandler, IBeginDragHandler, IEnd
 {
     [SerializeField]
     public EquipSlotType equipslot;
-    public bool IsEquiped ;
+    public bool IsEquiped = false;  //
     public bool IsUsing;
 
     public float triggerOffset = 40f;

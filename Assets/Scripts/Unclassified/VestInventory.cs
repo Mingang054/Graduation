@@ -141,9 +141,10 @@ public class VestInventory : MonoBehaviour
                     if (isGrip)
                     {
                             //미구현파트 WeaponOnHand 연동
+                        
                         weaponOnHand.currentWeapon.isMag = true;
-                   
-                        weaponOnHand.currentWeapon.magCount = a.magCountMax;    
+                        weaponOnHand.currentWeapon.magCount = a.magCountMax;
+                        AudioManager.Instance.PlaySFX(a.loadClip);  //소리재생
                         UseGrip();
                     }
                 }
@@ -161,11 +162,17 @@ public class VestInventory : MonoBehaviour
         
     }
 
-    public void PullReceiver()
+    public void PullReceiverInVest()
     {
         //WeaponOnHand
-        if (weaponOnHand!= null && weaponOnHand.currentWeapon!= null)
+        if (weaponOnHand != null && weaponOnHand.currentWeapon != null)
         {
+            if (weaponOnHand.currentWeapon.data is WeaponData weaponData)
+            {
+                    AudioManager.Instance.PlaySFX(weaponData.loadbarClip);
+
+            }
+
             weaponOnHand.currentWeapon.PullReceiver();
         }
     }
@@ -267,8 +274,9 @@ public class VestInventory : MonoBehaviour
                     break;
             }
             weaponOnHand.gameObject.SetActive(true);
+            shooter.SetWeapon(weaponOnHand.currentWeapon);
+        
         }
-        shooter.SetWeapon(weaponOnHand.currentWeapon);
         
     }
 

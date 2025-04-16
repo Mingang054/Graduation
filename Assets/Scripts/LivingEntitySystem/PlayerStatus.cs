@@ -8,7 +8,7 @@ public class PlayerStatus : DamageableEntity
     /*-- Damageable 코드 포함
     public string npcCode;
     public float healthPointMax = 100;                   //최대체력
-    public float healthPoint { get; protected set; }     //체력
+    public float healthPoint 
     public float armorPoint = 0f;                        //방어내구도
     public float reduction = 0f;                    //피해감소
     */
@@ -20,7 +20,8 @@ public class PlayerStatus : DamageableEntity
 
     public NPCData npcData;
     private Animator animator;
-    private Collider2D npcCollider;
+    // entityCollider = GetComponent<Collider2D>(); 
+    //X private Collider2D npcCollider;
     private AudioSource audioSource;
 
 
@@ -30,6 +31,8 @@ public class PlayerStatus : DamageableEntity
 
     public override void Awake()
     {
+        faction = Faction.Friendly;
+        entityCollider = GetComponent<Collider2D>();
     }
 
     void Start()
@@ -107,7 +110,7 @@ public class PlayerStatus : DamageableEntity
         }
 
         // ✅ 콜라이더 가져오기
-        npcCollider = GetComponent<Collider2D>();
+        entityCollider = GetComponent<Collider2D>();
 
         Debug.Log($"NPC '{gameObject.name}' 초기화 완료!", this);
     }

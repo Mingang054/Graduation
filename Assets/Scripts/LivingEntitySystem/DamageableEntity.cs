@@ -8,7 +8,7 @@ public class DamageableEntity  : MonoBehaviour, IDamageable
 {
     public string npcCode;
     public float healthPointMax= 100;                   //최대체력
-    public float healthPoint { get; protected set; }     //체력
+    public float healthPoint ;//{ get; protected set; }     //체력
     public float armorPoint = 0f;                        //방어내구도
     public float reduction = 0f;                    //피해감소
 
@@ -20,7 +20,7 @@ public class DamageableEntity  : MonoBehaviour, IDamageable
     public Faction faction;
 
 
-    private Collider2D entityCollider;
+    public Collider2D entityCollider;
 
 
     protected virtual void OnEnable()
