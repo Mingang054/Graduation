@@ -16,6 +16,8 @@ public class PlayerShooter : MonoBehaviour
     private float lastFireTime;
     private bool triggered = false;
 
+    private bool isActing = false;
+
     private InputAction fireAction;
     private InputAction zoomAction;
 
@@ -64,26 +66,30 @@ public class PlayerShooter : MonoBehaviour
 
     private void Update()
     {
-        /* ① 마우스 월드 좌표 한 번만 계산 (z=0 평면) */
-        mouseWorld = GetMouseWorldOnPlane(0f);
-
-        /* ② 팔 회전 & 캐릭터 플립 (좌표 캐시 사용) */
-        RotateArmToMouse();
-        FlipCharacter();
-
-
-        /* ③ 사격 체크 */
-        if (newWeaponTest == null || currentWeaponData == null) return;
-
-        if (triggered && Time.time >= lastFireTime + currentWeaponData.fireRate)
+        if (!isActing)
         {
-            TryFire();                          // Semi‑Auto, Full‑Auto 모두 여기서 처리
-        }
+            /* ① 마우스 월드 좌표 한 번만 계산 (z=0 평면) */
+            mouseWorld = GetMouseWorldOnPlane(0f);
 
-        /* 🔹 Semi‑Auto일 땐 트리거를 즉시 해제해 중복 발사 방지 */
-        if (currentWeaponData.fireMode != FireMode.FullAuto)
-        {
-            triggered = false;
+            /* ② 팔 회전 & 캐릭터 플립 (좌표 캐시 사용) */
+            RotateArmToMouse();
+            FlipCharacter();
+
+
+            /* ③ 사격 체크 */
+            if (newWeaponTest == null || currentWeaponData == null) return;
+
+            if (triggered && Time.time >= lastFireTime + currentWeaponData.fireRate)
+            {
+                TryFire();                          // Semi‑Auto, Full‑Auto 모두 여기서 처리
+            }
+
+            /* 🔹 Semi‑Auto일 땐 트리거를 즉시 해제해 중복 발사 방지 */
+            if (currentWeaponData.fireMode != FireMode.FullAuto)
+            {
+                triggered = false;
+            }
+
         }
 
     }
@@ -238,5 +244,9 @@ public class PlayerShooter : MonoBehaviour
     public void SetNoWeapon() {
         newWeaponTest = null;
         currentWeaponData = null;
+    }
+    public void SetIsActing(bool newIsActing)
+    {
+        isActing = newIsActing;
     }
 }

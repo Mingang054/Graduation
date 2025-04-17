@@ -9,6 +9,8 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
+    public PlayerShooter playerShooter;
+
 
     // Input Action Asset 
     public InputActionAsset inputActions;
@@ -213,8 +215,12 @@ public class UIManager : MonoBehaviour
         currentUI = vestInventoryUI;
         vestInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Vest Inventory Enabled");
+
+        playerShooter.SetIsActing(true);
+
         //UI
         cursorUI.SetUIAsUICursor();
+        
     }
     public void EnableBagInventory()
     {
@@ -225,6 +231,9 @@ public class UIManager : MonoBehaviour
         currentUI = bagInventoryUI;
         bagInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Bag Inventory Enabled");
+
+        playerShooter.SetIsActing(true);
+
         //UI
         cursorUI.SetUIAsUICursor();
     }
@@ -238,6 +247,9 @@ public class UIManager : MonoBehaviour
         pauseMenuUI.SetActive(true); // 새로운 UI 활성화
         Time.timeScale = 0; // 게임 시간 정지
         Debug.Log("Pause Menu Enabled");
+
+        playerShooter.SetIsActing(true);
+
         //UI
         cursorUI.SetUIAsUICursor();
     }
@@ -258,6 +270,9 @@ public class UIManager : MonoBehaviour
             BagInventoryManager.Instance.ResetOpponentItems();
 
         }
+
+        playerShooter.SetIsActing(false);
+
         //UI
         cursorUI.SetUIAsAimCursor();
     }
@@ -269,6 +284,9 @@ public class UIManager : MonoBehaviour
             vestInventoryUI.SetActive(false);
             Debug.Log("Vest Inventory Disabled");
         }
+
+        playerShooter.SetIsActing(false);
+
         //UI
         cursorUI.SetUIAsAimCursor();
     }
@@ -280,6 +298,9 @@ public class UIManager : MonoBehaviour
             bagInventoryUI.SetActive(false);
             Debug.Log("Bag Inventory Disabled");
         }
+
+        playerShooter.SetIsActing(false);
+
         //UI
         cursorUI.SetUIAsAimCursor();
     }
@@ -292,6 +313,9 @@ public class UIManager : MonoBehaviour
             Time.timeScale = 1; // 게임 시간 재개
             Debug.Log("Pause Menu Disabled");
         }
+
+        playerShooter.SetIsActing(false);
+
         //UI
         cursorUI.SetUIAsAimCursor();
     }

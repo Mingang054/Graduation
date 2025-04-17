@@ -18849,6 +18849,10 @@ PrefabInstance:
       propertyPath: cursorImage
       value: 
       objectReference: {fileID: 76652482}
+    - target: {fileID: 1467542230621395060, guid: 170601f7205ab594da673229add427d0, type: 3}
+      propertyPath: playerShooter
+      value: 
+      objectReference: {fileID: 138504147}
     - target: {fileID: 1567119427423334603, guid: 170601f7205ab594da673229add427d0, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.3
@@ -18969,6 +18973,7 @@ PrefabInstance:
     - {fileID: 7786183231879113770, guid: 170601f7205ab594da673229add427d0, type: 3}
     m_RemovedGameObjects:
     - {fileID: 5386182470728486293, guid: 170601f7205ab594da673229add427d0, type: 3}
+    - {fileID: 2937505155815026529, guid: 170601f7205ab594da673229add427d0, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4716367131528428011, guid: 170601f7205ab594da673229add427d0, type: 3}
       insertIndex: 3
