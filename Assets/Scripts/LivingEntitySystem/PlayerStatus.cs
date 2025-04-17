@@ -2,6 +2,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.UI;
 
 public class PlayerStatus : DamageableEntity
 {
@@ -18,6 +19,9 @@ public class PlayerStatus : DamageableEntity
 
 
 
+    public Slider hpSlider;
+    public Slider spSlider;
+
     public NPCData npcData;
     private Animator animator;
     // entityCollider = GetComponent<Collider2D>(); 
@@ -33,11 +37,12 @@ public class PlayerStatus : DamageableEntity
     {
         faction = Faction.Friendly;
         entityCollider = GetComponent<Collider2D>();
+        
     }
 
     void Start()
     {
-        
+        initStatusUI();
     }
 
 
@@ -53,10 +58,17 @@ public class PlayerStatus : DamageableEntity
     {
         
         base.OnHitDamage(damage, penetration, hitPoint, hitNormal, projectileFaction);
+        UpdateStatusUI();
     }
 
+    public void initStatusUI()
+    {
+        hpSlider.maxValue = healthPointMax;
+        UpdateStatusUI();
+    }
     public void UpdateStatusUI()
-    { 
+    {
+        hpSlider.value = healthPoint;
         //
     }
 
@@ -116,7 +128,9 @@ public class PlayerStatus : DamageableEntity
     }
 
 
-
+    public override void Die() {
+        return;
+    }
 
 
 

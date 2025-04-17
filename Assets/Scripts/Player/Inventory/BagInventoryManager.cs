@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEditor.FilePathAttribute;
 
 public class BagInventoryManager : MonoBehaviour
 {
+    
+    [SerializeField] private CanvasScaler canvasScaler;
 
     public Vector2Int currentPointedSlot = new Vector2Int(-1, -1);
     public bool currentPointedSlotIsMySlot = false;
@@ -56,6 +59,7 @@ public class BagInventoryManager : MonoBehaviour
     public static BagInventoryManager Instance { get; private set; }
     private void Awake()
     {
+
         if (Instance == null)
         {
             Instance = this;
@@ -64,12 +68,19 @@ public class BagInventoryManager : MonoBehaviour
         {
             Destroy(gameObject); // 중복 인스턴스 방지
         }
+
+
+        if (canvasScaler == null)
+            canvasScaler = GetComponentInParent<CanvasScaler>();
+
         if (slotUIPrefab != null && myInventoryGrid!=null && opponentInventoryGrid!=null)
         {
             InitSlotUI();
         }
         InitMySlots();
         InitOpSlots();
+
+
     }
 
 
@@ -468,7 +479,26 @@ public class BagInventoryManager : MonoBehaviour
 
 
 
+    public float CellSize
+    {
+        get
+        {
+            // CanvasScaler가 Scale With Screen Size 일 때,
+            // scaleFactor 가 현재 해상도 대비 배율(1.0 = 기준 해상도)
+            float scale = canvasScaler != null
+                          ? canvasScaler.scaleFactor   // 권장
+                          : CanvasScaleFallback();
 
+            return 96f * scale; 
+        }
+    }
+
+    private float CanvasScaleFallback()
+    {
+        // 최상단 Canvas의 scaleFactor 가져오기 (예비용)
+        var rootCanvas = GetComponentInParent<Canvas>();
+        return rootCanvas != null ? rootCanvas.scaleFactor : 1f;
+    }
 }
 
 

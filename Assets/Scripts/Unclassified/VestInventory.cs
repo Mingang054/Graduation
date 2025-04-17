@@ -280,7 +280,5 @@ public class VestInventory : MonoBehaviour
         
     }
 
-
-
     //우클릭 처리
 }

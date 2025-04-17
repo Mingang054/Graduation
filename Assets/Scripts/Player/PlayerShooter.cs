@@ -239,14 +239,20 @@ public class PlayerShooter : MonoBehaviour
         newWeaponTest = newWeapon;
         
         currentWeaponData = newWeapon.data as WeaponData;
-
+        SetArmSprite(currentWeaponData.weaponArm);
     }
     public void SetNoWeapon() {
         newWeaponTest = null;
         currentWeaponData = null;
     }
+    public void SetArmSprite(Sprite newArmSprite)
+    {
+        armTransform.GetComponent<SpriteRenderer>().sprite = newArmSprite;
+    }
+
     public void SetIsActing(bool newIsActing)
     {
         isActing = newIsActing;
     }
+
 }

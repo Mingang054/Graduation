@@ -21,6 +21,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     private Vector2Int originLocation;
     private Vector2 originalPosition;
 
+    private float Cell => BagInventoryManager.Instance.CellSize;
     private void OnEnable()
     {
         if (itemInstance != null && itemInstance.data!=null) { itemImage.sprite = itemInstance.data.itemSprite; }
@@ -92,16 +93,16 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     public void UpdatePosition(Vector2Int location)
     {
         if (rectTransform == null) return;
-        // 1칸=96px, (1,1) => anchoredPosition=(0,0) 방식
+        // 1칸=Cell, (1,1) => anchoredPosition=(0,0) 방식
         rectTransform.anchoredPosition =
-            new Vector2(location.x * 96 - 96, -location.y * 96 + 96);
+            new Vector2(location.x * Cell - Cell, -location.y * Cell + Cell);
     }
 
     public void UpdateSize()
     {
         if (rectTransform == null || itemInstance == null) return;
         rectTransform.sizeDelta =
-            new Vector2(itemInstance.data.size.x * 96, itemInstance.data.size.y * 96);
+            new Vector2(itemInstance.data.size.x * Cell, itemInstance.data.size.y * Cell);
     }
     //============ 드래그 & 드롭 기능 ============//
 
@@ -131,20 +132,25 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             originalParent = transform.parent;
             originLocation = itemInstance.location;
             originalPosition = rectTransform.anchoredPosition;
-
-            // 2) UI 위치 보정
+            // 1) 피벗을 오른쪽‑아래로
             rectTransform.pivot = new Vector2(1f, 0f);
+
+            // 2) 마우스 위치 → 월드 좌표
             if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
-                canvas.transform as RectTransform,
-                eventData.position,
-                canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
-                out Vector3 globalMousePos))
+                    canvas.transform as RectTransform,
+                    eventData.position,
+                    canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+                    out Vector3 globalMousePos))
             {
-                Vector3 offset = new Vector3(48f, -48f, 0f);
+
+                globalMousePos.z = 0f;         // ★ 추가
+                Debug.Log(Cell);
+                // 3) 셀 절반만큼 보정 (x = -Cell/2, y = +Cell/2)
+                Vector3 offset = new Vector3(Cell * 0.5f, -Cell * 0.5f, 0f);
                 rectTransform.position = globalMousePos + offset;
             }
 
-            // 3) 부모 이동 및 Raycast 차단
+            // 4) 부모를 최상단 Canvas로 옮기고 Raycast 차단
             rectTransform.SetParent(canvas.transform, true);
             canvasGroup.blocksRaycasts = false;
         }
