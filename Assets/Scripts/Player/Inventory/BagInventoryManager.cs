@@ -489,7 +489,7 @@ public class BagInventoryManager : MonoBehaviour
                           ? canvasScaler.scaleFactor   // 권장
                           : CanvasScaleFallback();
 
-            return 96f * scale; 
+            return 70f * scale; 
         }
     }
 

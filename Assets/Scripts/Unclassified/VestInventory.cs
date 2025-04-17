@@ -126,7 +126,6 @@ public class VestInventory : MonoBehaviour
         }
         Debug.Log($"isGrip {isGrip}");
         Debug.Log($"isGripCount {isGripCount}");
-        Debug.Log($"isGrip {originVestPlacable.placeableType}");
 
     }
 

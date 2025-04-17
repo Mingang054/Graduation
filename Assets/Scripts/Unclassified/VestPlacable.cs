@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 public class VestPlacable : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField]
-    public VestPlaceableType placeableType { get; private set; }
+    public VestPlaceableType placeableType;
 
     public int count; //물건개수
     // Weaponv

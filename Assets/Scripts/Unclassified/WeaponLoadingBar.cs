@@ -52,7 +52,6 @@ public class WeaponLoadingBar : MonoBehaviour, IBeginDragHandler, IDragHandler, 
         if (currentOffset >= pullOffset)
         {
             VestInventory.Instance.PullReceiverInVest();
-            VestInventory.Instance.PullReceiverInVest();
             Debug.Log("리시버 당기기! 작동!");
             // 여기에 원하는 실행 코드 삽입
         }
