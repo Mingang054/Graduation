@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf50ea0e4913cdb4a92942be4a6faaf9, type: 3}
+  m_Name: H001
+  m_EditorClassIdentifier: 
+  size: {x: 1, y: 1}
+  itemName: Tourniquet
+  itemCode: H001
+  itemSprite: {fileID: 5732779932280801577, guid: aa877c0ea080f1843b74d1f068ea4a20, type: 3}
+  price: 1500
+  weight: 0.1
+  maxStack: 2
+  itemType: 2
+  description: Tourniquet for Combat
+  hp: 0
+  sp: 0
+  energy: 0
+  hydration: 0
+  hpRegen: 0
+  spRegen: 0
+  energyRegen: 0
+  hydrationRegen: 0
+  regenDuration: 0
+  isMedicine: 1
+  isInjector: 0
+  isSplint: 0
+  isTourniquet: 1
+  hemostasis: 1
+  consumableType: 0
+  isConsumable: 1

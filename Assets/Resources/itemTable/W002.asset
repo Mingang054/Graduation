@@ -43,6 +43,7 @@ MonoBehaviour:
   attackClip: {fileID: 8300000, guid: 1209929bba5264147ba80df93bcc4aeb, type: 3}
   loadClip: {fileID: 8300000, guid: b9807233cec98624cadd488535fdf23f, type: 3}
   loadbarClip: {fileID: 8300000, guid: cb65f955e0e118a46b4c78775aa1905a, type: 3}
+  empty: {fileID: 8300000, guid: 8238cb2652506eb4ea061a50572ae7ad, type: 3}
   weaponArm: {fileID: -4487003269873657752, guid: 14a23b6f9250aba4b8cfd9a71fe654ff, type: 3}
   weaponBody: {fileID: 5576054796633054120, guid: 36cc01ee749b12944b4a2ea3b3a68c19, type: 3}
   weaponUnloadBody: {fileID: -3030257955745713747, guid: b8db1772a08bc09458243ced3631e911, type: 3}

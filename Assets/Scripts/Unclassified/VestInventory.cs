@@ -16,6 +16,7 @@ public class VestInventory : MonoBehaviour
     [SerializeField]
     public PlayerShooter shooter;
 
+    public CursorUI cursorUI;
 
     // 관리용
     private InputAction rightClickAction;
@@ -30,6 +31,7 @@ public class VestInventory : MonoBehaviour
     public WeaponOnHand weaponOnHand2;
     public WeaponOnHand weaponOnHand3;
 
+    
 
     [SerializeField]
     public WeaponOnVest firstWeaponOnVest;
@@ -48,6 +50,9 @@ public class VestInventory : MonoBehaviour
     public VestPlacable originVestPlacable = null;
     public Stack<VestPlacable> originPlaceabkeStack = new Stack<VestPlacable>();
     //public Stack<Vestplacable> originplacable; //2개 잡기용
+
+    //
+    [SerializeField] public GameObject healUI;
 
     
     public void Awake()
@@ -103,6 +108,8 @@ public class VestInventory : MonoBehaviour
                 break;
 
             case VestPlaceableType.Medical:
+                healUI.SetActive(true);
+                UIManager.Instance.currentSecondaryUI = healUI;
                 Debug.Log("의료품 슬롯입니다.");
                 break;
 
@@ -127,17 +134,20 @@ public class VestInventory : MonoBehaviour
         Debug.Log($"isGrip {isGrip}");
         Debug.Log($"isGripCount {isGripCount}");
 
+        UpdateCursor();
     }
 
     public void LoadAmmo()
     {
         WeaponData a = weaponOnHand.currentWeapon.data as WeaponData;
+
         switch (a.ammoType)
         {
             default:        //통상 방식
                 if (!weaponOnHand.currentWeapon.isMag)  //탄창이 없으면 바로 탄창 삽입 
                 {
-                    if (isGrip)
+                    if (isGrip && originVestPlacable.placeableType ==VestPlaceableType.Mag
+                        && originVestPlacable.ammoType == a.ammoType)
                     {
                             //미구현파트 WeaponOnHand 연동
                         
@@ -190,7 +200,8 @@ public class VestInventory : MonoBehaviour
         originVestPlacable = null;
         isGrip = false;
         originPlaceabkeStack.Clear();
-        
+        UpdateCursor();
+
     }
 
 
@@ -199,6 +210,8 @@ public class VestInventory : MonoBehaviour
     {
         isGripCount--;
         if (isGripCount <= 0) {CancelGrip();}
+
+        UpdateCursor();
     }
 
     public void UsePlayerAction() {
@@ -280,4 +293,18 @@ public class VestInventory : MonoBehaviour
     }
 
     //우클릭 처리
+
+    public void initVest()
+    {
+        CancelGrip();
+    }
+    private void UpdateCursor()
+    {
+        cursorUI.UpdateVestCursor(isGripCount,originVestPlacable);
+    }
+
+
+
+
+
 }

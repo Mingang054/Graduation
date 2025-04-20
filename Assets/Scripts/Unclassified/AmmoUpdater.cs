@@ -6,22 +6,32 @@ using UnityEngine.UIElements;
 
 public class AmmoUpdater : MonoBehaviour
 {
-    public TMP_Text tMP_Text;
-
+    public RectTransform ammoUIRect;
+    private Vector2 size = new Vector2(64, 14);
+    private int x = 64;
+    private int y = 14;
     private void Awake()
-    {
-       tMP_Text = GetComponent<TMP_Text>();
+    { 
+        ammoUIRect = GetComponent<RectTransform>();
     }
     public void UpdateAmmoUI(int? ammoCount)
     {
-        if (ammoCount == null)
+
+        
+        if (ammoCount == null) 
         {
-            tMP_Text.text = "N/A"; // 또는 "N/A", "없음" 등 표시
+            Vector2 size = ammoUIRect.sizeDelta;
+            size.y = 0;
+            ammoUIRect.sizeDelta = size;            
         }
         else
         {
-            Debug.Log(ammoCount);
-            tMP_Text.text = ammoCount.ToString();   
+            Vector2 size = ammoUIRect.sizeDelta;
+            size.y = y * ammoCount.Value;
+            ammoUIRect.sizeDelta = size;
+
         }
+
+
     }
 }

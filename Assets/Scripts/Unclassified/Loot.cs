@@ -41,6 +41,18 @@ public class Loot : Interactable
             magCount = 12
         });
 
+        itemToCreate.Add(new ItemInitData
+        {
+            itemCode = "H001",
+            count = 2,
+            location = new Vector2Int(1, 1)
+        });
+        itemToCreate.Add(new ItemInitData
+        {
+            itemCode = "H002",
+            count = 2,
+            location = new Vector2Int(2, 1)
+        });
         //아이템 생성
         foreach (var item in itemToCreate)
         {

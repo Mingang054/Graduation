@@ -11,8 +11,7 @@ public class Consumable : ItemInstance
     // 사용 처리
     public void Use()
     {
-        
-        Debug.LogWarning($"{data.itemName}을(를) 더 이상 사용할 수 없습니다.");
+        //PlayerStatus.instace
         
     }
 }

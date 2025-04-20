@@ -35,6 +35,7 @@ public class WeaponData : ItemData
     public AudioClip attackClip;
     public AudioClip loadClip;
     public AudioClip loadbarClip;
+    public AudioClip empty;
 
     //플레이어 오브젝트에서 나타날 무기와 팔의 모습
     public Sprite weaponArm;

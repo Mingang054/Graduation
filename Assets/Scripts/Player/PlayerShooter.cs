@@ -122,6 +122,7 @@ public class PlayerShooter : MonoBehaviour
         if (currentWeaponData == null || !newWeaponTest.isChamber)
         {
             triggered = false;
+            AudioManager.Instance.PlaySFX(currentWeaponData.empty);
             return;
         }
 
@@ -130,7 +131,7 @@ public class PlayerShooter : MonoBehaviour
         // 🔹 발사 성공 시 효과음 재생
         if (currentWeaponData.attackClip != null)
         {
-            audioSource.PlayOneShot(currentWeaponData.attackClip);
+            AudioManager.Instance.PlaySFX(currentWeaponData.attackClip);
         }
 
         for (int i = 0; i < currentWeaponData.pelletCount; i++)
@@ -218,7 +219,7 @@ public class PlayerShooter : MonoBehaviour
 
     private void OnZoomStarted(InputAction.CallbackContext context)
     {
-        if (UIManager.Instance.currentUI == null)
+        if (UIManager.Instance.currentPrimaryUI == null)
         {
             zoomObject.SetActive(true);
         }

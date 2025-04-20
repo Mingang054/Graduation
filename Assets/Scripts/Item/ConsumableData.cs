@@ -15,7 +15,12 @@ public class ConsumableData : ItemData
     public float regenDuration;               // 지속 회복 시간
 
     public bool isMedicine;                         //의료품 여부
+
+    //치료 액션 종류
     public bool isInjector;
+    public bool isSplint;
+    public bool isTourniquet;
+    
     public bool hemostasis;                   // 지혈 효과 여부
     public ConsumableType consumableType;     // 소모품 타입 (의약품, 음식)
 

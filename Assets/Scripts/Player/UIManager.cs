@@ -22,12 +22,16 @@ public class UIManager : MonoBehaviour
     public GameObject vestInventoryUI;      // Vest Inventory
     public GameObject bagInventoryUI;       // Bag Inventory
     public GameObject pauseMenuUI;          // Pause Menu
+    //
+    public GameObject currentPrimaryUI;           // 현재 활성화된 UI
 
-    public GameObject currentUI;           // 현재 활성화된 UI
+    // 세부 UI
+    public GameObject currentSecondaryUI;
+    public GameObject current3rdUI;
+
 
     //임시
     public AmmoUpdater ammoUpdater;
-
 
     private InputAction inventoryAction;    // Tab 키
     private InputAction escapeAction;       // Esc 키
@@ -43,6 +47,11 @@ public class UIManager : MonoBehaviour
     private float tabHoldTime = 0f;
 
     private CancellationTokenSource tabHoldTaskTokenSource; // Task 취소 토큰
+
+    [SerializeField]
+    public AudioClip vestClip;
+    public AudioClip bagClip;
+
 
 
     private void OnEnable()
@@ -138,41 +147,49 @@ public class UIManager : MonoBehaviour
 
     public void OnInventoryPerformed(InputAction.CallbackContext context)
     {
-        // 현재 UI가 Vest Inventory인 경우
-        if (currentUI == vestInventoryUI)
+        if (current3rdUI == null)
         {
-            if (context.interaction is HoldInteraction) // Hold 동작
+            if (currentSecondaryUI == null)
             {
-                // 기존 Task 취소
-                tabHoldTaskTokenSource?.Cancel();
-                tabHoldTaskTokenSource = new CancellationTokenSource();
+                // 현재 UI가 Vest Inventory인 경우
+                if (currentPrimaryUI == vestInventoryUI)
+                {
+                    if (context.interaction is HoldInteraction) // Hold 동작
+                    {
+                        // 기존 Task 취소
+                        tabHoldTaskTokenSource?.Cancel();
+                        tabHoldTaskTokenSource = new CancellationTokenSource();
 
-                // TrackTabHoldProgress 호출
-                TrackTabHoldProgress(tabHoldTaskTokenSource.Token).Forget();
+                        // TrackTabHoldProgress 호출
+                        TrackTabHoldProgress(tabHoldTaskTokenSource.Token).Forget();
+                    }
+                    else // Press 동작
+                    {
+                        DisableVestInventory(); // Vest Inventory를 비활성화
+                    }
+                    return;
+                }
+
+                // 현재 활성화된 UI가 없거나 다른 경우
+                if (currentPrimaryUI != null) return;
+
+                if (context.interaction is HoldInteraction) // Hold 동작
+                {
+                    // 기존 Task 취소
+                    tabHoldTaskTokenSource?.Cancel();
+                    tabHoldTaskTokenSource = new CancellationTokenSource();
+
+                    // TrackTabHoldProgress 호출
+                    TrackTabHoldProgress(tabHoldTaskTokenSource.Token).Forget();
+                }
+                else // Press 동작
+                {
+                    EnableVestInventory();
+                }
             }
-            else // Press 동작
-            {
-                DisableVestInventory(); // Vest Inventory를 비활성화
-            }
-            return;
         }
 
-        // 현재 활성화된 UI가 없거나 다른 경우
-        if (currentUI != null) return;
 
-        if (context.interaction is HoldInteraction) // Hold 동작
-        {
-            // 기존 Task 취소
-            tabHoldTaskTokenSource?.Cancel();
-            tabHoldTaskTokenSource = new CancellationTokenSource();
-
-            // TrackTabHoldProgress 호출
-            TrackTabHoldProgress(tabHoldTaskTokenSource.Token).Forget();
-        }
-        else // Press 동작
-        {
-            EnableVestInventory();
-        }
     }
 
     public void OnInventoryCanceled(InputAction.CallbackContext context)
@@ -185,12 +202,22 @@ public class UIManager : MonoBehaviour
     private void OnEscapePerformed(InputAction.CallbackContext context)
     {
         if (context.performed && !isEscapeHandled) // Escape 키가 눌리고 아직 처리되지 않은 경우
-        {
-            if (currentUI == pauseMenuUI) // Pause Menu가 활성화된 경우 비활성화
+        {   
+            if (current3rdUI != null)
+            {
+                current3rdUI.SetActive(false);
+                current3rdUI = null;
+            }
+            else if (currentSecondaryUI != null)
+            {
+                currentSecondaryUI.SetActive(false);
+                currentSecondaryUI = null;
+            }
+            else if (currentPrimaryUI == pauseMenuUI) // Pause Menu가 활성화된 경우 비활성화
             {
                 DisablePause();
             }
-            else if (currentUI == null) // 다른 UI가 없는 경우 Pause Menu 활성화
+            else if (currentPrimaryUI == null) // 다른 UI가 없는 경우 Pause Menu 활성화
             {
                 EnablePause();
             }
@@ -208,42 +235,44 @@ public class UIManager : MonoBehaviour
     }
     public void EnableVestInventory()
     {
-        if (currentUI != null)
+        if (currentPrimaryUI != null)
         {
-            currentUI.SetActive(false); // 기존 UI 비활성화
+            currentPrimaryUI.SetActive(false); // 기존 UI 비활성화
         }
-        currentUI = vestInventoryUI;
+        currentPrimaryUI = vestInventoryUI;
         vestInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Vest Inventory Enabled");
 
         playerShooter.SetIsActing(true);
 
+        AudioManager.Instance.PlaySFX(vestClip);
         //UI
         cursorUI.SetUIAsUICursor();
         
     }
     public void EnableBagInventory()
     {
-        if (currentUI != null)
+        if (currentPrimaryUI != null)
         {
-            currentUI.SetActive(false); // 🔴 기존 UI 비활성화
+            currentPrimaryUI.SetActive(false); // 🔴 기존 UI 비활성화
         }
-        currentUI = bagInventoryUI;
+        currentPrimaryUI = bagInventoryUI;
         bagInventoryUI.SetActive(true); // 새로운 UI 활성화
         Debug.Log("Bag Inventory Enabled");
 
         playerShooter.SetIsActing(true);
 
+        AudioManager.Instance.PlaySFX(bagClip);
         //UI
         cursorUI.SetUIAsUICursor();
     }
     public void EnablePause()
     {
-        if (currentUI != null)
+        if (currentPrimaryUI != null)
         {
-            currentUI.SetActive(false); // 기존 UI 비활성화
+            currentPrimaryUI.SetActive(false); // 기존 UI 비활성화
         }
-        currentUI = pauseMenuUI;
+        currentPrimaryUI = pauseMenuUI;
         pauseMenuUI.SetActive(true); // 새로운 UI 활성화
         Time.timeScale = 0; // 게임 시간 정지
         Debug.Log("Pause Menu Enabled");
@@ -255,15 +284,15 @@ public class UIManager : MonoBehaviour
     }
     private void DisableCurrentUI()
     {
-        if (currentUI == pauseMenuUI)
+        if (currentPrimaryUI == pauseMenuUI)
         {
             DisablePause();
-            currentUI = null;
+            currentPrimaryUI = null;
         }
-        else if (currentUI != null)
+        else if (currentPrimaryUI != null)
         {
-            currentUI.SetActive(false);
-            currentUI = null;
+            currentPrimaryUI.SetActive(false);
+            currentPrimaryUI = null;
         }
         if (BagInventoryManager.Instance.opponentItems != null)
         {
@@ -278,9 +307,9 @@ public class UIManager : MonoBehaviour
     }
     private void DisableVestInventory()
     {
-        if (currentUI == vestInventoryUI)
+        if (currentPrimaryUI == vestInventoryUI)
         {
-            currentUI = null;
+            currentPrimaryUI = null;
             vestInventoryUI.SetActive(false);
             Debug.Log("Vest Inventory Disabled");
         }
@@ -292,9 +321,9 @@ public class UIManager : MonoBehaviour
     }
     private void DisableBagInventory()
     {
-        if (currentUI == bagInventoryUI)
+        if (currentPrimaryUI == bagInventoryUI)
         {
-            currentUI = null;
+            currentPrimaryUI = null;
             bagInventoryUI.SetActive(false);
             Debug.Log("Bag Inventory Disabled");
         }
@@ -306,9 +335,9 @@ public class UIManager : MonoBehaviour
     }
     private void DisablePause()
     {
-        if (currentUI == pauseMenuUI)
+        if (currentPrimaryUI == pauseMenuUI)
         {
-            currentUI = null;
+            currentPrimaryUI = null;
             pauseMenuUI.SetActive(false);
             Time.timeScale = 1; // 게임 시간 재개
             Debug.Log("Pause Menu Disabled");

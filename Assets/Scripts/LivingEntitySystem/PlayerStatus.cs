@@ -29,7 +29,7 @@ public class PlayerStatus : DamageableEntity
     private AudioSource audioSource;
 
 
-
+    public static PlayerStatus instance;
 
 
 
@@ -38,6 +38,8 @@ public class PlayerStatus : DamageableEntity
         faction = Faction.Friendly;
         entityCollider = GetComponent<Collider2D>();
         
+        PlayerStatus.instance = this;
+
     }
 
     void Start()

@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,10 @@ public class CursorUI : MonoBehaviour
 
     [SerializeField] public Sprite aimCursor;
     [SerializeField] public Sprite uiCursor;
+
+    [SerializeField] public Sprite uiCursor_mag;
+    [SerializeField] public Sprite[] uiCursor_shell;
+    [SerializeField] public Sprite uiCursor_;   
 
     [SerializeField] private Image image;
 
@@ -33,5 +38,35 @@ public class CursorUI : MonoBehaviour
     public void SetUIAsOnLoad()
     {
 
+    }
+
+    public void UpdateVestCursor( int isGripCount, VestPlacable? origin )
+    {
+        if (origin == null || isGripCount <=0 ) { image.sprite = uiCursor; return; }
+
+        if (origin.placeableType == VestPlaceableType.Mag)
+        {
+            switch (origin.ammoType)
+            {
+                case AmmoType.Light:
+                    break;
+                case AmmoType.Medium:
+                    image.sprite = uiCursor_mag;
+                    break;
+                case AmmoType.Heavy:
+                    break;
+                case AmmoType.Anti:
+                    break;
+                case AmmoType.Shell:
+                    if (uiCursor_shell.Length <= isGripCount)
+                    {
+                        image.sprite = uiCursor_shell[isGripCount - 1];
+                    }    
+                    break;
+                default:
+                    image.sprite = uiCursor;
+                    break;
+            }
+        }
     }
 }

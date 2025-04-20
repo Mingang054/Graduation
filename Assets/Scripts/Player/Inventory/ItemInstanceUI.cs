@@ -1,5 +1,6 @@
 ﻿using Cysharp.Threading.Tasks.Triggers;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.PlasticSCM.Editor.WebApi;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -52,14 +53,48 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     {
         if (itemInstance != null)
         {
-            if(itemInstance.currentEquipSlotType == EquipSlotType.none)
+            if (GetComponentInParent<HealSlotUI>() != null)
             {
+
+                // 현재 오브젝트의 부모 Transform을 직접 얻습니다.
+                if (transform.parent == null)
+                    return;
+
+                // 부모와 자식의 RectTransform을 가져옵니다.
+                RectTransform parentRect = transform.parent as RectTransform;
+                RectTransform selfRect = transform as RectTransform;
+                if (parentRect == null || selfRect == null)
+                    return;
+                // 1. 부모의 중앙 기준으로 정렬하도록 anchor와 pivot을 중앙으로 설정합니다.
+                selfRect.anchorMin = new Vector2(0.5f, 0.5f);
+                selfRect.anchorMax = new Vector2(0.5f, 0.5f);
+                selfRect.pivot = new Vector2(0.5f, 0.5f);
+                // 2. 부모의 중앙으로 실제 위치 이동
+                selfRect.anchoredPosition = Vector2.zero;
+                Debug.Log("heal");
+            }
+            else if(itemInstance.currentEquipSlotType == EquipSlotType.none) {
                 itemImage.sprite = itemInstance.data.itemSprite;
+
+
+                // 부모와 자식의 RectTransform을 가져옵니다.
+                RectTransform parentRect = transform.parent as RectTransform;
+                RectTransform selfRect = transform as RectTransform;
+                if (parentRect == null || selfRect == null)
+                    return;
+                // 1. 부모의 중앙 기준으로 정렬하도록 anchor와 pivot을 중앙으로 설정합니다.
+                // 앵커: 좌측 상단 (0,1)
+                selfRect.anchorMin = new Vector2(0f, 1f);
+                selfRect.anchorMax = new Vector2(0f, 1f);
+                // 피봇: 좌측 상단 (0,1)
+                selfRect.pivot = new Vector2(0f, 1f);
+
                 UpdatePosition(itemInstance.location);
                 UpdateSize();
 
                 itemImage.enabled = true;
                 itemCountText.text = itemInstance.count > 1 ? itemInstance.count.ToString() : "";
+                Debug.Log("item");
             }
             else
             {
@@ -267,6 +302,22 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 return;
             }
             
+            HealSlotUI foundHealUI = foundObject.GetComponent<HealSlotUI>();
+            if (foundHealUI != null)
+            {
+
+                if (CanEquipHealItem(foundHealUI))
+                {
+                    EquipHealItem(foundHealUI);
+
+                    BagInventoryManager.Instance.currentPointedSlotIsEquip = false;
+                    BagInventoryManager.Instance.currentPointedEquipSlot = null;
+                }
+                canvasGroup.blocksRaycasts = true;       // ★ 추가
+                rectTransform.pivot = new Vector2(0f, 1f);   // ★ 추가
+                UpdateUI();
+                return;
+            }
 
         }
 
@@ -343,7 +394,6 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
         return true;
     }
-
 
     private void EquipItem(EquipmentSlotUI foundEquipUI) {
         //게임 로드 시에도 사용가능
@@ -476,6 +526,81 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         // 피봇: 좌측 상단 (0,1)
         selfRect.pivot = new Vector2(0f, 1f);
     }
+
+    private bool CanEquipHealItem(HealSlotUI foundHealUI)
+    {
+        if (foundHealUI.equipedItem != null) { return false; }
+
+        if (itemInstance.data is ConsumableData consume)
+        {
+            if (consume.isMedicine)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void EquipHealItem(HealSlotUI foundHealUI)
+    {
+        var mgr = BagInventoryManager.Instance;
+
+        /* ① 인벤토리(내/상대)에서 제거 + 슬롯 점유 해제 */
+        if (mgr.myItems.Contains(itemInstance))
+        {
+            mgr.FreeItemSlots(itemInstance);
+            mgr.myItems.Remove(itemInstance);
+        }
+        else if (mgr.opponentItems != null && mgr.opponentItems.Contains(itemInstance))
+        {
+            mgr.FreeItemSlots(itemInstance);
+            mgr.opponentItems.Remove(itemInstance);
+        }
+        else if(true)  // 이미 다른 힐 슬롯에 있었던 경우 list contain으로...
+        {
+            UnEquipHealItem();
+        }
+
+        var hmgr = HealItemManager.instance;
+        hmgr.consumables[foundHealUI.index] = itemInstance as Consumable;
+
+        /* ② UI 부모 변경 */
+        rectTransform.SetParent(foundHealUI.transform, true);
+        rectTransform.anchoredPosition = Vector2.zero;   // 중앙 고정
+        rectTransform.localScale = Vector3.one;
+
+        foundHealUI.equipedItem = this;
+        
+        UpdateUI();
+    }
+
+    private void UnEquipHealItem()
+    {
+        var hmgr = HealItemManager.instance;
+        if (hmgr == null) return;
+
+        // 0~5 슬롯을 모두 검색
+        for (int i = 0; i < hmgr.consumables.Length; i++)
+        {
+            if (hmgr.consumables[i] == (itemInstance as Consumable))
+            {
+                hmgr.consumables[i] = null;                 // 배열 해제
+                hmgr.healSlot[i].equipedItem = null;        // 슬롯‑UI 해제
+                break;
+            }
+        }
+
+
+        // ③ 원래 Canvas(혹은 풀)로 이동
+        Canvas rootCanvas = GetComponentInParent<Canvas>();
+        if (rootCanvas != null) transform.SetParent(rootCanvas.transform, true);
+
+        // ④ 피벗/앵커 복원
+        rectTransform.anchorMin = rectTransform.anchorMax = new Vector2(0f, 1f);
+        rectTransform.pivot = new Vector2(0f, 1f);
+    }
+
+
     /// <summary>
     /// 실제로 해당 targetPosition에 배치할 수 있는지 검사만 (점유 안함)
     /// </summary>
@@ -535,6 +660,12 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 manager.opponentItems.Remove(itemInstance);
                 // manager.FreeItemSlots(itemInstance); // ★삭제
             }
+        }
+        else if (HealItemManager.instance != null &&
+                 System.Array.IndexOf(HealItemManager.instance.consumables,
+                                      itemInstance as Consumable) >= 0)
+        {
+            UnEquipHealItem();
         }
         else
         {

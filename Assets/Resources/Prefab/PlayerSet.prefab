@@ -1552,8 +1552,8 @@ GameObject:
   - component: {fileID: 8428720557398701942}
   - component: {fileID: 5445115776763655726}
   - component: {fileID: 6815126081713832907}
-  - component: {fileID: 2232105705067470589}
   - component: {fileID: 435440641303718697}
+  - component: {fileID: 6197104460265035520}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -1800,27 +1800,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &2232105705067470589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8863443284397109318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f24400c71b6773744b17b547394062b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  npcCode: 
-  healthPointMax: 300
-  healthPoint: 0
-  armorPoint: 0
-  reduction: 0
-  isEssential: 0
-  isDead: 0
-  faction: 2
-  entityCollider: {fileID: 0}
 --- !u!114 &435440641303718697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1839,3 +1818,29 @@ MonoBehaviour:
     m_Bits: 1024
   targetName: {fileID: 8738247600212660786}
   legacyTargetName: {fileID: 4429684040861243089}
+--- !u!114 &6197104460265035520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8863443284397109318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 048ee9ef0bad7324bbc0247b965405dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  npcCode: player
+  healthPointMax: 30
+  healthPoint: 30
+  armorPoint: 10
+  reduction: 0
+  isEssential: 0
+  isDead: 0
+  faction: 2
+  entityCollider: {fileID: 1127109481322700183}
+  weightMax: 60
+  money: 0
+  hpSlider: {fileID: 0}
+  spSlider: {fileID: 0}
+  npcData: {fileID: 0}
