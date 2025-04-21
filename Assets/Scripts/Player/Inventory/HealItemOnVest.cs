@@ -7,9 +7,9 @@ public class HealItemOnVest : MonoBehaviour
     
     public GameObject[] healButton = new GameObject[6];
     public TMP_Text[] text = new TMP_Text[6];
-    public HealItemButton[] healItemButtonsa = new HealItemButton[6];
+    public HealItemButton[] healItemButtons = new HealItemButton[6];
 
-    public void UpdateButtonImages()
+    public void UpdateButtonUI()
     {
         var HIM = HealItemManager.instance;
         for (int i = 0; i<6; i++)
@@ -32,6 +32,6 @@ public class HealItemOnVest : MonoBehaviour
 
     private void OnEnable()
     {
-        UpdateButtonImages();   
+        UpdateButtonUI();   
     }
 }

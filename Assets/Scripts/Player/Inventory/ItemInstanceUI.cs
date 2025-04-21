@@ -51,8 +51,13 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void UpdateUI()
     {
+
         if (itemInstance != null)
         {
+            if (itemInstance.count <= 0) { 
+                RemoveItemOnUI();
+                ItemUIPoolManager.Instance.ReturnItemUI(this.gameObject);
+            }
             if (GetComponentInParent<HealSlotUI>() != null)
             {
 
@@ -734,5 +739,53 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     {
         // 드래그 도중 UI가 꺼지면 Raycast 복원
         itemImage.raycastTarget = true;
+    }
+
+
+    public void TryUseItem()
+    {
+        if (itemInstance!=null&&itemInstance is Consumable consumable)
+        {
+            if (consumable.Use() == true)
+            {
+                // item 또는 힐 칸에서 제거 로직 (미구현)
+                RemoveItemOnUI();
+                ItemUIPoolManager.Instance.ReturnItemUI(this.gameObject);
+            }
+            else
+            {
+                UpdateUI();
+            }
+        }
+    }
+
+    public void RemoveItemOnUI()
+    {
+        var bag = BagInventoryManager.Instance;
+
+        /* ① 인벤토리에 있었던 경우 → 리스트에서 빼고 슬롯 점유 해제 */
+        if (bag.myItems.Remove(itemInstance))
+            bag.FreeItemSlots(itemInstance);
+        else if (bag.opponentItems != null && bag.opponentItems.Remove(itemInstance))
+            bag.FreeItemSlots(itemInstance);
+
+        /* ② 힐‑슬롯에 들어 있던 경우 → HealItemManager 정리 */
+        var hMgr = HealItemManager.instance;
+        if (hMgr != null && itemInstance is Consumable con)
+        {
+            for (int i = 0; i < hMgr.consumables.Length; i++)
+            {
+                if (hMgr.consumables[i] == con)
+                {
+                    hMgr.consumables[i] = null;                 // 배열 비움
+                    hMgr.healSlot[i].equipedItem = null;                 // 슬롯‑UI 비움
+                    break;
+                }
+            }
+        }
+
+        /* ③ 착용 중이었으면 해제 */
+        if (itemInstance.currentEquipSlotUI != null)
+            UnEquip();
     }
 }

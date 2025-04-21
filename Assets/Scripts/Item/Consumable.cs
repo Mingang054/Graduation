@@ -9,9 +9,17 @@ public class Consumable : ItemInstance
 
 
     // 사용 처리
-    public void Use()
+    public bool Use()
     {
+        if (PlayerStatus.instance.UseConsumable(data as ConsumableData))
+        {
+            SetCount(count-1);
+            if (count <= 0) { return true; } else
+            {
+                return false;
+            }
+        }
         //PlayerStatus.instace
-        
+        return false;
     }
 }

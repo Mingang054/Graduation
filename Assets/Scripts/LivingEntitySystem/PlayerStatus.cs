@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using Cysharp.Threading.Tasks;
+using System.Xml.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -13,7 +14,14 @@ public class PlayerStatus : DamageableEntity
     public float armorPoint = 0f;                        //방어내구도
     public float reduction = 0f;                    //피해감소
     */
+    public float staminaPoint = 100;
+    public float staminaPointMax = 100;
+
+    public float eneregy = 100f;
+    public float hydration = 100;
     public float weightMax;
+    public bool isBleeding = false;
+
 
     public float money;
 
@@ -38,7 +46,10 @@ public class PlayerStatus : DamageableEntity
         faction = Faction.Friendly;
         entityCollider = GetComponent<Collider2D>();
         
-        PlayerStatus.instance = this;
+        if (PlayerStatus.instance == null)
+        {
+            PlayerStatus.instance = this;
+        }
 
     }
 
@@ -134,8 +145,38 @@ public class PlayerStatus : DamageableEntity
         return;
     }
 
+    public bool UseConsumable(ConsumableData cData)
+    {
+        if (cData == null) return false;
 
+        healthPoint += cData.hp;
+        staminaPoint += cData.sp;
+        eneregy += cData.energy;
+        hydration += cData.hydration;
 
+        if (cData.hemostasis && isBleeding)
+        {
+            StopBleed();
+        }
+        //isConsumable 체크 및 감산은 Use에서 처리
 
+        //루틴 생성 부분
+
+        UpdateStatusUI();
+        return true;
+    }
+
+    public void StartBleed()
+    {
+        isBleeding = true;
+    }
+    public void StopBleed() {
+        isBleeding = false;
+    }
+
+    public async UniTask UsingConsumable()
+    {
+        
+    }
 
 }

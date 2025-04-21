@@ -7,6 +7,7 @@ public class HealItemManager : MonoBehaviour
     public HealSlotUI[] healSlot;             // 인스펙터 연결
     public Consumable[] consumables;          // 길이 6
 
+    public HealItemOnVest healOnVest;
 
     public GameObject HealBase;
     public GameObject injectorSet;
@@ -14,6 +15,7 @@ public class HealItemManager : MonoBehaviour
     public GameObject tempSet;
 
     public Consumable currentConsumable;
+    public ItemInstanceUI currentConsumableUI;
 
     private void Awake()
     {
@@ -31,6 +33,7 @@ public class HealItemManager : MonoBehaviour
 
     public void StartHealKit(int index)
     {
+        currentConsumableUI = healSlot[index].equipedItem;
         currentConsumable = consumables[index];
         ConsumableData medData = consumables[index].data as ConsumableData;
 
@@ -53,12 +56,15 @@ public class HealItemManager : MonoBehaviour
 
     public void UseHealKit()
     {
-        currentConsumable.Use();
+        currentConsumableUI.TryUseItem();
     }
 
     public void EndHealKit()
     {
+        if (healOnVest!= null) { healOnVest.UpdateButtonUI(); }
 
+
+        currentConsumableUI = null;
         currentConsumable = null;
         if (UIManager.Instance.current3rdUI != null)
         {

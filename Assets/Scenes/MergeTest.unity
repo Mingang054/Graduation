@@ -14844,7 +14844,7 @@ MonoBehaviour:
   - {fileID: 852373967}
   - {fileID: 18446172}
   - {fileID: 1692752015}
-  healItemButtonsa:
+  healItemButtons:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -18134,6 +18134,10 @@ PrefabInstance:
       propertyPath: HealBase
       value: 
       objectReference: {fileID: 1103788714}
+    - target: {fileID: 6831781494414809051, guid: 170601f7205ab594da673229add427d0, type: 3}
+      propertyPath: healOnVest
+      value: 
+      objectReference: {fileID: 530154852}
     - target: {fileID: 6831781494414809051, guid: 170601f7205ab594da673229add427d0, type: 3}
       propertyPath: injectorSet
       value: 
