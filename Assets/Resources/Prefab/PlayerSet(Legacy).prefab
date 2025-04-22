@@ -304,6 +304,11 @@ MonoBehaviour:
   canvas: {fileID: 3705093065853565717}
   aimCursor: {fileID: 58537775430694542, guid: b55ebd7b4bbab6f4dbe57de626fc2ec8, type: 3}
   uiCursor: {fileID: -8567186622430992613, guid: 3e8e0d0a499a19b449ad487feadc2ce4, type: 3}
+  uiCursor_mag: {fileID: -5245105268521383412, guid: 7a21475aa6c514149a6d8f2a3b6fb384, type: 3}
+  uiCursor_shell:
+  - {fileID: -8898249714654073136, guid: 3964b66251ddd794693ab7ba16360865, type: 3}
+  - {fileID: 1724613622281694017, guid: 276fcd492b4cc7240b0d266c627ed930, type: 3}
+  uiCursor_: {fileID: 0}
   image: {fileID: 2383388874764948205}
 --- !u!1 &4081121875281700939
 GameObject:
@@ -1120,7 +1125,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3161206631284458397}
   m_Layer: 0
-  m_Name: PlayerSet
+  m_Name: PlayerSet(Legacy)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1839,7 +1844,12 @@ MonoBehaviour:
   isDead: 0
   faction: 2
   entityCollider: {fileID: 1127109481322700183}
+  staminaPoint: 100
+  staminaPointMax: 100
+  eneregy: 100
+  hydration: 100
   weightMax: 60
+  isBleeding: 0
   money: 0
   hpSlider: {fileID: 0}
   spSlider: {fileID: 0}
