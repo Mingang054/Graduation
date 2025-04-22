@@ -72,6 +72,8 @@ public class HealItemManager : MonoBehaviour
             UIManager.Instance.current3rdUI = null;
         }
 
+        HealBase.SetActive(false);
+
     }
     
 }

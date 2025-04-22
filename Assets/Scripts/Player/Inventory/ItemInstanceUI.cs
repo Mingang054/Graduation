@@ -583,7 +583,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     {
         var hmgr = HealItemManager.instance;
         if (hmgr == null) return;
-
+        
         // 0~5 슬롯을 모두 검색
         for (int i = 0; i < hmgr.consumables.Length; i++)
         {
@@ -665,12 +665,12 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
                 manager.opponentItems.Remove(itemInstance);
                 // manager.FreeItemSlots(itemInstance); // ★삭제
             }
-        }
-        else if (HealItemManager.instance != null &&
+            else if (HealItemManager.instance != null &&
                  System.Array.IndexOf(HealItemManager.instance.consumables,
                                       itemInstance as Consumable) >= 0)
-        {
-            UnEquipHealItem();
+            {
+                UnEquipHealItem();
+            }
         }
         else
         {

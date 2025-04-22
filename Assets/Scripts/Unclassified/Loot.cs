@@ -53,6 +53,12 @@ public class Loot : Interactable
             count = 2,
             location = new Vector2Int(2, 1)
         });
+        itemToCreate.Add(new ItemInitData
+        {
+            itemCode = "H003",
+            count = 2,
+            location = new Vector2Int(3, 1)
+        });
         //아이템 생성
         foreach (var item in itemToCreate)
         {
