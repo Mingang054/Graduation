@@ -58,7 +58,7 @@ public class CursorUI : MonoBehaviour
                 case AmmoType.Anti:
                     break;
                 case AmmoType.Shell:
-                    if (uiCursor_shell.Length <= isGripCount)
+                    if (uiCursor_shell.Length >= isGripCount)
                     {
                         image.sprite = uiCursor_shell[isGripCount - 1];
                     }    

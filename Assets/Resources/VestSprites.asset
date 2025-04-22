@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d95b17ec8e37ab4db74e75365bc724c, type: 3}
+  m_Name: VestSprites
+  m_EditorClassIdentifier: 
+  pistolSprite:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  lightSprite:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  mediumSprite:
+  - {fileID: 7783274799027428880, guid: bc6793fe1e36adb48b6b0abd3fe39ab7, type: 3}
+  - {fileID: -4147739552407236061, guid: 24d26bad81b275c458019d140407258c, type: 3}
+  - {fileID: 2032570534160639674, guid: bb442613ae04e794fb65e860261ba07b, type: 3}
+  heavySprite:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  shellSprite:
+  - {fileID: 5645029365147253592, guid: 2715ed2764a3ea64db2e37eafae8a336, type: 3}
+  - {fileID: 4960236553859744496, guid: dfc9e8d09df3b994883e67680ffece67, type: 3}
+  - {fileID: 543300371827703354, guid: 7dd76582f501911418b3a11386c5efd5, type: 3}
+  - {fileID: 2728151376559093091, guid: 1e70deb6e1a6d2a46af3d5583d87fa92, type: 3}
+  - {fileID: -3148521801209982593, guid: 7dac20b754871724c84e6c5735f8b080, type: 3}
+  - {fileID: -5645871042119111582, guid: 168772e70f9375347957683218d729c5, type: 3}
+  - {fileID: 6445306278765065108, guid: 2a98f516ed9d1c34886ab1319a0e41e6, type: 3}
+  - {fileID: 6998383854925626750, guid: 1a701c495e549c0468813f1bc703b727, type: 3}
+  - {fileID: 5410138440645198928, guid: 6c608a30fc71fe149bfd4164caf6cce0, type: 3}
+  magnumSprite: []
+  equippedSprite: {fileID: 0}

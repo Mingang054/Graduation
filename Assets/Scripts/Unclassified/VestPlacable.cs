@@ -2,12 +2,17 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class VestPlacable : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField]
     public VestPlaceableType placeableType;
+    [SerializeField]
+    public VestSpriteSet spriteSet;
+
+
+    public int magAmmoCount;// 미사용
 
     public int count; //물건개수
     // Weaponv
@@ -25,12 +30,22 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler
 
     //Consumable - Medicine
     //public int medCount;
-    public ConsumableData consumableData;
+    // consumableData도 미사용
+    //public ConsumableData consumableData;
     //consumableData.
 
 
     public Image image;
     public Sprite sprite;
+
+    public void Awake()
+    {
+        image = GetComponent<Image>();
+    }
+    public void Start()
+    {
+        UpdateUI();
+    }
 
     public VestPlaceableType GetPlaceableType()
     {
@@ -50,23 +65,29 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler
             switch (ammoType)
             {
                 case AmmoType.Shell:
+                    image.sprite = spriteSet.shellSprite[count];
                     break;
                 case AmmoType.Light:
+                    image.sprite = spriteSet.lightSprite[count];
                     break;
                 case AmmoType.Medium:
+                    image.sprite = spriteSet.mediumSprite[count];
                     break;
                 case AmmoType.Heavy:
+                    image.sprite = spriteSet.heavySprite[count];
                     break;
                 case AmmoType.Anti:
+                    image.sprite = spriteSet.shellSprite[count];
                     break;
                 case AmmoType.Explosive:
+                    image.sprite = spriteSet.shellSprite[count];
                     break;
 
                 default: break;
             }
         }else if (placeableType == VestPlaceableType.Medical)
         {
-
+            return;
         }
         //UP 갱신
         
@@ -89,4 +110,6 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler
         
         
     }
+
+    
 }

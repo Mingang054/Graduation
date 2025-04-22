@@ -96,7 +96,7 @@ public class VestInventory : MonoBehaviour
                     if (originVestPlacable != null && origin.ammoType == AmmoType.Shell)
                     {
                         originPlaceabkeStack.Push(gripTarget);
-                        originVestPlacable.count--;
+                        gripTarget.count--;
 
                         isGrip = true;
                         isGripCount++;
@@ -191,6 +191,7 @@ public class VestInventory : MonoBehaviour
     {
         while (isGripCount > 0 && originPlaceabkeStack.TryPop(out var vp))
         {
+            Debug.Log(vp);
             if (vp.count < vp.magMax)
                 vp.count++;
             isGripCount--;
