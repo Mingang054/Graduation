@@ -6,6 +6,7 @@ using UnityEngine;
 //코드 파생시켜서 다양한 상자로 만들기
 public class Loot : Interactable        
 {
+    //부모 string name
     public List<ItemInstance> lootItems;
     
     private void Awake()

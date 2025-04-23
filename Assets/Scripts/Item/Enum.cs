@@ -96,6 +96,7 @@ public enum InteractType
 {
     Lootable,
     Trigger,
+    Extraction,
     none
 
 }
