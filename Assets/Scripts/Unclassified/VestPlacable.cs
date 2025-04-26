@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class VestPlacable : MonoBehaviour, IPointerClickHandler
+public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
     public VestPlaceableType placeableType;
@@ -111,5 +111,13 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler
         
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+
+    }
+    public void OnPointerExit(PointerEventData eventData)
+    {
+
+    }
     
 }
