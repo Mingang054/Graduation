@@ -16,7 +16,7 @@ public enum ItemType
 //------ ¹«±â ------//
 
 // ¹«±â ºÐ·ù
-public enum WeaponCategory
+public enum WeaponCategoryLegacy
 {
     Pistol,           // ±ÇÃÑ
     SMG,              // ±â°ü´ÜÃÑ
@@ -51,7 +51,7 @@ public enum AttackMode
 }
 
 //ÅºÁ¾,
-public enum AmmoType
+public enum WeaponAType
 {
     Light,    // ¼ÒÇü Åº¾à (±ÇÃÑ, ±â°ü´ÜÃÑ)
     Medium,   // ÁßÇü Åº¾à

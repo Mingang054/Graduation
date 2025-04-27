@@ -48,16 +48,16 @@ public class CursorUI : MonoBehaviour
         {
             switch (origin.ammoType)
             {
-                case AmmoType.Light:
+                case WeaponAType.Light:
                     break;
-                case AmmoType.Medium:
+                case WeaponAType.Medium:
                     image.sprite = uiCursor_mag;
                     break;
-                case AmmoType.Heavy:
+                case WeaponAType.Heavy:
                     break;
-                case AmmoType.Anti:
+                case WeaponAType.Anti:
                     break;
-                case AmmoType.Shell:
+                case WeaponAType.Shell:
                     if (uiCursor_shell.Length >= isGripCount)
                     {
                         image.sprite = uiCursor_shell[isGripCount - 1];

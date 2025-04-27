@@ -40,6 +40,12 @@ public class VestInventory : MonoBehaviour
     [SerializeField]
     public WeaponOnVest thirdWeaponOnVest;
 
+    //
+    // if 우클릭시 false처리
+    public bool isAmmoFill = false;
+
+
+
     //손에 쥔 대상
     public bool isGripAction = false;
     public bool isGrip = false;
@@ -90,10 +96,10 @@ public class VestInventory : MonoBehaviour
 
                     gripTarget.UpdateUI();
                     //수정, Shell 대신 장전 방식 single인지 체크
-                } else if (isGripCount < isGripCountMax && gripTarget.ammoType == AmmoType.Shell)
+                } else if (isGripCount < isGripCountMax && gripTarget.ammoType == WeaponAType.Shell)
                 {
                     originPlaceabkeStack.TryPeek(out VestPlacable origin);
-                    if (originVestPlacable != null && origin.ammoType == AmmoType.Shell)
+                    if (originVestPlacable != null && origin.ammoType == WeaponAType.Shell)
                     {
                         originPlaceabkeStack.Push(gripTarget);
                         gripTarget.count--;
@@ -108,6 +114,7 @@ public class VestInventory : MonoBehaviour
                 break;
 
             case VestPlaceableType.Medical:
+                if(UIManager.Instance.currentSecondaryUI== null)
                 healUI.SetActive(true);
                 UIManager.Instance.currentSecondaryUI = healUI;
                 Debug.Log("의료품 슬롯입니다.");
@@ -251,7 +258,7 @@ public class VestInventory : MonoBehaviour
 
     public void EquipWeaponInVest()
     {
-        
+        //화면 UI 변경용
     }
 
     public void SwapWeapon(WeaponOnVest onVest)

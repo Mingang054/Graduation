@@ -7,7 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Items/Weapon")]
 public class WeaponData : ItemData
 {
-    public WeaponCategory category;   // 무기 분류 (권총, 소총 등)
+    public WeaponCategoryLegacy category;   // 무기 분류 (권총, 소총 등)
     public int damage;                // 기본 데미지
     public int penetration;           // 관통력 (방어력 무시 수치)
     public int damageAP;                // 기본 데미지 
@@ -46,7 +46,7 @@ public class WeaponData : ItemData
     public List<Sprite> roadCount;      //리볼버 등의 장전 모습
     public Sprite bullet;
 
-    public AmmoType ammoType;          // 탄약 종류
+    public WeaponAType ammoType;          // 탄약 종류
                                        
     public float durability;          // 내구도
     public float wearRate;            // 마모 계수

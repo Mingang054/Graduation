@@ -377,7 +377,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             if (weapon == null) return false;
 
             // 3번 무기 슬롯일 때 권총만 허용
-            if (equipSlotType == EquipSlotType.thirdWeapon && weapon.category != WeaponCategory.Pistol)
+            if (equipSlotType == EquipSlotType.thirdWeapon && weapon.category != WeaponCategoryLegacy.Pistol)
                 return false;
 
             //Equip

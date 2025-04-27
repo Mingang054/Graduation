@@ -1,36 +1,39 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
 {
     [SerializeField]
     public VestPlaceableType placeableType;
     [SerializeField]
     public VestSpriteSet spriteSet;
+    //ê¾¹ ëˆ„ë¥´ê¸°
+    public HoldTimer holdTimer;
 
 
-    public int magAmmoCount;// ¹Ì»ç¿ë
+    public int magAmmoCount;// ë¯¸ì‚¬ìš©
 
-    public int count; //¹°°Ç°³¼ö
+    public int count; //ë¬¼ê±´ê°œìˆ˜
     // Weaponv
-    public int magMax;      //2°³
-    //public int magCount;    //½ÇÁ¦ °³¼ö
-    public AmmoType ammoType;
+    public int magMax;      //2ê°œ
+    //public int magCount;    //ì‹¤ì œ ê°œìˆ˜
+    public WeaponAType ammoType;
     /*
-        Light,    // ¼ÒÇü Åº¾à (±ÇÃÑ, ±â°ü´ÜÃÑ)
-        Medium,   // ÁßÇü Åº¾à
-        Heavy,    // ´ëÇü Åº¾à
-        Anti,     // ´ë´ëÇü
-        Shell,    // »êÅºÃÑ Åº¾à
-        Explosive // À¯Åº
+        Light,    // ì†Œí˜• íƒ„ì•½ (ê¶Œì´, ê¸°ê´€ë‹¨ì´)
+        Medium,   // ì¤‘í˜• íƒ„ì•½
+        Heavy,    // ëŒ€í˜• íƒ„ì•½
+        Anti,     // ëŒ€ëŒ€í˜•
+        Shell,    // ì‚°íƒ„ì´ íƒ„ì•½
+        Explosive // ìœ íƒ„
     */
 
     //Consumable - Medicine
     //public int medCount;
-    // consumableDataµµ ¹Ì»ç¿ë
+    // consumableDataë„ ë¯¸ì‚¬ìš©
     //public ConsumableData consumableData;
     //consumableData.
 
@@ -64,22 +67,22 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         {
             switch (ammoType)
             {
-                case AmmoType.Shell:
+                case WeaponAType.Shell:
                     image.sprite = spriteSet.shellSprite[count];
                     break;
-                case AmmoType.Light:
+                case WeaponAType.Light:
                     image.sprite = spriteSet.lightSprite[count];
                     break;
-                case AmmoType.Medium:
+                case WeaponAType.Medium:
                     image.sprite = spriteSet.mediumSprite[count];
                     break;
-                case AmmoType.Heavy:
+                case WeaponAType.Heavy:
                     image.sprite = spriteSet.heavySprite[count];
                     break;
-                case AmmoType.Anti:
+                case WeaponAType.Anti:
                     image.sprite = spriteSet.shellSprite[count];
                     break;
-                case AmmoType.Explosive:
+                case WeaponAType.Explosive:
                     image.sprite = spriteSet.shellSprite[count];
                     break;
 
@@ -89,7 +92,7 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         {
             return;
         }
-        //UP °»½Å
+        //UP ê°±ì‹ 
         
     }
 
@@ -100,24 +103,114 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if( VestInventory.Instance.isAmmoFill) { return; }
         if(eventData.button == PointerEventData.InputButton.Left)
         {
             VestInventory.Instance.GetGrip(this);
         }else if (eventData.button == PointerEventData.InputButton.Right)
         {
-            // VestÀÇ isGripºÎºĞ È®ÀÎÇÏ°í ¸ÂÀ¸¸é ÀÛµ¿x
+            // Vestì˜ isGripë¶€ë¶„ í™•ì¸í•˜ê³  ë§ìœ¼ë©´ ì‘ë™x
         }
         
         
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
 
-    }
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
-
+        if (placeableType != VestPlaceableType.Mag) { return; }
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            holdTimer.StartHold(this); // ğŸ”¥ ë‚´ ìì‹ ì„ ë„˜ê²¨ì¤˜
+        }
     }
-    
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (placeableType != VestPlaceableType.Mag) { return; }
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            holdTimer.StopHold();
+        }
+    }
+
+    public bool OnHoldTick()
+    {
+        Debug.Log("tick");
+
+        var am = AmmunitionManager.instance;
+
+        switch (ammoType)
+        {
+            case WeaponAType.Light:
+                int need = 90 - magAmmoCount;
+                if (need > 10) need = 10;
+                if (am.lightAmmo < need) need = am.lightAmmo;
+
+                if (need > 0)
+                {
+                    am.lightAmmo -= need;
+                    magAmmoCount += need;
+
+                    if (magAmmoCount > 60)
+                        count = 3;
+                    else if (magAmmoCount > 30)
+                        count = 2;
+                    else if (magAmmoCount > 0)
+                        count = 1;
+                    else
+                        count = 0;
+
+                    UpdateUI();
+                }
+
+                // ì—¬ê¸°ì„œ ì¡°ê±´ íŒë‹¨
+                if (magAmmoCount >= 60 || am.mediumAmmo <= 0)
+                    return true; // ğŸ”¥ ë©ˆì¶°ì•¼ í•œë‹¤
+                else
+                    return false; // ê³„ì† ì§„í–‰
+
+            case WeaponAType.Medium:
+                int medneed = 60 - magAmmoCount;
+                if (medneed > 10) medneed = 10;
+                if (am.mediumAmmo < medneed) medneed = am.mediumAmmo;
+
+                if (medneed > 0)
+                {
+                    am.mediumAmmo -= medneed;
+                    magAmmoCount += medneed;
+
+                    if (magAmmoCount > 30)
+                        count = 2;
+                    else if (magAmmoCount > 0)
+                        count = 1;
+                    else
+                        count = 0;
+
+                    UpdateUI();
+                }
+
+                // ì—¬ê¸°ì„œ ì¡°ê±´ íŒë‹¨
+                if (magAmmoCount >= 60 || am.mediumAmmo <= 0)
+                    return true; // ğŸ”¥ ë©ˆì¶°ì•¼ í•œë‹¤
+                else
+                    return false; // ê³„ì† ì§„í–‰
+
+            case WeaponAType.Shell:
+                if (am.shellAmmo > 0)
+                {
+                    am.shellAmmo--;
+                    count++;
+                    UpdateUI();
+                }
+
+                // shellì€ ì•„ì§ ë©ˆì¶œ ì¡°ê±´ ë”°ë¡œ ì—†ìŒ
+                return false;
+
+            default:
+                return false;
+        }
+    }
+
+
 }

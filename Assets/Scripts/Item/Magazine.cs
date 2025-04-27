@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class Magazine
 {
-    private AmmoType ammoType;              // 탄약 종류 (구경)
+    private WeaponAType ammoType;              // 탄약 종류 (구경)
     private int ammoCapacity;               // 최대 탄약 수
     private Stack<bool> ammoStack;          // 탄약을 AP 여부로 관리 (true: AP 탄, false: 일반 탄)
 
     // 생성자: 탄약 종류와 최대 용량을 초기화
-    public Magazine(AmmoType ammoType, int ammoCapacity)
+    public Magazine(WeaponAType ammoType, int ammoCapacity)
     {
         this.ammoType = ammoType;
         this.ammoCapacity = ammoCapacity;
@@ -54,7 +54,7 @@ public class Magazine
     }
 
     // 탄약 종류 반환
-    public AmmoType GetAmmoType()
+    public WeaponAType GetAmmoType()
     {
         return ammoType;
     }
