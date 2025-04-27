@@ -46,7 +46,26 @@ public static class SaveLoader
         ApplyToGame(gs);                              // 실제 게임 오브젝트에 반영(구현 필요)
         Debug.Log($"✅ Load (checkpoint) :  {gs.saveTime}");
     }
+    public static void LoadExplicit(string fileNameWithoutExtension)
+    {
+        string path = PathFor(fileNameWithoutExtension);
 
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning($"❗ 저장 파일이 없습니다: {path}");
+            return;
+        }
+
+        var gs = JsonUtility.FromJson<GameSaveData>(File.ReadAllText(path));
+        if (gs == null)
+        {
+            Debug.LogWarning($"❗ 파일 파싱 실패: {fileNameWithoutExtension}");
+            return;
+        }
+
+        ApplyToGame(gs);
+        Debug.Log($"✅ 명시적 로드 완료: {fileNameWithoutExtension} ({gs.saveTime})");
+    }
     /*──────────────── 현재 상태 → GameSaveData ────────────────*/
     private static GameSaveData GatherCurrentState()
     {
@@ -128,6 +147,8 @@ public static class SaveLoader
     }
 
     /*──────────────── TODO : 로드시 적용 ────────────────*/
+
+
     private static void ApplyToGame(GameSaveData data)
     {
         var bag = BagInventoryManager.Instance;
