@@ -21,6 +21,10 @@ public static class ItemFactory
             return null;
         }
 
+        // [🔵 추가] 기본값 초기화 (null 오류 방지)
+        itemInstance.currentEquipSlotType = EquipSlotType.none;
+        itemInstance.currentEquipSlotUI = null;
+
         // 3. 공통 속성 설정
         itemInstance.SetCount(initData.count);
         itemInstance.location = initData.location;
@@ -30,22 +34,8 @@ public static class ItemFactory
         {
             weapon.SetDurability(initData.durability ?? 100f);
             weapon.isChamber = initData.loaded ?? false;
-            //weapon.loadedIsAP = initData.loadedIsAP ?? false;
-
-            // 🔹 탄창/탄 수 세팅
             weapon.magCount = initData.magCount ?? 0;
-            weapon.isMag = weapon.magCount > 0;   // 탄창 유무 플래그도 같이
-            /*
-            
-            if (initData.magazineData != null)
-            {
-                foreach (bool isAP in initData.magazineData)
-                {
-                    weapon.magStack.Push(isAP);
-                }
-                weapon.SyncMagAndCount();
-            }
-            */
+            weapon.isMag = weapon.magCount > 0;
         }
 
         // 5. 방어구일 경우 내구도 설정
@@ -74,7 +64,7 @@ public class ItemInitData
     public int count;
     public Vector2Int location;
 
-    // 무기,방어구일 경우에만 사용
+    // 무기, 방어구일 경우에만 사용
     public float? durability;
     public bool? loaded;
     public int? magCount;

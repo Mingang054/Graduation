@@ -15,7 +15,7 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     public HoldTimer holdTimer;
 
 
-    public int magAmmoCount;// 미사용
+    public int magAmmoCount;
 
     public int count; //물건개수
     // Weaponv
@@ -23,9 +23,9 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
     //public int magCount;    //실제 개수
     public WeaponAType ammoType;
     /*
-        Light,    // 소형 탄약 (권총, 기관단총)
-        Medium,   // 중형 탄약
-        Heavy,    // 대형 탄약
+        Light,    // 소형 mag light ammo
+        Medium,   // 중형 mag 
+        Heavy,    // 대형 mag heavy ammo
         Anti,     // 대대형
         Shell,    // 산탄총 탄약
         Explosive // 유탄

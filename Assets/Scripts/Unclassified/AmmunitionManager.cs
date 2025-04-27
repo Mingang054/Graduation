@@ -1,9 +1,10 @@
+using System.ComponentModel;
 using UnityEngine;
 
 public class AmmunitionManager : MonoBehaviour
 {
     //subUI
-    public int lightAmmo;
+    public int lightAmmo;   //pistol, smg(light mag)
     public int mediumAmmo;
     public int heavyAmmo;
     public int antiAmmo;
@@ -17,7 +18,11 @@ public class AmmunitionManager : MonoBehaviour
     {
         instance = this;
     }
-
+    public void Start()
+    {
+        this.gameObject.SetActive(false);
+        
+    }
     public void UpdateAmmo()
     {
        
@@ -36,6 +41,7 @@ public class AmmunitionManager : MonoBehaviour
 
     public void OnEnable()
     {
+        if(VestInventory.Instance != null)
         VestInventory.Instance.isAmmoFill = true;
     }
 

@@ -25,7 +25,10 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     private float Cell => BagInventoryManager.Instance.CellSize;
     private void OnEnable()
     {
-        if (itemInstance != null && itemInstance.data!=null) { itemImage.sprite = itemInstance.data.itemSprite; }
+        if (itemInstance != null && itemInstance.data!=null) 
+        {
+            itemImage.enabled = true;
+            itemImage.sprite = itemInstance.data.itemSprite; }
         UpdateUI();
     }
     private void Awake()
@@ -54,6 +57,8 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
         if (itemInstance != null)
         {
+            this.gameObject.SetActive(true);
+            UpdateSize();
             if (itemInstance.count <= 0) { 
                 RemoveItemOnUI();
                 ItemUIPoolManager.Instance.ReturnItemUI(this.gameObject);
@@ -61,6 +66,8 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             if (GetComponentInParent<HealSlotUI>() != null)
             {
 
+                itemImage.sprite = itemInstance.data.itemSprite;
+                itemImage.enabled = true;
                 // 현재 오브젝트의 부모 Transform을 직접 얻습니다.
                 if (transform.parent == null)
                     return;
@@ -103,6 +110,8 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             }
             else
             {
+                itemImage.sprite = itemInstance.data.itemSprite;
+                itemImage.enabled = true;
                 // 현재 오브젝트의 부모 Transform을 직접 얻습니다.
                 if (transform.parent == null)
                     return;
@@ -400,7 +409,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         return true;
     }
 
-    private void EquipItem(EquipmentSlotUI foundEquipUI) {
+    public void EquipItem(EquipmentSlotUI foundEquipUI) {
         //게임 로드 시에도 사용가능
 
         //기존 위치에 대한 점유해제 및 리스트 내 삭제
@@ -418,7 +427,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             manager.FreeItemSlots(itemInstance); // 슬롯 점유 해제
             manager.opponentItems.Remove(itemInstance);
         }
-        else if (itemInstance.currentEquipSlotType != EquipSlotType.none)
+        else if (itemInstance.currentEquipSlotType != EquipSlotType.none)   
         {
             UnEquip();
             //기존 Slot에서 제거...
@@ -477,60 +486,84 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         }
         return;
     }
+
     private void UnEquip()
     {
+        var vest = VestInventory.Instance;
+
         switch (itemInstance.currentEquipSlotType)
         {
             case EquipSlotType.firstWeapon:
-                if (VestInventory.Instance.weaponOnHand1 != null)
-                { Destroy(VestInventory.Instance.weaponOnHand1); }
+                if (vest.weaponOnHand1 != null)
+                {
+                    if (vest.weaponOnHand == vest.weaponOnHand1)
+                    {
+                        vest.weaponOnHand = null;
+                        vest.shooter.SetNoWeapon();   // 🛠️ PlayerShooter 무기 해제 호출
+                    }
+                    Destroy(vest.weaponOnHand1.gameObject);
+                }
                 BagInventoryManager.Instance.firstWeapon = null;
-                VestInventory.Instance.firstWeaponOnVest.IsEquiped = false;
-                VestInventory.Instance.firstWeaponOnVest.UpdateUI();
+                vest.firstWeaponOnVest.IsEquiped = false;
+                vest.firstWeaponOnVest.UpdateUI();
                 break;
 
             case EquipSlotType.secondWeapon:
-                if (VestInventory.Instance.weaponOnHand2 != null)
-                { Destroy(VestInventory.Instance.weaponOnHand2); }
+                if (vest.weaponOnHand2 != null)
+                {
+                    if (vest.weaponOnHand == vest.weaponOnHand2)
+                    {
+                        vest.weaponOnHand = null;
+                        vest.shooter.SetNoWeapon();
+                    }
+                    Destroy(vest.weaponOnHand2.gameObject);
+                }
                 BagInventoryManager.Instance.secondWeapon = null;
-                VestInventory.Instance.secondWeaponOnVest.IsEquiped = false;
-                VestInventory.Instance.secondWeaponOnVest.UpdateUI();
+                vest.secondWeaponOnVest.IsEquiped = false;
+                vest.secondWeaponOnVest.UpdateUI();
                 break;
 
             case EquipSlotType.thirdWeapon:
-                if (VestInventory.Instance.weaponOnHand3 != null)
-                { Destroy(VestInventory.Instance.weaponOnHand3); }
+                if (vest.weaponOnHand3 != null)
+                {
+                    if (vest.weaponOnHand == vest.weaponOnHand3)
+                    {
+                        vest.weaponOnHand = null;
+                        vest.shooter.SetNoWeapon();
+                    }
+                    Destroy(vest.weaponOnHand3.gameObject);
+                }
                 BagInventoryManager.Instance.thirdWeapon = null;
-                VestInventory.Instance.thirdWeaponOnVest.IsEquiped = false;
-                VestInventory.Instance.thirdWeaponOnVest.UpdateUI();
+                vest.thirdWeaponOnVest.IsEquiped = false;
+                vest.thirdWeaponOnVest.UpdateUI();
                 break;
 
             default:
-                break ;
+                break;
         }
 
-        if(itemInstance.currentEquipSlotUI != null) { 
+        if (itemInstance.currentEquipSlotUI != null)
+        {
             itemInstance.currentEquipSlotUI.equipedItem = null;
             itemInstance.currentEquipSlotUI = null;
             itemInstance.currentEquipSlotType = EquipSlotType.none;
         }
 
-        // 현재 오브젝트의 부모 Transform을 직접 얻습니다.
-        if (transform.parent == null)
-            return;
-
-        // 부모와 자식의 RectTransform을 가져옵니다.
-        RectTransform parentRect = transform.parent as RectTransform;
-        RectTransform selfRect = transform as RectTransform;
-        if (parentRect == null || selfRect == null)
-            return;
-        // 1. 부모의 중앙 기준으로 정렬하도록 anchor와 pivot을 중앙으로 설정합니다.
-        // 앵커: 좌측 상단 (0,1)
-        selfRect.anchorMin = new Vector2(0f, 1f);
-        selfRect.anchorMax = new Vector2(0f, 1f);
-        // 피봇: 좌측 상단 (0,1)
-        selfRect.pivot = new Vector2(0f, 1f);
+        if (transform.parent != null)
+        {
+            RectTransform parentRect = transform.parent as RectTransform;
+            RectTransform selfRect = transform as RectTransform;
+            if (parentRect != null && selfRect != null)
+            {
+                selfRect.anchorMin = new Vector2(0f, 1f);
+                selfRect.anchorMax = new Vector2(0f, 1f);
+                selfRect.pivot = new Vector2(0f, 1f);
+            }
+        }
     }
+
+
+
 
     private bool CanEquipHealItem(HealSlotUI foundHealUI)
     {
@@ -546,7 +579,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         return false;
     }
 
-    private void EquipHealItem(HealSlotUI foundHealUI)
+    public void EquipHealItem(HealSlotUI foundHealUI)
     {
         var mgr = BagInventoryManager.Instance;
 

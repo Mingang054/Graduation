@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 public class VestInventory : MonoBehaviour
 {
     //ΩÃ±€≈Ê
-    public static VestInventory Instance { get; private set; }
+    public static VestInventory Instance;//{ get; private set; }
     [SerializeField]
     public PlayerShooter shooter;
 
@@ -31,7 +31,14 @@ public class VestInventory : MonoBehaviour
     public WeaponOnHand weaponOnHand2;
     public WeaponOnHand weaponOnHand3;
 
-    
+    public VestPlacable PLeft;
+    public VestPlacable PCenter;
+    public VestPlacable PRight;
+    public VestPlacable SOne;
+    public VestPlacable SLeft;
+    public VestPlacable SRight;
+
+
 
     [SerializeField]
     public WeaponOnVest firstWeaponOnVest;

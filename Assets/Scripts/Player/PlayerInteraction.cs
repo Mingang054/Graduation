@@ -119,7 +119,10 @@ public class PlayerInteraction : MonoBehaviour
         {
             InteractTrigger(trigger);
         }
-        else
+        else if (interactable is InteractSellBox selBox)
+        {
+            selBox.SellBox();
+        }
         {
             return;
         }
@@ -270,6 +273,7 @@ private void DetectClosestInteractableLegacy()
     {
         detectionLoop = UniTask.CompletedTask;
         extractionCounter = UniTask.CompletedTask;
+        if (currentExtractPoint!=null)
         StopExtraction();
     }
 }

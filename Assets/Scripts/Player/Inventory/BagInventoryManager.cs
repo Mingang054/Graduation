@@ -499,6 +499,32 @@ public class BagInventoryManager : MonoBehaviour
         var rootCanvas = GetComponentInParent<Canvas>();
         return rootCanvas != null ? rootCanvas.scaleFactor : 1f;
     }
+
+    public EquipmentSlotUI GetEquipSlotUI(EquipSlotType type)
+    {
+        switch (type)
+        {
+            case EquipSlotType.firstWeapon:
+                return firstWeaponUI?.GetComponent<EquipmentSlotUI>();
+
+            case EquipSlotType.secondWeapon:
+                return secondWeaponUI?.GetComponent<EquipmentSlotUI>();
+
+            case EquipSlotType.thirdWeapon:
+                return thirdWeaponUI?.GetComponent<EquipmentSlotUI>();
+
+            case EquipSlotType.head:
+                return headArmorUI?.GetComponent<EquipmentSlotUI>();
+
+            case EquipSlotType.body:
+                return bodyArmorUI?.GetComponent<EquipmentSlotUI>();
+
+            default:
+                return null;
+        }
+    }
+
+
 }
 
 

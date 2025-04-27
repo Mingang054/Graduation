@@ -7,5 +7,9 @@ public class SceneLoader : MonoBehaviour
     {
         SceneManager.LoadScene("Title");
     }
+    public void GoToBase()
+    {
+
+    }
 
 }

@@ -1,4 +1,5 @@
 ﻿
+using Unity.Burst.Intrinsics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,6 +10,7 @@ public class PlayerShooter : MonoBehaviour
     public Transform armTransform; // 팔(Arm) Transform
     private Camera mainCamera;
 
+    public Sprite basic_Arm;
 
     [SerializeField]
     GameObject zoomObject;
@@ -23,7 +25,7 @@ public class PlayerShooter : MonoBehaviour
 
     public Vector3 mouseWorld = Vector3.zero;
     //
-    public Weapon newWeaponTest; //VestInventory의 WeaponOnHand가 바뀔때 관련함수 호출
+    public Weapon currentWeapon; //VestInventory의 WeaponOnHand가 바뀔때 관련함수 호출
     public WeaponData currentWeaponData;
 
     [SerializeField]                //
@@ -77,7 +79,7 @@ public class PlayerShooter : MonoBehaviour
 
 
             /* ③ 사격 체크 */
-            if (newWeaponTest == null || currentWeaponData == null) return;
+            if (currentWeapon == null || currentWeaponData == null) return;
 
             if (triggered && Time.time >= lastFireTime + currentWeaponData.fireRate)
             {
@@ -119,7 +121,7 @@ public class PlayerShooter : MonoBehaviour
 
     private void TryFire()
     {
-        if (currentWeaponData == null || !newWeaponTest.isChamber)
+        if (currentWeaponData == null || !currentWeapon.isChamber)
         {
             triggered = false;
             AudioManager.Instance.PlaySFX(currentWeaponData.empty);
@@ -139,7 +141,7 @@ public class PlayerShooter : MonoBehaviour
             FireProjectile();
         }
 
-        newWeaponTest.PullReceiver();
+        currentWeapon.PullReceiver();
 
         
     }
@@ -230,20 +232,25 @@ public class PlayerShooter : MonoBehaviour
         zoomObject.SetActive(false);
     }
 
-    public void SetWeapon(Weapon newWeapon)
+    public void SetWeapon(Weapon? newWeapon)
     {
         if (newWeapon == null)
         {
-            newWeaponTest = null;
+            SetArmSprite(basic_Arm);
+            currentWeapon = null;
             currentWeaponData = null;
         }
-        newWeaponTest = newWeapon;
+        currentWeapon = newWeapon;
         
         currentWeaponData = newWeapon.data as WeaponData;
         SetArmSprite(currentWeaponData.weaponArm);
+        
     }
+
+
     public void SetNoWeapon() {
-        newWeaponTest = null;
+        SetArmSprite(basic_Arm);
+        currentWeapon = null;
         currentWeaponData = null;
     }
     public void SetArmSprite(Sprite newArmSprite)
