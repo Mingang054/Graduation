@@ -136,8 +136,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void InteractTrigger(InteractableTrigger trigger)
     {
-        // 트리거 전용 이벤트 실행 등
-        Debug.Log("Interact with Trigger!");
+        trigger.TriggerInteractable();
     }
 
     // 3) extraction 관련 시도, 동장, 취소
@@ -217,6 +216,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void ConfirmExtraction()
     {
+
+        if (SceneLoader.instance != null)
+        {
+            SceneLoader.instance.GoToBaseFromRaid();
+        }
         // 씬 전환 또는 클리어 처리
         Debug.Log(currentExtractPoint.interactionName);
         //UnityEngine.SceneManagement.SceneManager.LoadScene("OutPost");

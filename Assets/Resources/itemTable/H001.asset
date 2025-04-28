@@ -21,10 +21,12 @@ MonoBehaviour:
   maxStack: 2
   itemType: 2
   description: Tourniquet for Combat
+  forSale: 1
   hp: 0
   sp: 0
   energy: 0
   hydration: 0
+  hemostasis: 1
   hpRegen: 0
   spRegen: 0
   energyRegen: 0
@@ -34,6 +36,5 @@ MonoBehaviour:
   isInjector: 0
   isSplint: 0
   isTourniquet: 1
-  hemostasis: 1
   consumableType: 0
   isConsumable: 1

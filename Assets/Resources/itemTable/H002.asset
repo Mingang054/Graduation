@@ -21,10 +21,12 @@ MonoBehaviour:
   maxStack: 2
   itemType: 0
   description: suspicious Injector
+  forSale: 1
   hp: 20
   sp: 0
   energy: 0
   hydration: 0
+  hemostasis: 0
   hpRegen: 2
   spRegen: 1
   energyRegen: -10
@@ -34,6 +36,5 @@ MonoBehaviour:
   isInjector: 1
   isSplint: 0
   isTourniquet: 0
-  hemostasis: 0
   consumableType: 0
   isConsumable: 1

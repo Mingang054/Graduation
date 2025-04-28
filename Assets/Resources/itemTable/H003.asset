@@ -21,6 +21,7 @@ MonoBehaviour:
   maxStack: 3
   itemType: 2
   description: 
+  forSale: 1
   hp: 10
   sp: 20
   energy: 0

@@ -47,4 +47,9 @@ public class ItemDB : MonoBehaviour
         Debug.LogWarning($"아이템 코드 {itemCode}에 해당하는 아이템을 찾을 수 없습니다.");
         return null;
     }
+    public List<ItemData> GetAllItems()
+    {
+        return new List<ItemData>(itemDictionary.Values);
+    }
+
 }

@@ -4,6 +4,15 @@ using System.IO;
 
 public class SceneLoader : MonoBehaviour
 {
+
+    public static SceneLoader instance;
+
+    public void Awake()
+    {
+       if (instance == null)
+       instance = this;
+    }
+
     private void Start()
     {
         SaveLoader.LoadCheckpoint();
@@ -29,6 +38,8 @@ public class SceneLoader : MonoBehaviour
         SceneManager.LoadScene("Base");
     }
 
+
+    // "PrologueRaid"
     public void GoToRaid(string raidSceneName)
     {
         SaveLoader.SaveCheckpoint();

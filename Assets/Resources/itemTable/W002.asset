@@ -21,6 +21,7 @@ MonoBehaviour:
   maxStack: 1
   itemType: 0
   description: 
+  forSale: 1
   category: 0
   damage: 30
   penetration: 6

@@ -304,7 +304,7 @@ public class BagInventoryManager : MonoBehaviour
             Debug.LogWarning($"위치 {location}에서 아이템 '{itemInstance.data.itemName}'을(를) 배치할 공간이 부족합니다.");
             return false;
         }
-
+        if (items == null) return false;
         OccupySlots(location, size, slots);
         itemInstance.location = location;
         items.Add(itemInstance);
@@ -312,7 +312,7 @@ public class BagInventoryManager : MonoBehaviour
         return true;
     }
 
-    private bool PlaceFirstAvailableSlot(ItemInstance itemInstance, List<ItemInstance> targetItems)
+    public bool PlaceFirstAvailableSlot(ItemInstance itemInstance, List<ItemInstance> targetItems)
     {
         Vector2Int size = itemInstance.data.size;
         Vector2Int sizeOfInventory = (targetItems == myItems) ? myInventoryVector : opponentInventoryVector;
@@ -321,9 +321,15 @@ public class BagInventoryManager : MonoBehaviour
         Vector2Int? location = FindFirstAvailableSlot(size, targetSlot, sizeOfInventory);
         if (location == null) return false;
 
-        FreeItemSlots(itemInstance);
+        // 🔥 여기 추가: 리스트에 이미 포함된 경우에만 FreeItemSlots 호출
+        if (myItems.Contains(itemInstance)||(opponentItems!=null&&opponentItems.Contains(itemInstance)))
+        {
+            FreeItemSlots(itemInstance);
+        }
+
         return PlaceItemInSlot(itemInstance, location.Value, targetSlot, targetItems, sizeOfInventory);
     }
+
 
     public void FreeItemSlots(ItemInstance itemInstance)
     {
@@ -441,7 +447,7 @@ public class BagInventoryManager : MonoBehaviour
         }
     }
 
-    private Vector2Int? FindFirstAvailableSlot(Vector2Int size, Dictionary<Vector2Int, Slot> slots, Vector2Int inventorySize)
+    public Vector2Int? FindFirstAvailableSlot(Vector2Int size, Dictionary<Vector2Int, Slot> slots, Vector2Int inventorySize)
     {
         for (int y = 1; y <= inventorySize.y; y++)
         {

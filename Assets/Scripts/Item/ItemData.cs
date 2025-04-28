@@ -11,4 +11,6 @@ public abstract class ItemData : ScriptableObject
     public int maxStack;                      // 최대 겹침 수량
     public ItemType itemType;                 // 아이템 타입 (열거형)
     public string description;         // 아이템 설명
+
+    public bool forSale;
 }

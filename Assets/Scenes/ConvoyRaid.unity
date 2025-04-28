@@ -21626,7 +21626,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionName: Extraction of Test
   interactType: 2
-  timeToExtract: 15
+  timeToExtract: 5
   extractDistance: 4
   constraint: 0
   constraintList: 

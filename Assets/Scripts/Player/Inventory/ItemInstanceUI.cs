@@ -655,7 +655,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             targetSlots = manager.mySlots;
         }
         else
-        {targetSlots = manager.opponentSlots;
+        { targetSlots = manager.opponentSlots;
         }
 
         Vector2Int inventorySize;
@@ -677,7 +677,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     /// (현재 내/상대 인벤토리 중 어느 리스트에 이 아이템이 있었는지 파악 후 이동)
     /// 비효올적이지만 자주하는 연산 아님
     /// </summary>
-    private void PlaceItem(Vector2Int targetPosition, bool isTargetMySlot)
+    public void PlaceItem(Vector2Int targetPosition, bool isTargetMySlot)
     {
         //inventoryManager와 연동
         var manager = BagInventoryManager.Instance;

@@ -22,6 +22,8 @@ public class UIManager : MonoBehaviour
     public GameObject vestInventoryUI;      // Vest Inventory
     public GameObject bagInventoryUI;       // Bag Inventory
     public GameObject pauseMenuUI;          // Pause Menu
+    public GameObject radioUI;
+    public GameObject raidUI;
     //
     public GameObject currentPrimaryUI;           // 현재 활성화된 UI
 
@@ -282,6 +284,34 @@ public class UIManager : MonoBehaviour
         //UI
         cursorUI.SetUIAsUICursor();
     }
+
+    public void EnableRadio()
+    {
+        if (currentPrimaryUI != null)
+        {
+
+        }
+        currentPrimaryUI = radioUI;
+        radioUI.SetActive(true);
+        playerShooter.SetIsActing(true);
+
+        cursorUI.SetUIAsUICursor();
+    }
+
+    public void EnableRaid()
+    {
+        if (currentPrimaryUI != null)
+        {
+
+        }
+        currentPrimaryUI = raidUI;
+        raidUI.SetActive(true);
+        playerShooter.SetIsActing(true);
+
+        cursorUI.SetUIAsUICursor();
+    }
+
+
     private void DisableCurrentUI()
     {
         if (currentPrimaryUI == pauseMenuUI)
@@ -346,6 +376,27 @@ public class UIManager : MonoBehaviour
         playerShooter.SetIsActing(false);
 
         //UI
+        cursorUI.SetUIAsAimCursor();
+    }
+    public void DisableRadio()
+    {
+        if (currentPrimaryUI == radioUI)
+        {
+            currentPrimaryUI = null;
+            radioUI.SetActive(false);
+        }
+        playerShooter.SetIsActing(false);
+        cursorUI.SetUIAsAimCursor();
+    }
+
+    public void DisableRaid()
+    {
+        if (currentPrimaryUI == raidUI)
+        {
+            currentPrimaryUI = null;
+            raidUI.SetActive(false);
+        }
+        playerShooter.SetIsActing(false);
         cursorUI.SetUIAsAimCursor();
     }
 

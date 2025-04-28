@@ -21,6 +21,7 @@ MonoBehaviour:
   maxStack: 0
   itemType: 1
   description: 
+  forSale: 0
   defense: 0
   durabilityMax: 0
   wearRate: 0
