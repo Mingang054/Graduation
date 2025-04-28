@@ -1,4 +1,6 @@
+using JetBrains.Annotations;
 using System.ComponentModel;
+using TMPro;
 using UnityEngine;
 
 public class AmmunitionManager : MonoBehaviour
@@ -14,6 +16,17 @@ public class AmmunitionManager : MonoBehaviour
 
     public static AmmunitionManager instance;
 
+
+    public TMP_Text mainTxt;
+    public TMP_Text lightTxt;
+    public TMP_Text mediumTxt;
+    public TMP_Text heavyTxt;
+    public TMP_Text antiTxt;
+    public TMP_Text shellTxt;
+    public TMP_Text magnumTxt;
+    public TMP_Text explosiveTxt;
+
+
     public void Awake()
     {
         instance = this;
@@ -25,7 +38,14 @@ public class AmmunitionManager : MonoBehaviour
     }
     public void UpdateAmmo()
     {
-       
+        mainTxt.text =
+            $"Light Ammo: {lightAmmo}\n" +
+            $"Medium Ammo: {mediumAmmo}\n" +
+            $"Heavy Ammo: {heavyAmmo}\n" +
+            $"Anti Ammo: {antiAmmo}\n" +
+            $"Shell Ammo: {shellAmmo}\n" +
+            $"Magnum Ammo: {magnumAmmo}\n" +
+            $"Explosive Ammo: {explosiveAmmo}";
     }
 
     public void OnAmmoUI()
@@ -39,10 +59,16 @@ public class AmmunitionManager : MonoBehaviour
         }
     }
 
+    public void UpdateUI()
+    {
+
+    }
+
     public void OnEnable()
     {
         if(VestInventory.Instance != null)
         VestInventory.Instance.isAmmoFill = true;
+        UpdateAmmo();
     }
 
     public void OnDisable()

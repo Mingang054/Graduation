@@ -160,7 +160,7 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
                         count = 1;
                     else
                         count = 0;
-
+                    am.UpdateAmmo();
                     UpdateUI();
                 }
 
@@ -187,6 +187,7 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
                     else
                         count = 0;
 
+                    am.UpdateAmmo();
                     UpdateUI();
                 }
 
@@ -201,6 +202,7 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
                 {
                     am.shellAmmo--;
                     count++;
+                    am.UpdateAmmo();
                     UpdateUI();
                 }
 

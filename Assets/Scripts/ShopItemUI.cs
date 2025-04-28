@@ -80,6 +80,8 @@ public class ShopItemUI : MonoBehaviour
         }
 
         // 🔥 6. 돈 차감
+
+        AudioManager.Instance.PlayCoin();
         PlayerStatus.instance.money -= itemData.price;
         Debug.Log($"✅ {itemData.itemName} 구매 완료!");
     }

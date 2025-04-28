@@ -10,6 +10,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource voiceSource;   //UIÈ¿°úÀ½
     [SerializeField] private AudioSource uiSource;
 
+    [SerializeField] private AudioClip coinClip;
+    
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -48,4 +50,9 @@ public class AudioManager : MonoBehaviour
 
     public void StopBGM() => bgmSource.Stop();
     public void StopVoice() => voiceSource.Stop();
+
+    public void PlayCoin()
+    {
+        PlaySFX(coinClip);
+    }
 }
