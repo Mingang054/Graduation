@@ -9445,6 +9445,7 @@ MonoBehaviour:
   interactionName: Sell Items in box
   interactType: 1
   boxForSell: {fileID: 476400758}
+  sellClip: {fileID: 8300000, guid: b0420b2d8e6141542ae7ce9d4b7698d3, type: 3}
 --- !u!212 &1489511410
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9958,6 +9959,10 @@ PrefabInstance:
     - target: {fileID: 2741912084989536576, guid: 89aedfd1a7fef3c4baf0322110408cfc, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284362438502451798, guid: 89aedfd1a7fef3c4baf0322110408cfc, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 10.214844
       objectReference: {fileID: 0}
     - target: {fileID: 4040314539077605728, guid: 89aedfd1a7fef3c4baf0322110408cfc, type: 3}
       propertyPath: m_AnchorMax.x

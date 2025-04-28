@@ -3,6 +3,7 @@
 public class InteractSellBox : Interactable
 {
     public Loot boxForSell;  // 연결된 판매할 Loot 상자
+    public AudioClip sellClip;
 
     public void SellBox()
     {
