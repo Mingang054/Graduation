@@ -6,7 +6,7 @@ public class RaidInteract : InteractableTrigger
     {
 
         interactType = InteractType.Trigger;
-        interactionName = "Turn on Radio";
+        interactionName = "Enter Raid";
     }
     override public void TriggerInteractable()
     {
