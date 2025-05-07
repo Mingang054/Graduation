@@ -603,7 +603,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 10.214722}
+  m_AnchoredPosition: {x: 0, y: 10.214844}
   m_SizeDelta: {x: 1800, y: 1060}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8786267980332643702
@@ -17784,7 +17784,7 @@ MonoBehaviour:
   shellAmmo: 20
   magnumAmmo: 0
   explosiveAmmo: 0
-  mainTxt: {fileID: 0}
+  mainTxt: {fileID: 8988299195998185039}
   lightTxt: {fileID: 0}
   mediumTxt: {fileID: 0}
   heavyTxt: {fileID: 0}
