@@ -129,12 +129,12 @@ TextureImporter:
       name: solider_arm_handgun_0
       rect:
         serializedVersion: 2
-        x: 121
-        y: 111
-        width: 64
-        height: 24
+        x: 0
+        y: 0
+        width: 256
+        height: 256
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1c281707055db684b9adf2ad7933b736
     internalID: 0
     vertices: []
     indices: 

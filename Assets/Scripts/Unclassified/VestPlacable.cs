@@ -71,10 +71,14 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
                     image.sprite = spriteSet.shellSprite[count];
                     break;
                 case WeaponAType.Light:
-                    image.sprite = spriteSet.lightSprite[count];
+                    image.sprite = spriteSet.pistolSprite[count];
                     break;
                 case WeaponAType.Medium:
-                    image.sprite = spriteSet.mediumSprite[count];
+                    if (count >= 0 && count < spriteSet.mediumSprite.Length)
+                        image.sprite = spriteSet.mediumSprite[count];
+                    else
+                        Debug.LogWarning("[UpdateUI] mediumSprite 인덱스 초과");
+                    break;
                     break;
                 case WeaponAType.Heavy:
                     image.sprite = spriteSet.heavySprite[count];

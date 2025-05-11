@@ -18,4 +18,12 @@ public class RadioUI : MonoBehaviour
         UIManager.Instance.currentSecondaryUI = ammoShopUI;
 
     }
+    public void OnEnable()
+    {
+        PlayerMovement.Instance.enabled = false;
+    }
+    public void OnDisable()
+    {
+        PlayerMovement.Instance.enabled = true;
+    }
 }

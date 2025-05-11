@@ -51,6 +51,6 @@ MonoBehaviour:
   weaponLoadBar: {fileID: -7083479760921904867, guid: 8da9b17004eb14a41825d42deb0b72c7, type: 3}
   roadCount: []
   bullet: {fileID: -2346302928887187388, guid: d0b3f1e155d19e343bfc23591304c1d7, type: 3}
-  ammoType: 0
+  ammoType: 1
   durability: 0
   wearRate: 0

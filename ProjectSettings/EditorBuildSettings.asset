@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Base.unity
     guid: 0dd5af533a545214c9b3ebd247e77693
+  - enabled: 1
+    path: Assets/Scenes/HighwayRaid.unity
+    guid: 6fa8defb40461f3469c2148f1d66f492
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 8795f9c5337f063419333aaa3b32d98a, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 3590b91b4603b465dbb4216d601bff33, type: 3}

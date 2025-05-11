@@ -23,15 +23,15 @@ MonoBehaviour:
   description: 
   forSale: 1
   category: 2
-  damage: 35
+  damage: 50
   penetration: 10
   damageAP: 0
   penetrationAP: 0
   fireRate: 0.1
   fireDelay: 0
-  projectileSpeed: 8
+  projectileSpeed: 12
   pelletCount: 1
-  barrelLength: 0.5
+  barrelLength: 1
   timeToSwap: 0
   colliderSize: 0.02
   dispersion: 1
@@ -51,6 +51,6 @@ MonoBehaviour:
   weaponLoadBar: {fileID: -3447600402928057874, guid: 827080ca66256c24db534b87926b7bb7, type: 3}
   roadCount: []
   bullet: {fileID: -2346302928887187388, guid: d0b3f1e155d19e343bfc23591304c1d7, type: 3}
-  ammoType: 1
+  ammoType: 2
   durability: 100
   wearRate: 0.2

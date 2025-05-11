@@ -53,6 +53,7 @@ public enum AttackMode
 //ÅºÁ¾,
 public enum WeaponAType
 {
+    Pistol,
     Light,    // ¼ÒÇü Åº¾à (±ÇÃÑ, ±â°ü´ÜÃÑ)
     Medium,   // ÁßÇü Åº¾à
     Heavy,    // ´ëÇü Åº¾à

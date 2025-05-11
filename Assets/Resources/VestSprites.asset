@@ -13,12 +13,10 @@ MonoBehaviour:
   m_Name: VestSprites
   m_EditorClassIdentifier: 
   pistolSprite:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1008726448703100653, guid: 4b28343d0f62aca49ad8486623486d35, type: 3}
+  - {fileID: 2096251219204714238, guid: b5833f2f661e92244868aaa8fff30a25, type: 3}
+  - {fileID: -9195438384364216275, guid: 0877fad12daff504287bf3a75fd2d7ea, type: 3}
   lightSprite:
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

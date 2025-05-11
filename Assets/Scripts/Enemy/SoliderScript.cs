@@ -26,10 +26,12 @@ public class SoliderScript : NPCBase
 
     [Header("Combat Settings")]
     private bool isFiring;                       // 🔑 FireTask 실행 중 여부
-    private int attackPreDelayTime = 500;
-    private int attackPostDelayTime = 1000;
-    private int reloadCount = 15;
-    private const int reloadMax = 15;
+    public int attackPreDelayTime = 500;
+    public int attackPostDelayTime = 1000;
+    public int closeFire = 6;
+    public int farFire = 3;
+    public int reloadCount = 15;
+    public const int reloadMax = 15;
 
     [Header("AI Random Weights")]
     public int rushRate = 2;
@@ -64,8 +66,19 @@ public class SoliderScript : NPCBase
         agent.avoidancePriority = 50;
     }
 
+
+    private void FixedUpdate() => UpdateBodyAnimator();
+
+
+    private void UpdateBodyAnimator()
+    {
+        bool isWalking = agent.velocity.sqrMagnitude > 0.1f;
+        bodyAnimator.SetBool("isWalk", isWalking);
+    }
+
     private void Update()
     {
+        if (agent.enabled == false) { return; }
         if (isContact && currentTarget!=null) { 
             if (Time.time - lastUpdate > 0.05f) //성능 부하 테스트 후 조준 부분을 사격태스크로 이관
             {
@@ -220,16 +233,16 @@ public class SoliderScript : NPCBase
             //for문 내 횟수, Delay 내 횟수를 변수로 치환 
             if (currentDistance < npcData.fireRange / 2)
             {
-                reloadCount -= 6;
-                for (int i = 0; i < 6; i++) {
+                reloadCount -= closeFire;
+                for (int i = 0; i < closeFire; i++) {
                     await UniTask.Delay(200, cancellationToken: token);
                     FireProjectile();
                 }
             }
             else
             {
-                reloadCount -= 3;
-                for (int i = 0; i < 3; i++)
+                reloadCount -= farFire;
+                for (int i = 0; i < farFire; i++)
                 {
                     await UniTask.Delay(300, cancellationToken: token);
                     FireProjectile();
@@ -316,8 +329,19 @@ public class SoliderScript : NPCBase
             lastFindTargetTime = Time.time;
             currentTarget = closest;
             currentDistance = closestDist;
+            if (currentDistance <= npcData.fireRange)
+            {
+                // 🔍 타겟과의 직선 경로에 Wall이 없는 경우만 발사
+                Vector2 from = transform.position;
+                Vector2 to = currentTarget.transform.position;
 
-            if (currentDistance <= npcData.fireRange) StartFireTask();
+                var hit = Physics2D.Linecast(from, to, LayerMask.GetMask("Wall"));
+                if (!hit)  // 막히지 않았을 경우에만 FireTask 실행
+                {
+                    StartFireTask();
+                }
+            }
+
         }
         else if (Time.time - lastFindTargetTime > detectionTimeout)
         {
@@ -371,12 +395,14 @@ public class SoliderScript : NPCBase
         proj.transform.rotation = Quaternion.Euler(0, 0,
                                  Mathf.Atan2(finalDir.y, finalDir.x) * Mathf.Rad2Deg);
         proj.GetComponent<Projectile>().Launch(finalDir);
+        AudioManager.Instance.PlaySFX(npcData.attackAudio);
     }
 
     /* ───────────────────── 8. 사망 처리 ───────────────────── */
     public override void Die()
     {
         base.Die();
+        bodyAnimator.SetBool("isDie", true);
         if (agent)
         {
             agent.isStopped = true;
