@@ -29,6 +29,13 @@ public class SceneLoader : MonoBehaviour
         SceneManager.LoadScene("Base");
     }
 
+
+    public void GoToNewGame()
+    {
+        SaveLoader.DeleteCheckpoint();
+        SceneManager.LoadScene("ConvoyRaid");
+    }
+
     public void GoToBaseFromTitle(string filename)
     {
         // 🔥 1. 파일 복사 (filename.json → checkpoint.json)

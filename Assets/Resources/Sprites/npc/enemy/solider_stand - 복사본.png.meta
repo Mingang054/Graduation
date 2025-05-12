@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "solider_stand - \uBCF5\uC0AC\uBCF8_0": -7609819767404832072
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

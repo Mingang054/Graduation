@@ -5,6 +5,7 @@ using UnityEngine;
 public class NPCData : ScriptableObject
 {
     public bool essential; //기본 false
+    public string npcCode = "default";
 
     // hp 최대값 및 초기값
     public float health;

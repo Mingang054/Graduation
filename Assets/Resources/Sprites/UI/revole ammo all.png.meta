@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      revole ammo all_0: 629034069223277311
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

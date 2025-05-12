@@ -40,6 +40,7 @@ public class NPCBase : DamageableEntity
         healthPoint = npcData.health;
         armorPoint = npcData.armor;
 
+        npcCode = npcData.npcCode;
         // ✅ 이동 속도 설정
         float speed = npcData.speed;
 

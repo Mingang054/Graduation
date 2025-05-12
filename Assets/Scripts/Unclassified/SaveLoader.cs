@@ -15,6 +15,22 @@ public static class SaveLoader
 
     /*──────────────── 공개 API ────────────────*/
     /// <summary>2025-04-27_2005.json 처럼 시간 기반 파일로 저장</summary>
+    /// 
+    public static void DeleteCheckpoint()
+    {
+        string file = PathFor("checkpoint");
+
+        if (File.Exists(file))
+        {
+            File.Delete(file);
+            Debug.Log($"🗑️ 체크포인트 삭제 완료: {file}");
+        }
+        else
+        {
+            Debug.LogWarning("❗ 삭제할 checkpoint.json 파일이 존재하지 않습니다.");
+        }
+    }
+
     public static void SaveWithTimestamp()
     {
         EnsureDir();

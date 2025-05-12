@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ZombieNormal
   m_EditorClassIdentifier: 
   essential: 0
+  npcCode: E010
   health: 150
   armor: 20
   speed: 3

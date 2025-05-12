@@ -58,8 +58,11 @@ public class DamageableEntity  : MonoBehaviour, IDamageable
             Die();
             if(projectileFaction == Faction.Friendly)
             {
-
-                //퀘스트 반영용 코드 작성
+                if(QuestCaculator.instance != null)
+                {
+                    if(npcCode!=null && faction != Faction.None)
+                    QuestCaculator.instance.AddKillCount(npcCode, faction);
+                }
             }
         }
         

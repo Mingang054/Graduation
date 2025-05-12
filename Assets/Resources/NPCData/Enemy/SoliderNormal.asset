@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SoliderNormal
   m_EditorClassIdentifier: 
   essential: 0
+  npcCode: E001
   health: 150
   armor: 20
   speed: 3

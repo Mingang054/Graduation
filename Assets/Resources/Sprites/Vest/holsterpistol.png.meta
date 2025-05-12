@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      holsterpistol_0: 8936036854642101911
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

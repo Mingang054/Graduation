@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SoliderHandgun
   m_EditorClassIdentifier: 
   essential: 0
+  npcCode: E002
   health: 150
   armor: 20
   speed: 3
