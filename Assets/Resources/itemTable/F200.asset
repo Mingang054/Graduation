@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf50ea0e4913cdb4a92942be4a6faaf9, type: 3}
   m_Name: F200
   m_EditorClassIdentifier: 
-  size: {x: 1, y: 2}
+  size: {x: 1, y: 1}
   itemName: Cup
   itemCode: F200
   itemSprite: {fileID: -2299316985778227356, guid: 61288c1ac52a57d48baedbd23a421fb7, type: 3}
@@ -21,15 +21,20 @@ MonoBehaviour:
   maxStack: 255
   itemType: 2
   description: MREEEEE
+  forSale: 0
   hp: 5
   sp: 20
   energy: 50
   hydration: 50
+  hemostasis: 0
   hpRegen: 0
   spRegen: 0
   energyRegen: 0.5
   hydrationRegen: 0.5
   regenDuration: 5
-  hemostasis: 0
+  isMedicine: 0
+  isInjector: 0
+  isSplint: 0
+  isTourniquet: 0
   consumableType: 1
   isConsumable: 1

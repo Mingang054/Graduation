@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf50ea0e4913cdb4a92942be4a6faaf9, type: 3}
+  m_Name: F004
+  m_EditorClassIdentifier: 
+  size: {x: 1, y: 1}
+  itemName: coke
+  itemCode: F201
+  itemSprite: {fileID: -6704000743581025313, guid: 77d525d475f91f140bed1f3bacf7e758, type: 3}
+  price: 100
+  weight: 0.1
+  maxStack: 255
+  itemType: 2
+  description: 
+  forSale: 0
+  hp: 0
+  sp: 0
+  energy: 5
+  hydration: 30
+  hemostasis: 0
+  hpRegen: 0
+  spRegen: 0
+  energyRegen: 0
+  hydrationRegen: 0
+  regenDuration: 0
+  isMedicine: 0
+  isInjector: 0
+  isSplint: 0
+  isTourniquet: 0
+  consumableType: 1
+  isConsumable: 1
