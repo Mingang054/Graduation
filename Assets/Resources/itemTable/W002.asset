@@ -23,13 +23,13 @@ MonoBehaviour:
   description: 
   forSale: 1
   category: 0
-  damage: 30
+  damage: 60
   penetration: 6
   damageAP: 0
   penetrationAP: 0
   fireRate: 0.25
   fireDelay: 0
-  projectileSpeed: 7
+  projectileSpeed: 14
   pelletCount: 1
   barrelLength: 0.5
   timeToSwap: 0

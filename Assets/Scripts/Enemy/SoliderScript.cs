@@ -387,7 +387,7 @@ public class SoliderScript : NPCBase
             dir.x * Mathf.Sin(angOff) + dir.y * Mathf.Cos(angOff));
 
         GameObject proj = pool.GetProjectile(
-            npcData.faction, 2f, 8f, npcData.damage, npcData.penetration, 0.05f);
+            npcData.faction, 2f, 16f, npcData.damage, npcData.penetration, 0.05f);
 
         if (!proj) return;
 
