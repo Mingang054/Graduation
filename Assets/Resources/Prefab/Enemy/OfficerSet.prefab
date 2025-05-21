@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 157249775
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4563812367655229021, guid: c98b68d4a45706340b4e8976c38c55af, type: 3}
+  m_Sprite: {fileID: -8958755221049680785, guid: d8feb1e97753bce499d7125d8fc12e20, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -208,7 +208,7 @@ GameObject:
   - component: {fileID: 900961370264225894}
   - component: {fileID: 7167484162453746437}
   m_Layer: 0
-  m_Name: SoliderSet(Rifle)
+  m_Name: OfficerSet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -250,7 +250,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 0.2
   m_BaseOffset: 0
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
 --- !u!1 &7358056576751780901
 GameObject:
@@ -345,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015c4035ce9881641b0742f0e9a5aedd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcCode: 
+  npcCode: S002
   healthPointMax: 100
   healthPoint: 100
   armorPoint: 0
@@ -354,7 +354,7 @@ MonoBehaviour:
   isDead: 0
   faction: 3
   entityCollider: {fileID: 0}
-  npcData: {fileID: 11400000, guid: 7ffd01f5488c61e46954096c127ab71a, type: 2}
+  npcData: {fileID: 11400000, guid: 6a0ac19d7be95a24cad3987f37a4f331, type: 2}
   isAttacking: 0
   alertState: 0
   agent: {fileID: 7167484162453746437}
@@ -362,6 +362,11 @@ MonoBehaviour:
   armTransform: {fileID: 1240548332820087280}
   armAnimator: {fileID: 0}
   attackCollider: {fileID: 0}
-  rushRate: 2
-  stopRate: 1
+  attackPreDelayTime: 1000
+  attackPostDelayTime: 2000
+  closeFire: 1
+  farFire: 1
+  reloadCount: 5
+  rushRate: 1
+  stopRate: 4
   aroundRate: 4

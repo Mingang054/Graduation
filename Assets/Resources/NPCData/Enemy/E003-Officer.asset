@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65eb3cdf2fdb3dc468bfc646a1a4111b, type: 3}
-  m_Name: SoliderHandgun
+  m_Name: E003-Officer
   m_EditorClassIdentifier: 
   essential: 0
-  npcCode: E002
-  health: 150
-  armor: 20
-  speed: 3
-  detectionRange: 15
-  fireRange: 15
-  attckType: 1
+  npcCode: E003
+  health: 140
+  armor: 30
+  speed: 1
+  detectionRange: 20
+  fireRange: 16
+  attckType: 0
   trackType: 1
   faction: 3
-  damage: 20
-  penetration: 10
+  damage: 50
+  penetration: 40
   attackAudio: {fileID: 8300000, guid: b95d7018c00cc504083b44e59a68fe09, type: 3}
   bodySprite: {fileID: 8544195505073520909, guid: 69c0526fa1365714392cab0ebe448ef9, type: 3}
   bodyAnimation: {fileID: 7400000, guid: 05dc5da829fcada4bb82bf239060dd19, type: 2}

@@ -30,7 +30,7 @@ public enum Faction
     None,
     Wall,
     Friendly,
-    Slavika,
-    Zombie
+    Ruscist,
+    Zombie,
 }
 

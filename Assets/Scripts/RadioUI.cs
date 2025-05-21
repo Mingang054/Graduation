@@ -2,8 +2,18 @@ using UnityEngine;
 
 public class RadioUI : MonoBehaviour
 {
+    public GameObject QuestUI;
+
     public GameObject shopUI;
     public GameObject ammoShopUI;
+
+
+    public void EnableQuestUI()
+    {
+        QuestUI.SetActive(true);
+        UIManager.Instance.currentSecondaryUI = QuestUI;
+
+    }
 
     public void EnableShopUI()
     {

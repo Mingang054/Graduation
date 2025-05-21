@@ -94,12 +94,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c230d7f6d10c5144890062347a933ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  npcCode: 
   healthPointMax: 100
+  healthPoint: 0
   armorPoint: 0
   reduction: 0
   isEssential: 0
   isDead: 0
   faction: 3
+  entityCollider: {fileID: 0}
   npcData: {fileID: 11400000, guid: 1e10f6ea32b3064428cd12470b55af9d, type: 2}
   isAttacking: 0
   alertState: 3
@@ -344,7 +347,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 0.2
   m_BaseOffset: 0
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
 --- !u!1 &7581718047253850767
 GameObject:

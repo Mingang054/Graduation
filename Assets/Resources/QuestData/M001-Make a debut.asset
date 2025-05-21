@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 017e5a97c42525440b06c80f40c74bfe, type: 3}
+  m_Name: M001-Make a debut
+  m_EditorClassIdentifier: 
+  questId: M001
+  title: Make a Debut
+  description: "Pryvit, friend. Welcome to Mriyapol.\nHow was your day?\nDid you
+    receive warm Ruski-style welcome? Hmm? \nI heard your plans... didn\u2019t go
+    so well?\nMaybe I can help you.\nBut first... I want to see if you can help me
+    with something, yes?"
+  objectives:
+  - type: 3
+    key: Ruscist
+    targetCount: 2
+  itemRewards:
+  - itemId: W002
+    quantity: 1
+  moneyReward: 5000
+  requiredCompletedQuests: []
+  isRepeatable: 0
