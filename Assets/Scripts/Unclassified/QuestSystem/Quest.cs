@@ -1,5 +1,4 @@
-﻿using Mono.Cecil.Cil;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 public class Quest
@@ -13,34 +12,6 @@ public class Quest
     public List<string> requiredCompletedQuestIds;
     public bool isRepeatable;
 
-    public string GetTitle() {
-        string titleText = questId + " " + title ;
-        return titleText;
-    }
-    public string GetObjectiveSummary()
-    {
-        if (objectives == null || objectives.Count == 0)
-            return "※ 목표 없음";
-
-        List<string> lines = new();
-
-        foreach (var obj in objectives)
-        {
-            string line = obj switch
-            {
-                KillObjective kill => $"• {kill.requiredCount}명 처치: {kill.targetNpcCode}",
-                KillFactionObjective killFac => $"• {killFac.requiredCount}명 처치: {killFac.targetFaction} 팩션",
-                DeliverObjective deliver => $"• {deliver.requiredAmount}개 납품: {deliver.itemCode}",
-                ConditionObjective cond => $"• 조건 만족: {cond.conditionKey}",
-                _ => "• (알 수 없는 목표)"
-            };
-
-            lines.Add(line);
-        }
-
-        return string.Join("\n", lines);
-    }
-
     public Quest(QuestDataSO data)
     {
         questId = data.questId;
@@ -52,7 +23,6 @@ public class Quest
         requiredCompletedQuestIds = data.requiredCompletedQuests != null ?
             data.requiredCompletedQuests.Select(q => q.questId).ToList() : new List<string>();
 
-        // 목표 복제 및 다형성 인스턴스화
         objectives = new List<QuestObjective>();
         if (data.objectives != null)
         {
@@ -69,6 +39,9 @@ public class Quest
                     case ObjectiveType.ConditionFlag:
                         objectives.Add(new ConditionObjective(obj.key));
                         break;
+                    case ObjectiveType.KillFaction:
+                        objectives.Add(new KillFactionObjective(obj.key, obj.targetCount));
+                        break;
                 }
             }
         }
@@ -77,8 +50,38 @@ public class Quest
     public void ReportProgress(string key, int amount = 1)
     {
         foreach (var obj in objectives)
-            obj.Report(key, amount);
+        {
+            if (obj is KillObjective ko && ko.targetNpcCode == key && !ko.IsComplete)
+                ko.currentCount += amount;
+            else if (obj is KillFactionObjective fo && fo.targetFaction == key && !fo.IsComplete)
+                fo.currentCount += amount;
+            else if (obj is DeliverObjective dobj && dobj.itemCode == key && !dobj.IsComplete)
+                dobj.deliveredAmount += amount;
+            else if (obj is ConditionObjective co && co.conditionKey == key)
+                co.isSatisfied = true;
+        }
     }
 
     public bool IsComplete => objectives.All(o => o.IsComplete);
+
+    public string GetTitle() => title;
+    public string GetObjectiveSummary()
+    {
+        if (objectives == null || objectives.Count == 0) return "※ 목표 없음";
+        List<string> lines = new();
+        foreach (var obj in objectives)
+        {
+            string line = obj switch
+            {
+                KillObjective ko => $"• {ko.requiredCount}명 처치: {ko.targetNpcCode} ({ko.currentCount}/{ko.requiredCount})",
+                KillFactionObjective fo => $"• {fo.requiredCount}명 처치: {fo.targetFaction} 팩션 ({fo.currentCount}/{fo.requiredCount})",
+                DeliverObjective dobj => $"• {dobj.requiredAmount}개 납품: {dobj.itemCode} ({dobj.deliveredAmount}/{dobj.requiredAmount})",
+                ConditionObjective co => $"• 조건 만족: {co.conditionKey}" + (co.isSatisfied ? " (완료)" : ""),
+                _ => "• (알 수 없는 목표)"
+            };
+            lines.Add(line);
+        }
+        return string.Join("\n", lines);
+    }
 }
+

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// SaveLoader : 모든 세이브 데이터를 한 파일로 묶어 저장/로드
@@ -14,8 +15,6 @@ public static class SaveLoader
     private static void EnsureDir() { if (!Directory.Exists(DIR)) Directory.CreateDirectory(DIR); }
 
     /*──────────────── 공개 API ────────────────*/
-    /// <summary>2025-04-27_2005.json 처럼 시간 기반 파일로 저장</summary>
-    /// 
     public static void DeleteCheckpoint()
     {
         string file = PathFor("checkpoint");
@@ -31,6 +30,7 @@ public static class SaveLoader
         }
     }
 
+    /// <summary>2025-04-27_2005.json 처럼 시간 기반 파일로 저장</summary>
     public static void SaveWithTimestamp()
     {
         EnsureDir();
@@ -59,9 +59,10 @@ public static class SaveLoader
         var gs = JsonUtility.FromJson<GameSaveData>(File.ReadAllText(file));
         if (gs == null) { Debug.LogWarning("❗ 파싱 실패"); return; }
 
-        ApplyToGame(gs);                              // 실제 게임 오브젝트에 반영(구현 필요)
+        ApplyToGame(gs);
         Debug.Log($"✅ Load (checkpoint) :  {gs.saveTime}");
     }
+
     public static void LoadExplicit(string fileNameWithoutExtension)
     {
         string path = PathFor(fileNameWithoutExtension);
@@ -82,6 +83,7 @@ public static class SaveLoader
         ApplyToGame(gs);
         Debug.Log($"✅ 명시적 로드 완료: {fileNameWithoutExtension} ({gs.saveTime})");
     }
+
     /*──────────────── 현재 상태 → GameSaveData ────────────────*/
     private static GameSaveData GatherCurrentState()
     {
@@ -100,14 +102,13 @@ public static class SaveLoader
             vestPlaceables = new VestPlaceableSaveList { placeables = new List<VestPlaceableSaveData>() },
             ammunition = new AmmunitionSaveData(),
             currentWeapon = new CurrentWeaponSaveData(),
-
-            money = player != null ? player.money : 0f  // 🔥 돈 저장
+            money = player != null ? player.money : 0f
         };
 
-        /* ① 인벤토리 */
+        // ① 인벤토리
         foreach (var it in bag.myItems) gs.inventory.myItems.Add(ToItem(it));
 
-        /* ② 장비 슬롯 */
+        // ② 장비 슬롯
         foreach (var ui in new[] {
                  bag.firstWeaponUI?.GetComponent<EquipmentSlotUI>(),
                  bag.secondWeaponUI?.GetComponent<EquipmentSlotUI>(),
@@ -123,12 +124,12 @@ public static class SaveLoader
             });
         }
 
-        /* ③ 힐 슬롯 */
+        // ③ 힐 슬롯
         for (int i = 0; i < heal.consumables.Length; i++)
             if (heal.consumables[i] != null)
                 gs.healSlot.healItems[i] = ToItem(heal.consumables[i]);
 
-        /* ④ 베스트 슬롯 */
+        // ④ 베스트 슬롯
         foreach (var vp in new[] { vest.PLeft, vest.PCenter, vest.PRight,
                                    vest.SOne, vest.SLeft,  vest.SRight })
             if (vp)
@@ -140,7 +141,7 @@ public static class SaveLoader
                     magAmmoCount = vp.magAmmoCount
                 });
 
-        /* ⑤ 탄약 */
+        // ⑤ 탄약
         gs.ammunition = new AmmunitionSaveData
         {
             lightAmmo = ammo.lightAmmo,
@@ -152,19 +153,31 @@ public static class SaveLoader
             explosiveAmmo = ammo.explosiveAmmo
         };
 
-        /* ⑥ 현재 들고 있던 무기 */
+        // ⑥ 현재 들고 있던 무기
         var cw = vest.weaponOnHand?.currentWeapon;
         if (cw == bag.firstWeapon) gs.currentWeapon.currentUsingWeapon = EquipSlotType.firstWeapon;
         else if (cw == bag.secondWeapon) gs.currentWeapon.currentUsingWeapon = EquipSlotType.secondWeapon;
         else if (cw == bag.thirdWeapon) gs.currentWeapon.currentUsingWeapon = EquipSlotType.thirdWeapon;
         else gs.currentWeapon.currentUsingWeapon = EquipSlotType.none;
 
+        // ⑦ 퀘스트 저장
+        var qManager = QuestManager.instance;
+        gs.activeQuests = qManager.activeQuests?.Select(q => new QuestSaveData
+        {
+            questId = q.questId,
+            objectiveProgress = q.objectives.Select(obj => obj.GetProgress()).ToArray()
+        }).ToList() ?? new List<QuestSaveData>();
+
+        gs.completedQuests = qManager.completedQuests?.Select(q => new QuestSaveData
+        {
+            questId = q.questId,
+            objectiveProgress = q.objectives.Select(obj => obj.GetProgress()).ToArray()
+        }).ToList() ?? new List<QuestSaveData>();
+
         return gs;
     }
 
-    /*──────────────── TODO : 로드시 적용 ────────────────*/
-
-
+    /*──────────────── GameSaveData → 실제 게임 반영 ────────────────*/
     private static void ApplyToGame(GameSaveData data)
     {
         var bag = BagInventoryManager.Instance;
@@ -173,8 +186,7 @@ public static class SaveLoader
         var ammo = AmmunitionManager.instance;
         var player = PlayerStatus.instance;
 
-
-        /* ① 인벤토리 복구 */
+        // ① 인벤토리 복구
         var newItems = new List<ItemInstance>();
         foreach (var saveItem in data.inventory.myItems)
         {
@@ -191,12 +203,11 @@ public static class SaveLoader
         }
         bag.SetMyItems(newItems);
 
-        /* ② 장비 슬롯 복구 */
+        // ② 장비 슬롯 복구
         foreach (var equip in data.equipSlot.equipSlots)
         {
             if (equip.item == null || string.IsNullOrEmpty(equip.item.itemCode))
-                continue; // 🔥 아이템이 없으면 넘어감
-            Debug.Log(equip.item.itemCode);
+                continue;
             var inst = ItemFactory.CreateItem(new ItemInitData
             {
                 itemCode = equip.item.itemCode,
@@ -213,16 +224,12 @@ public static class SaveLoader
                 itemUI.GetComponent<ItemInstanceUI>().EquipItem(slotUI);
                 itemUI.GetComponent<ItemInstanceUI>().UpdateUI();
             }
-            
         }
 
-
-        /* ③ 힐 슬롯 복구 */
-        /* ③ 힐 슬롯 복구 */
+        // ③ 힐 슬롯 복구
         for (int i = 0; i < heal.consumables.Length; i++)
         {
             var healItem = data.healSlot.healItems[i];
-
             if (healItem != null && !string.IsNullOrEmpty(healItem.itemCode))
             {
                 var inst = ItemFactory.CreateItem(new ItemInitData
@@ -234,13 +241,10 @@ public static class SaveLoader
                 if (inst != null)
                 {
                     heal.consumables[i] = inst;
-
-                    // 🔥 여기서 ItemUI를 생성하고
                     var itemUIObj = ItemUIPoolManager.Instance.GetItemUI(inst);
                     var itemUI = itemUIObj.GetComponent<ItemInstanceUI>();
 
-                    // 🔥 Heal 슬롯에 장착
-                    var slotUI = heal.healSlot[i];  // 이거 필요함: heal 슬롯 i번째 가져오기
+                    var slotUI = heal.healSlot[i];
                     if (slotUI != null)
                     {
                         itemUI.EquipHealItem(slotUI);
@@ -257,7 +261,7 @@ public static class SaveLoader
             }
         }
 
-        /* ④ 베스트 슬롯 복구 */
+        // ④ 베스트 슬롯 복구
         var slots = new VestPlacable[] { vest.PLeft, vest.PCenter, vest.PRight, vest.SOne, vest.SLeft, vest.SRight };
         for (int i = 0; i < slots.Length && i < data.vestPlaceables.placeables.Count; i++)
         {
@@ -274,7 +278,7 @@ public static class SaveLoader
             }
         }
 
-        /* ⑤ 탄약 복구 */
+        // ⑤ 탄약 복구
         ammo.lightAmmo = data.ammunition.lightAmmo;
         ammo.mediumAmmo = data.ammunition.mediumAmmo;
         ammo.heavyAmmo = data.ammunition.heavyAmmo;
@@ -284,7 +288,7 @@ public static class SaveLoader
         ammo.explosiveAmmo = data.ammunition.explosiveAmmo;
         ammo.UpdateAmmo();
 
-        /* ⑥ 현재 무기 스왑 복구 */
+        // ⑥ 현재 무기 스왑 복구
         switch (data.currentWeapon.currentUsingWeapon)
         {
             case EquipSlotType.firstWeapon: vest.weaponOnHand = vest.weaponOnHand1; break;
@@ -297,8 +301,36 @@ public static class SaveLoader
             vest.shooter.SetWeapon(vest.weaponOnHand.currentWeapon);
         else
             vest.shooter.SetNoWeapon();
-    }
 
+        // ⑦ 퀘스트 복원
+        var qManager = QuestManager.instance;
+        qManager.activeQuests.Clear();
+        qManager.completedQuests.Clear();
+
+        foreach (var qsd in data.activeQuests ?? new List<QuestSaveData>())
+        {
+            var so = qManager.allQuestSO.FirstOrDefault(q => q.questId == qsd.questId);
+            if (so != null)
+            {
+                var quest = new Quest(so);
+                for (int i = 0; i < qsd.objectiveProgress.Length && i < quest.objectives.Count; i++)
+                    quest.objectives[i].SetProgress(qsd.objectiveProgress[i]);
+                qManager.activeQuests.Add(quest);
+            }
+        }
+        foreach (var qsd in data.completedQuests ?? new List<QuestSaveData>())
+        {
+            var so = qManager.allQuestSO.FirstOrDefault(q => q.questId == qsd.questId);
+            if (so != null)
+            {
+                var quest = new Quest(so);
+                for (int i = 0; i < qsd.objectiveProgress.Length && i < quest.objectives.Count; i++)
+                    quest.objectives[i].SetProgress(qsd.objectiveProgress[i]);
+                qManager.completedQuests.Add(quest);
+            }
+        }
+        qManager.UpdateAvailableQuest();
+    }
 
     /*──────────────── ItemInstance ↔ SaveData 변환 ────────────────*/
     private static ItemSaveData ToItem(ItemInstance it)
@@ -314,10 +346,6 @@ public static class SaveLoader
         else if (it is Armor a) d.durability = a.durability;
         return d;
     }
-
-
-
-
 }
 
 /*──────────────────────── Save Data 구조체 (통합) ────────────────────────*/
@@ -325,19 +353,24 @@ public static class SaveLoader
 public class GameSaveData
 {
     public string saveTime;
-
     public InventorySaveData inventory;
     public EquipSaveData equipSlot;
     public HealSaveData healSlot;
     public VestPlaceableSaveList vestPlaceables;
     public AmmunitionSaveData ammunition;
     public CurrentWeaponSaveData currentWeapon;
-
-    public float money;  // 🔥 추가: 플레이어 돈
+    public float money;
+    public List<QuestSaveData> activeQuests;
+    public List<QuestSaveData> completedQuests;
 }
 
+[Serializable]
+public class QuestSaveData
+{
+    public string questId;
+    public int[] objectiveProgress;
+}
 
-/*― 기존 구조체 재사용 ―*/
 [Serializable] public class InventorySaveData { public List<ItemSaveData> myItems; }
 [Serializable] public class EquipSaveData { public List<EquipSlotSaveData> equipSlots; }
 [Serializable] public class HealSaveData { public ItemSaveData[] healItems; }

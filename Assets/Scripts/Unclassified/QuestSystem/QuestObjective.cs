@@ -1,14 +1,11 @@
 using System;
 
-
-[Serializable]
 public abstract class QuestObjective
 {
     public ObjectiveType type;
-    public bool IsComplete => CheckComplete();
-
-    public abstract void Report(string key, int amount = 1);
-    protected abstract bool CheckComplete();
+    public abstract int GetProgress();
+    public abstract void SetProgress(int value);
+    public abstract bool IsComplete { get; }
 }
 
 [Serializable]
@@ -16,66 +13,19 @@ public class KillObjective : QuestObjective
 {
     public string targetNpcCode;
     public int requiredCount;
-    private int currentCount = 0;
+    public int currentCount;  // 반드시 필드로
 
     public KillObjective(string npcCode, int count)
     {
         type = ObjectiveType.KillNPC;
         targetNpcCode = npcCode;
         requiredCount = count;
+        currentCount = 0;
     }
 
-    public override void Report(string key, int amount = 1)
-    {
-        if (key == targetNpcCode && !IsComplete)
-            currentCount += amount;
-    }
-
-    protected override bool CheckComplete() => currentCount >= requiredCount;
-}
-
-[Serializable]
-public class DeliverObjective : QuestObjective
-{
-    public string itemCode;
-    public int requiredAmount;
-    private int deliveredAmount = 0;
-
-    public DeliverObjective(string code, int count)
-    {
-        type = ObjectiveType.DeliverItem;
-        itemCode = code;
-        requiredAmount = count;
-    }
-
-    public override void Report(string key, int amount = 1)
-    {
-        if (key == itemCode && !IsComplete)
-            deliveredAmount += amount;
-    }
-
-    protected override bool CheckComplete() => deliveredAmount >= requiredAmount;
-}
-
-[Serializable]
-public class ConditionObjective : QuestObjective
-{
-    public string conditionKey;
-    private bool isSatisfied = false;
-
-    public ConditionObjective(string key)
-    {
-        type = ObjectiveType.ConditionFlag;
-        conditionKey = key;
-    }
-
-    public override void Report(string key, int amount = 1)
-    {
-        if (key == conditionKey)
-            isSatisfied = true;
-    }
-
-    protected override bool CheckComplete() => isSatisfied;
+    public override int GetProgress() => currentCount;
+    public override void SetProgress(int value) => currentCount = value;
+    public override bool IsComplete => currentCount >= requiredCount;
 }
 
 [Serializable]
@@ -83,20 +33,55 @@ public class KillFactionObjective : QuestObjective
 {
     public string targetFaction;
     public int requiredCount;
-    private int currentCount = 0;
+    public int currentCount;
 
     public KillFactionObjective(string faction, int count)
     {
         type = ObjectiveType.KillFaction;
         targetFaction = faction;
         requiredCount = count;
+        currentCount = 0;
     }
 
-    public override void Report(string key, int amount = 1)
+    public override int GetProgress() => currentCount;
+    public override void SetProgress(int value) => currentCount = value;
+    public override bool IsComplete => currentCount >= requiredCount;
+}
+
+[Serializable]
+public class DeliverObjective : QuestObjective
+{
+    public string itemCode;
+    public int requiredAmount;
+    public int deliveredAmount;
+
+    public DeliverObjective(string code, int amount)
     {
-        if (key == targetFaction && !IsComplete)
-            currentCount += amount;
+        type = ObjectiveType.DeliverItem;
+        itemCode = code;
+        requiredAmount = amount;
+        deliveredAmount = 0;
     }
 
-    protected override bool CheckComplete() => currentCount >= requiredCount;
+    public override int GetProgress() => deliveredAmount;
+    public override void SetProgress(int value) => deliveredAmount = value;
+    public override bool IsComplete => deliveredAmount >= requiredAmount;
+}
+
+[Serializable]
+public class ConditionObjective : QuestObjective
+{
+    public string conditionKey;
+    public bool isSatisfied;
+
+    public ConditionObjective(string key)
+    {
+        type = ObjectiveType.ConditionFlag;
+        conditionKey = key;
+        isSatisfied = false;
+    }
+
+    public override int GetProgress() => isSatisfied ? 1 : 0;
+    public override void SetProgress(int value) => isSatisfied = value != 0;
+    public override bool IsComplete => isSatisfied;
 }
