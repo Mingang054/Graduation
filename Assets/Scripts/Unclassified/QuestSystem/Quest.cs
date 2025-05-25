@@ -11,6 +11,7 @@ public class Quest
     public int moneyReward;
     public List<string> requiredCompletedQuestIds;
     public bool isRepeatable;
+    public bool isRewarded = false;
 
     public Quest(QuestDataSO data)
     {
@@ -22,7 +23,6 @@ public class Quest
         isRepeatable = data.isRepeatable;
         requiredCompletedQuestIds = data.requiredCompletedQuests != null ?
             data.requiredCompletedQuests.Select(q => q.questId).ToList() : new List<string>();
-
         objectives = new List<QuestObjective>();
         if (data.objectives != null)
         {
@@ -62,7 +62,8 @@ public class Quest
         }
     }
 
-    public bool IsComplete => objectives.All(o => o.IsComplete);
+    public bool IsGoalComplete => objectives.All(o => o.IsComplete);
+    public bool IsFullyCompleted => isRewarded;
 
     public string GetTitle() => title;
     public string GetObjectiveSummary()
@@ -84,4 +85,3 @@ public class Quest
         return string.Join("\n", lines);
     }
 }
-

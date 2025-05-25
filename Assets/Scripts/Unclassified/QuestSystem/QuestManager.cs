@@ -1,113 +1,84 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QuestManager : MonoBehaviour
 {
     public static QuestManager instance;
 
+    [Header("퀘스트 프리팹/스크롤뷰/상세 UI")]
+    public GameObject QuestPrefab;     // 프리팹(에디터 할당)
+    public RectTransform questContent; // 스크롤뷰 Content
+    public GameObject questDetail;     // 상세 패널
+
+    public Quest currentQuest;
+
+    [Header("SO 데이터")]
     public List<QuestDataSO> allQuestSO = new();
+
+    [Header("수주가능/진행중/완료")]
     public List<Quest> availableQuests = new();
     public List<Quest> activeQuests = new();
     public List<Quest> completedQuests = new();
-
-    public GameObject QuestPrefab;
-
-    public GameObject questDetail;
-    public RectTransform questContent;
-
-    
-    public Quest currentQuest;//UI상으로 실행된 Quest
 
     private void Awake()
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
 
-        // 자동 SO 로드 (최초 한 번만)
         if (allQuestSO == null || allQuestSO.Count == 0)
             allQuestSO = Resources.LoadAll<QuestDataSO>("QuestData").ToList();
-
         UpdateAvailableQuest();
     }
 
+    // (1) 퀘스트 버튼 리스트 생성(중복 방지, 상태 구분)
     public void PopulateQuestScroll_Mixed()
     {
-        UpdateAvailableQuest();
-        // 기존 리스트 삭제
         foreach (Transform child in questContent)
             Destroy(child.gameObject);
 
-        // 수주 가능 먼저 출력 (예: 구분선 추가 가능)
-        foreach (var quest in availableQuests)
-        {
-            var go = Instantiate(QuestPrefab, questContent);
-            var qb = go.GetComponent<QuestButton>();
-            qb.quest = quest;
-            qb.SetQuest();
-
-            // 상태 표시 (수주 가능)
-            //qb.SetStatus("수주 가능");
-            // 또는 qb.myStatusText.text = "수주 가능";
-        }
-
-        // 진행 중 퀘스트도 출력
+        // 진행중(보상대기 포함)
         foreach (var quest in activeQuests)
         {
             var go = Instantiate(QuestPrefab, questContent);
-            var qb = go.GetComponent<QuestButton>();
-            qb.quest = quest;
-            qb.SetQuest();
+            var btn = go.GetComponent<QuestButton>();
+            btn.quest = quest;
+            btn.SetQuest();
+            btn.SetStatus(quest.IsGoalComplete && !quest.isRewarded ? "완료 보상 받기" : "진행 중");
+        }
 
-            // 상태 표시 (진행 중)
-            //qb.SetStatus("진행 중");
+        // 수주가능(중복제거)
+        foreach (var quest in availableQuests)
+        {
+            if (activeQuests.Any(q => q.questId == quest.questId) ||
+                completedQuests.Any(q => q.questId == quest.questId)) continue;
+            var go = Instantiate(QuestPrefab, questContent);
+            var btn = go.GetComponent<QuestButton>();
+            btn.quest = quest;
+            btn.SetQuest();
+            btn.SetStatus("수주 가능");
+        }
+
+        // 완료퀘(옵션)
+        foreach (var quest in completedQuests)
+        {
+            var go = Instantiate(QuestPrefab, questContent);
+            var btn = go.GetComponent<QuestButton>();
+            btn.quest = quest;
+            btn.SetQuest();
+            btn.SetStatus("완료됨");
+            btn.GetComponent<Button>().interactable = false;
         }
     }
 
-
-    // 다형성 QuestObjective 인스턴스 생성
-    private Quest InstantiateQuestFromSO(QuestDataSO so)
-    {
-        var quest = new Quest(so)
-        {
-            questId = so.questId,
-            title = so.title,
-            description = so.description,
-            itemRewards = so.itemRewards,
-            moneyReward = so.moneyReward,
-            isRepeatable = so.isRepeatable,
-            requiredCompletedQuestIds = so.requiredCompletedQuests != null ?
-                so.requiredCompletedQuests.Select(q => q.questId).ToList() : new List<string>(),
-            objectives = new List<QuestObjective>()
-        };
-
-        // 목표별 다형성 객체 생성
-        if (so.objectives != null)
-        {
-            foreach (var obj in so.objectives)
-            {
-                switch (obj.type)
-                {
-                    case ObjectiveType.KillNPC:
-                        quest.objectives.Add(new KillObjective(obj.key, obj.targetCount));
-                        break;
-                    case ObjectiveType.DeliverItem:
-                        quest.objectives.Add(new DeliverObjective(obj.key, obj.targetCount));
-                        break;
-                    case ObjectiveType.ConditionFlag:
-                        quest.objectives.Add(new ConditionObjective(obj.key));
-                        break;
-                    case ObjectiveType.KillFaction:
-                        quest.objectives.Add(new KillFactionObjective(obj.key, obj.targetCount));
-                        break;
-                }
-            }
-        }
-        return quest;
-    }
-
+    // (2) 중복 방지 및 선행퀘스트 조건에 따라 available 갱신
     public void UpdateAvailableQuest()
     {
+        availableQuests = availableQuests.GroupBy(q => q.questId).Select(g => g.First()).ToList();
+        activeQuests = activeQuests.GroupBy(q => q.questId).Select(g => g.First()).ToList();
+        completedQuests = completedQuests.GroupBy(q => q.questId).Select(g => g.First()).ToList();
+
         foreach (var so in allQuestSO)
         {
             if (availableQuests.Any(q => q.questId == so.questId)) continue;
@@ -122,13 +93,16 @@ public class QuestManager : MonoBehaviour
         }
     }
 
+    // (3) 퀘스트 수주
     public void AddQuest(Quest quest)
     {
         if (!availableQuests.Contains(quest)) return;
         activeQuests.Add(quest);
         availableQuests.Remove(quest);
+        PopulateQuestScroll_Mixed();
     }
 
+    // (4) 퀘스트 목표 진척 보고
     public void ReportEvent(string npcKey, int amount = 1, string factionKey = null)
     {
         foreach (var quest in activeQuests.ToList())
@@ -136,14 +110,16 @@ public class QuestManager : MonoBehaviour
             quest.ReportProgress(npcKey, amount);
             if (!string.IsNullOrEmpty(factionKey))
                 quest.ReportProgress(factionKey, amount);
-            if (quest.IsComplete)
-                CompleteQuest(quest);
         }
+        PopulateQuestScroll_Mixed();
     }
 
+    // (5) 완료버튼 눌러서만 보상(완료처리)
     public void CompleteQuest(Quest quest)
     {
-        if (!quest.IsComplete) return;
+        if (!quest.IsGoalComplete || quest.isRewarded) return;
+
+        // 보상 지급
         var BIM = BagInventoryManager.Instance;
         foreach (var reward in quest.itemRewards)
         {
@@ -155,8 +131,12 @@ public class QuestManager : MonoBehaviour
             BIM.PlaceFirstAvailableSlot(item, BIM.myItems);
         }
         PlayerStatus.instance.money += quest.moneyReward;
+        quest.isRewarded = true;
+
         activeQuests.Remove(quest);
         completedQuests.Add(quest);
+
         UpdateAvailableQuest();
+        PopulateQuestScroll_Mixed();
     }
 }

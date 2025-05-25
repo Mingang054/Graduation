@@ -19,6 +19,8 @@ public class UIManager : MonoBehaviour
     public Image cursorImage;
 
     // UI GameObjects
+    public GameObject GameOverUI;
+
     public GameObject vestInventoryUI;      // Vest Inventory
     public GameObject bagInventoryUI;       // Bag Inventory
     public GameObject pauseMenuUI;          // Pause Menu
@@ -101,7 +103,7 @@ public class UIManager : MonoBehaviour
         }
 
     }
-    private void OnDisable()
+    public void OnDisable()
     {
         // Input Actions 비활성화
         inventoryAction.Disable();
@@ -363,7 +365,7 @@ public class UIManager : MonoBehaviour
         //UI
         cursorUI.SetUIAsAimCursor();
     }
-    private void DisablePause()
+    public void DisablePause()
     {
         if (currentPrimaryUI == pauseMenuUI)
         {

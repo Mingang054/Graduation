@@ -18,7 +18,7 @@ MonoBehaviour:
   itemSprite: {fileID: -4550549056436868033, guid: 3b3dbb934645b1f4bbe25dcfe32115c4, type: 3}
   price: 100
   weight: 0.1
-  maxStack: 255
+  maxStack: 1
   itemType: 2
   description: Dorkas loves it
   forSale: 0

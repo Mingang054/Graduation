@@ -10,28 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cf50ea0e4913cdb4a92942be4a6faaf9, type: 3}
-  m_Name: F200
+  m_Name: F008
   m_EditorClassIdentifier: 
   size: {x: 1, y: 1}
-  itemName: Cup
-  itemCode: F200
-  itemSprite: {fileID: -2299316985778227356, guid: 61288c1ac52a57d48baedbd23a421fb7, type: 3}
-  price: 500
+  itemName: peach
+  itemCode: F007
+  itemSprite: {fileID: 1066977704, guid: ee5cc0701a534f94dae44f42dcde6c59, type: 3}
+  price: 300
   weight: 0.2
   maxStack: 1
   itemType: 2
-  description: MREEEEE
+  description: 
   forSale: 0
-  hp: 5
-  sp: 20
-  energy: 50
-  hydration: 50
+  hp: 0
+  sp: 0
+  energy: 40
+  hydration: 10
   hemostasis: 0
   hpRegen: 0
   spRegen: 0
-  energyRegen: 0.5
-  hydrationRegen: 0.5
-  regenDuration: 5
+  energyRegen: 0
+  hydrationRegen: 0
+  regenDuration: 0
   isMedicine: 0
   isInjector: 0
   isSplint: 0

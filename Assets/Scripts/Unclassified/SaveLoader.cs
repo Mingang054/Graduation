@@ -30,6 +30,30 @@ public static class SaveLoader
         }
     }
 
+    public static void SaveCheckpointWithLostItems()
+    {
+        EnsureDir();
+        GameSaveData gs = GatherCurrentState();
+
+        // 아이템만 비움 (완전히 빈 인벤토리로)
+        gs.inventory.myItems = new List<ItemSaveData>();
+        gs.equipSlot.equipSlots = new List<EquipSlotSaveData>();
+        gs.healSlot.healItems = new ItemSaveData[HealItemManager.instance.consumables.Length];
+        gs.vestPlaceables.placeables = new List<VestPlaceableSaveData>();
+
+        // 탄약도 모두 0으로 (원하면 이 부분도)
+        gs.ammunition = new AmmunitionSaveData();
+
+        // 현재 들고 있는 무기 정보도 none으로 (옵션)
+        gs.currentWeapon.currentUsingWeapon = EquipSlotType.none;
+
+        string file = PathFor("checkpoint");
+        File.WriteAllText(file, JsonUtility.ToJson(gs, true));
+        Debug.Log($"☠️ Save (죽어서 아이템 잃음, checkpoint) → {file}");
+    }
+
+
+
     /// <summary>2025-04-27_2005.json 처럼 시간 기반 파일로 저장</summary>
     public static void SaveWithTimestamp()
     {
@@ -41,6 +65,7 @@ public static class SaveLoader
     }
 
     /// <summary>checkpoint.json 파일로 덮어쓰기 저장 (씬 이동용 임시 저장)</summary>
+    /// 
     public static void SaveCheckpoint()
     {
         EnsureDir();
@@ -165,13 +190,15 @@ public static class SaveLoader
         gs.activeQuests = qManager.activeQuests?.Select(q => new QuestSaveData
         {
             questId = q.questId,
-            objectiveProgress = q.objectives.Select(obj => obj.GetProgress()).ToArray()
+            objectiveProgress = q.objectives.Select(obj => obj.GetProgress()).ToArray(),
+            isRewarded = q.isRewarded
         }).ToList() ?? new List<QuestSaveData>();
 
         gs.completedQuests = qManager.completedQuests?.Select(q => new QuestSaveData
         {
             questId = q.questId,
-            objectiveProgress = q.objectives.Select(obj => obj.GetProgress()).ToArray()
+            objectiveProgress = q.objectives.Select(obj => obj.GetProgress()).ToArray(),
+            isRewarded = q.isRewarded
         }).ToList() ?? new List<QuestSaveData>();
 
         return gs;
@@ -315,6 +342,7 @@ public static class SaveLoader
                 var quest = new Quest(so);
                 for (int i = 0; i < qsd.objectiveProgress.Length && i < quest.objectives.Count; i++)
                     quest.objectives[i].SetProgress(qsd.objectiveProgress[i]);
+                quest.isRewarded = qsd.isRewarded;
                 qManager.activeQuests.Add(quest);
             }
         }
@@ -326,10 +354,12 @@ public static class SaveLoader
                 var quest = new Quest(so);
                 for (int i = 0; i < qsd.objectiveProgress.Length && i < quest.objectives.Count; i++)
                     quest.objectives[i].SetProgress(qsd.objectiveProgress[i]);
+                quest.isRewarded = qsd.isRewarded;
                 qManager.completedQuests.Add(quest);
             }
         }
         qManager.UpdateAvailableQuest();
+
     }
 
     /*──────────────── ItemInstance ↔ SaveData 변환 ────────────────*/
@@ -369,7 +399,9 @@ public class QuestSaveData
 {
     public string questId;
     public int[] objectiveProgress;
+    public bool isRewarded;
 }
+
 
 [Serializable] public class InventorySaveData { public List<ItemSaveData> myItems; }
 [Serializable] public class EquipSaveData { public List<EquipSlotSaveData> equipSlots; }

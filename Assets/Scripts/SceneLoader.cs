@@ -28,7 +28,11 @@ public class SceneLoader : MonoBehaviour
         SaveLoader.SaveCheckpoint();
         SceneManager.LoadScene("Base");
     }
-
+    public void GoToBaseFromGameOver()
+    {
+        SaveLoader.SaveCheckpointWithLostItems();
+        SceneManager.LoadScene("Base");
+    }
 
     public void GoToNewGame()
     {

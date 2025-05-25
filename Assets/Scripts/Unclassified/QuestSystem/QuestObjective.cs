@@ -8,13 +8,11 @@ public abstract class QuestObjective
     public abstract bool IsComplete { get; }
 }
 
-[Serializable]
 public class KillObjective : QuestObjective
 {
     public string targetNpcCode;
     public int requiredCount;
-    public int currentCount;  // 반드시 필드로
-
+    public int currentCount;
     public KillObjective(string npcCode, int count)
     {
         type = ObjectiveType.KillNPC;
@@ -22,7 +20,6 @@ public class KillObjective : QuestObjective
         requiredCount = count;
         currentCount = 0;
     }
-
     public override int GetProgress() => currentCount;
     public override void SetProgress(int value) => currentCount = value;
     public override bool IsComplete => currentCount >= requiredCount;

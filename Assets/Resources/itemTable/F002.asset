@@ -18,7 +18,7 @@ MonoBehaviour:
   itemSprite: {fileID: 3046544090647025007, guid: 77d525d475f91f140bed1f3bacf7e758, type: 3}
   price: 100
   weight: 0.1
-  maxStack: 255
+  maxStack: 1
   itemType: 2
   description: 
   forSale: 0
