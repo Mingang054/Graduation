@@ -11,7 +11,6 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
     public PlayerShooter playerShooter;
 
-
     // Input Action Asset 
     public InputActionAsset inputActions;
     //
@@ -19,7 +18,7 @@ public class UIManager : MonoBehaviour
     public Image cursorImage;
 
     // UI GameObjects
-    public GameObject GameOverUI;
+    public GameObject GameOverUI;       // 🔥 게임오버 UI 추가
 
     public GameObject vestInventoryUI;      // Vest Inventory
     public GameObject bagInventoryUI;       // Bag Inventory
@@ -28,11 +27,8 @@ public class UIManager : MonoBehaviour
     public GameObject raidUI;
     //
     public GameObject currentPrimaryUI;           // 현재 활성화된 UI
-
-    // 세부 UI
     public GameObject currentSecondaryUI;
     public GameObject current3rdUI;
-
 
     //임시
     public AmmoUpdater ammoUpdater;
@@ -40,14 +36,11 @@ public class UIManager : MonoBehaviour
     private InputAction inventoryAction;    // Tab 키
     private InputAction escapeAction;       // Esc 키
 
-    //
     public Slider tabHoldSlider;
 
     // 키 관련 플래그
-    private bool isEscapeHandled = false;   // Escape 키 처리 플래그
-    //private bool isTabPressed = false;      // 미사용
+    private bool isEscapeHandled = false;
     private bool isTabHold = false;
-
     private float tabHoldTime = 0f;
 
     private CancellationTokenSource tabHoldTaskTokenSource; // Task 취소 토큰
@@ -56,19 +49,12 @@ public class UIManager : MonoBehaviour
     public AudioClip vestClip;
     public AudioClip bagClip;
 
-
-
     private void OnEnable()
     {
-        // UI ActionMap 할당
         var actionMap = inputActions.FindActionMap("UI");
-
-        // UI 관련 Action 할당
         inventoryAction = actionMap?.FindAction("Inventory");
         escapeAction = actionMap?.FindAction("Escape");
-        
 
-        // ActionMap 및 Action 할당 에러 (디버그)
         if (actionMap == null)
         {
             Debug.LogError("UI ActionMap Missing");
@@ -85,31 +71,24 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        // Input Actions 활성화
         inventoryAction.Enable();
         escapeAction.Enable();
 
-        // 이벤트 핸들러 연결
         inventoryAction.started += OnInventoryStarted;
         inventoryAction.performed += OnInventoryPerformed;
         inventoryAction.canceled += OnInventoryCanceled;
         escapeAction.performed += OnEscapePerformed;
         escapeAction.canceled += OnEscapeCanceled;
 
-        //TabHoldSlider 초기화
         if (tabHoldSlider != null)
-        {
             tabHoldSlider.value = 0;
-        }
-
     }
+
     public void OnDisable()
     {
-        // Input Actions 비활성화
         inventoryAction.Disable();
         escapeAction.Disable();
 
-        // 이벤트 핸들러 연결 해제
         inventoryAction.started -= OnInventoryStarted;
         inventoryAction.performed -= OnInventoryPerformed;
         inventoryAction.canceled -= OnInventoryCanceled;
@@ -119,20 +98,17 @@ public class UIManager : MonoBehaviour
 
     void Awake()
     {
-        // 싱글톤 인스턴스 설정
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
-        DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지하려면 활성화
-    
+        DontDestroyOnLoad(gameObject);
     }
+
     private void Start()
-    {   
-        //인벤토리 초기화실행
+    {
         EnableBagInventory();
         DisableBagInventory();
         EnableVestInventory();
@@ -143,70 +119,61 @@ public class UIManager : MonoBehaviour
 
     public void OnInventoryStarted(InputAction.CallbackContext context)
     {
-        // Hold 여부 초기화
         isTabHold = true;
-        tabHoldTime = 0f; // 초기화
-
+        tabHoldTime = 0f;
     }
 
     public void OnInventoryPerformed(InputAction.CallbackContext context)
     {
+        // 🔥 GameOverUI가 PrimaryUI인 경우에는 인벤토리 오픈 불가
+        if (currentPrimaryUI == GameOverUI)
+            return;
+
         if (current3rdUI == null)
         {
             if (currentSecondaryUI == null)
             {
-                // 현재 UI가 Vest Inventory인 경우
                 if (currentPrimaryUI == vestInventoryUI)
                 {
-                    if (context.interaction is HoldInteraction) // Hold 동작
+                    if (context.interaction is HoldInteraction)
                     {
-                        // 기존 Task 취소
                         tabHoldTaskTokenSource?.Cancel();
                         tabHoldTaskTokenSource = new CancellationTokenSource();
-
-                        // TrackTabHoldProgress 호출
                         TrackTabHoldProgress(tabHoldTaskTokenSource.Token).Forget();
                     }
-                    else // Press 동작
+                    else
                     {
-                        DisableVestInventory(); // Vest Inventory를 비활성화
+                        DisableVestInventory();
                     }
                     return;
                 }
 
-                // 현재 활성화된 UI가 없거나 다른 경우
                 if (currentPrimaryUI != null) return;
 
-                if (context.interaction is HoldInteraction) // Hold 동작
+                if (context.interaction is HoldInteraction)
                 {
-                    // 기존 Task 취소
                     tabHoldTaskTokenSource?.Cancel();
                     tabHoldTaskTokenSource = new CancellationTokenSource();
-
-                    // TrackTabHoldProgress 호출
                     TrackTabHoldProgress(tabHoldTaskTokenSource.Token).Forget();
                 }
-                else // Press 동작
+                else
                 {
                     EnableVestInventory();
                 }
             }
         }
-
-
     }
 
     public void OnInventoryCanceled(InputAction.CallbackContext context)
     {
-        // Task 중단
         tabHoldTaskTokenSource?.Cancel();
-        ResetTabHoldProgress(); // 슬라이더 초기화
+        ResetTabHoldProgress();
     }
 
     private void OnEscapePerformed(InputAction.CallbackContext context)
     {
-        if (context.performed && !isEscapeHandled) // Escape 키가 눌리고 아직 처리되지 않은 경우
-        {   
+        if (context.performed && !isEscapeHandled)
+        {
             if (current3rdUI != null)
             {
                 current3rdUI.SetActive(false);
@@ -217,102 +184,127 @@ public class UIManager : MonoBehaviour
                 currentSecondaryUI.SetActive(false);
                 currentSecondaryUI = null;
             }
-            else if (currentPrimaryUI == pauseMenuUI) // Pause Menu가 활성화된 경우 비활성화
+            else if (currentPrimaryUI == pauseMenuUI)
             {
                 DisablePause();
             }
-            else if (currentPrimaryUI == null) // 다른 UI가 없는 경우 Pause Menu 활성화
+            else if (currentPrimaryUI == null)
             {
                 EnablePause();
             }
-            else // 다른 UI가 활성화된 경우 비활성화
+            else
             {
                 DisableCurrentUI();
             }
 
-            isEscapeHandled = true; // Escape 키 처리 완료
+            isEscapeHandled = true;
         }
     }
     private void OnEscapeCanceled(InputAction.CallbackContext context)
     {
         isEscapeHandled = false;
     }
+
     public void EnableVestInventory()
     {
+        if (currentPrimaryUI == GameOverUI) return; // 🔥 GameOver시 금지
         if (currentPrimaryUI != null)
         {
-            currentPrimaryUI.SetActive(false); // 기존 UI 비활성화
+            currentPrimaryUI.SetActive(false);
         }
         currentPrimaryUI = vestInventoryUI;
-        vestInventoryUI.SetActive(true); // 새로운 UI 활성화
+        vestInventoryUI.SetActive(true);
         Debug.Log("Vest Inventory Enabled");
 
         playerShooter.SetIsActing(true);
-
         AudioManager.Instance.PlaySFX(vestClip);
-        //UI
         cursorUI.SetUIAsUICursor();
-        
     }
     public void EnableBagInventory()
     {
+        if (currentPrimaryUI == GameOverUI) return; // 🔥 GameOver시 금지
         if (currentPrimaryUI != null)
         {
-            currentPrimaryUI.SetActive(false); // 🔴 기존 UI 비활성화
+            currentPrimaryUI.SetActive(false);
         }
         currentPrimaryUI = bagInventoryUI;
-        bagInventoryUI.SetActive(true); // 새로운 UI 활성화
+        bagInventoryUI.SetActive(true);
         Debug.Log("Bag Inventory Enabled");
 
         playerShooter.SetIsActing(true);
-
         AudioManager.Instance.PlaySFX(bagClip);
-        //UI
         cursorUI.SetUIAsUICursor();
     }
     public void EnablePause()
     {
+        if (currentPrimaryUI == GameOverUI) return; // 🔥 GameOver시 금지
         if (currentPrimaryUI != null)
         {
-            currentPrimaryUI.SetActive(false); // 기존 UI 비활성화
+            currentPrimaryUI.SetActive(false);
         }
         currentPrimaryUI = pauseMenuUI;
-        pauseMenuUI.SetActive(true); // 새로운 UI 활성화
-        Time.timeScale = 0; // 게임 시간 정지
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0;
         Debug.Log("Pause Menu Enabled");
 
         playerShooter.SetIsActing(true);
-
-        //UI
         cursorUI.SetUIAsUICursor();
     }
 
     public void EnableRadio()
     {
+        if (currentPrimaryUI == GameOverUI) return; // 🔥 GameOver시 금지
         if (currentPrimaryUI != null)
         {
-
+            currentPrimaryUI.SetActive(false);
         }
         currentPrimaryUI = radioUI;
         radioUI.SetActive(true);
         playerShooter.SetIsActing(true);
-
         cursorUI.SetUIAsUICursor();
     }
 
     public void EnableRaid()
     {
+        if (currentPrimaryUI == GameOverUI) return; // 🔥 GameOver시 금지
         if (currentPrimaryUI != null)
         {
-
+            currentPrimaryUI.SetActive(false);
         }
         currentPrimaryUI = raidUI;
         raidUI.SetActive(true);
         playerShooter.SetIsActing(true);
-
         cursorUI.SetUIAsUICursor();
     }
 
+    /// <summary>
+    /// 🔥 모든 UI(Primary/Secondary/3rd) 비활성화 후, GameOverUI를 Primary로 설정하고 활성화
+    /// </summary>
+    public void EnableGameOverUI()
+    {
+        // 모든 UI 비활성화 및 해제
+        if (current3rdUI != null)
+        {
+            current3rdUI.SetActive(false);
+            current3rdUI = null;
+        }
+        if (currentSecondaryUI != null)
+        {
+            currentSecondaryUI.SetActive(false);
+            currentSecondaryUI = null;
+        }
+        if (currentPrimaryUI != null)
+        {
+            currentPrimaryUI.SetActive(false);
+            currentPrimaryUI = null;
+        }
+
+        currentPrimaryUI = GameOverUI;
+        GameOverUI.SetActive(true);
+
+        playerShooter.SetIsActing(true);
+        cursorUI.SetUIAsUICursor();
+    }
 
     private void DisableCurrentUI()
     {
@@ -320,6 +312,11 @@ public class UIManager : MonoBehaviour
         {
             DisablePause();
             currentPrimaryUI = null;
+        }
+        else if (currentPrimaryUI == GameOverUI)
+        {
+            // GameOver는 Disable 불가 (원하면 별도 로직 추가)
+            return;
         }
         else if (currentPrimaryUI != null)
         {
@@ -329,14 +326,12 @@ public class UIManager : MonoBehaviour
         if (BagInventoryManager.Instance.opponentItems != null)
         {
             BagInventoryManager.Instance.ResetOpponentItems();
-
         }
 
         playerShooter.SetIsActing(false);
-
-        //UI
         cursorUI.SetUIAsAimCursor();
     }
+
     private void DisableVestInventory()
     {
         if (currentPrimaryUI == vestInventoryUI)
@@ -345,10 +340,7 @@ public class UIManager : MonoBehaviour
             vestInventoryUI.SetActive(false);
             Debug.Log("Vest Inventory Disabled");
         }
-
         playerShooter.SetIsActing(false);
-
-        //UI
         cursorUI.SetUIAsAimCursor();
     }
     private void DisableBagInventory()
@@ -359,10 +351,7 @@ public class UIManager : MonoBehaviour
             bagInventoryUI.SetActive(false);
             Debug.Log("Bag Inventory Disabled");
         }
-
         playerShooter.SetIsActing(false);
-
-        //UI
         cursorUI.SetUIAsAimCursor();
     }
     public void DisablePause()
@@ -371,13 +360,10 @@ public class UIManager : MonoBehaviour
         {
             currentPrimaryUI = null;
             pauseMenuUI.SetActive(false);
-            Time.timeScale = 1; // 게임 시간 재개
+            Time.timeScale = 1;
             Debug.Log("Pause Menu Disabled");
         }
-
         playerShooter.SetIsActing(false);
-
-        //UI
         cursorUI.SetUIAsAimCursor();
     }
     public void DisableRadio()
@@ -406,42 +392,28 @@ public class UIManager : MonoBehaviour
     {
         while (isTabHold)
         {
-            //Task 중단 체크
             cancellationToken.ThrowIfCancellationRequested();
-
             tabHoldTime += Time.deltaTime;
 
             if (tabHoldSlider != null)
-            {
-                tabHoldSlider.value = tabHoldTime; // 슬라이더 업데이트
-            }
+                tabHoldSlider.value = tabHoldTime;
 
-            // Bag Inventory를 열기 위한 최대 홀드 시간에 도달
             if (tabHoldTime >= 1f)
             {
                 EnableBagInventory();
-                ResetTabHoldProgress(); // 슬라이더 초기화
+                ResetTabHoldProgress();
                 return;
             }
-
-            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken); // 다음 프레임 대기
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
     }
 
     private void ResetTabHoldProgress()
     {
-        isTabHold = false; // Hold 상태 해제
-        tabHoldTime = 0f;     // Hold 시간 초기화
+        isTabHold = false;
+        tabHoldTime = 0f;
 
         if (tabHoldSlider != null)
-        {
-            tabHoldSlider.value = 0f; // 슬라이더 초기화
-        }
-
+            tabHoldSlider.value = 0f;
     }
-
-
-    
 }
-
-

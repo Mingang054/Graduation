@@ -20,6 +20,15 @@ public class SceneLoader : MonoBehaviour
 
     public void GoToTitle()
     {
+        // 현재 씬명이 "Base"이면 저장
+        if (SceneManager.GetActiveScene().name == "Base")
+        {
+            SaveLoader.SaveWithTimestamp();
+        }
+        SceneManager.LoadScene("Title");
+    }
+    public void GoToTitleNoSave()
+    {
         SceneManager.LoadScene("Title");
     }
 

@@ -243,7 +243,8 @@ public class PlayerStatus : DamageableEntity
     public override void Die()
     {
         CancelAllRegens();
-        
+        UIManager.Instance.EnableGameOverUI();
+        base.Die();
         //base.Die();
     }
 }
