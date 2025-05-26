@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 27bd94625610432418c87f1e3b2736f7
+guid: 8b24c3faa840d534b8c5d80df8c40f87
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6697041672820064122
-    second: solider_arm_machinegun_0
+      213: 8653222250688758175
+    second: torq1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -96,53 +96,27 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: solider_arm_machinegun_0
+      name: torq1_0
       rect:
         serializedVersion: 2
-        x: 121
-        y: 111
-        width: 113
-        height: 25
+        x: 0
+        y: 0
+        width: 256
+        height: 235
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a7f7d624beba0fc50800000000000000
-      internalID: 6697041672820064122
+      spriteID: f914fce4acb661870800000000000000
+      internalID: 8653222250688758175
       vertices: []
       indices: 
       edges: []
@@ -151,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 8d8acb097c121d14bad5170d44c299e6
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      solider_arm_machinegun_0: 6697041672820064122
+      torq1_0: 8653222250688758175
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -385,7 +385,17 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      solider2_body_0: -2488397520003069394
+      solider2_body_1: 6812489421431123225
+      solider2_body_2: 8507770209108477675
+      solider2_body_3: -7951887756410378278
+      solider2_body_4: 7049600215879462910
+      solider2_body_5: 5934283263125864072
+      solider2_body_6: 6461847027596379812
+      solider2_body_7: 1221950143083418290
+      solider2_body_8: -1212586905721014413
+      solider2_body_9: -5861685052235418623
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
