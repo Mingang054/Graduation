@@ -34,6 +34,9 @@ public class injector : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         rectTransform.anchoredPosition = originalPosition;
         isCap = true;
+
+        HealItemManager.instance.HealBase.SetActive(false);
+        
         cap.SetActive(true);
     }
 

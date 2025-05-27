@@ -6,7 +6,7 @@ public class HealItemManager : MonoBehaviour
     public static HealItemManager instance;
     public HealSlotUI[] healSlot;             // 인스펙터 연결
     public Consumable[] consumables;          // 길이 6
-
+    
     public HealItemOnVest healOnVest;
 
     public GameObject HealBase;
@@ -36,7 +36,7 @@ public class HealItemManager : MonoBehaviour
         currentConsumableUI = healSlot[index].equipedItem;
         currentConsumable = consumables[index];
         ConsumableData medData = consumables[index].data as ConsumableData;
-
+            
         HealBase.SetActive(true);
         if (medData.isInjector)
         {
@@ -57,8 +57,9 @@ public class HealItemManager : MonoBehaviour
     public void UseHealKit()
     {
         currentConsumableUI.TryUseItem();
+        
     }
-
+    
     public void EndHealKit()
     {
         if (healOnVest!= null) { healOnVest.UpdateButtonUI(); }
@@ -75,5 +76,6 @@ public class HealItemManager : MonoBehaviour
         HealBase.SetActive(false);
 
     }
+    
     
 }

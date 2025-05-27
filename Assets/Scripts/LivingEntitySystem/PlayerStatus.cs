@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Xml.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -22,7 +23,12 @@ public class PlayerStatus : DamageableEntity
     public float eneregy = 100f;
     public float hydration = 100;
     public float weightMax;
+
     public bool isBleeding = false;
+    public int levelBleeding = 0;
+    public int levelBleedingMax = 0;
+    public GameObject bleedImage;
+    public TMP_Text bleedText;
 
 
     public float money;
@@ -68,11 +74,128 @@ public class PlayerStatus : DamageableEntity
     void Update()
     {
     }
+    private CancellationTokenSource bleedCTS;
+    // UI 참조
+
+    // 출혈 추가
+    public void AddBleed(int addLevel)
+    {
+        levelBleeding = Mathf.Clamp(levelBleeding + addLevel, 0, levelBleedingMax);
+        isBleeding = levelBleeding > 0;
+
+        UpdateBleedUI(); // ✅ UI 갱신
+
+        if (bleedCTS == null || bleedCTS.IsCancellationRequested)
+        {
+            bleedCTS = new CancellationTokenSource();
+            BleedLoop(bleedCTS.Token).Forget();
+        }
+    }
+
+    // 출혈 제거
+    public void RemoveBleed(int removeLevel)
+    {
+        levelBleeding = Mathf.Max(levelBleeding - removeLevel, 0);
+        isBleeding = levelBleeding > 0;
+
+        if (levelBleeding == 0)
+        {
+            bleedCTS?.Cancel();
+            bleedCTS = null;
+        }
+
+        UpdateBleedUI(); // ✅ UI 갱신
+    }
+
+    private void UpdateBleedUI()
+    {
+        if (bleedImage == null || bleedText == null) return;
+
+        if (isBleeding && levelBleeding > 0)
+        {
+            bleedImage.SetActive(true);
+            bleedText.text = $"출혈 Lv.{levelBleeding}";
+        }
+        else
+        {
+            bleedImage.SetActive(false);
+        }
+    }
+
+
+    private async UniTaskVoid BleedLoop(CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested && levelBleeding > 0)
+            {
+                // ✅ 현재 레벨 기준 적용 주기 계산
+                float tickInterval = Mathf.Clamp(2.5f - levelBleeding * 0.4f, 0.2f, 2.5f);
+                float bleedDamage = levelBleeding * 2f; // 예: 2 데미지 * 레벨
+
+                healthPoint -= bleedDamage;
+                if (healthPoint <= 0)
+                {
+                    Die();
+                    break;
+                }
+
+                UpdateStatusUI();
+                await UniTask.Delay((int)(tickInterval * 1000f), cancellationToken: token);
+            }
+        }
+        catch { /* 무시 */ }
+        finally
+        {
+            bleedCTS?.Dispose();
+            bleedCTS = null;
+        }
+    }
+
 
     public override void OnHitDamage(float damage, float penetration, Vector2 hitPoint, Vector2 hitNormal, Faction projectileFaction)
     {
         
         base.OnHitDamage(damage, penetration, hitPoint, hitNormal, projectileFaction);
+        float penetratedArmor = armorPoint - penetration;
+        float penetratedDamage;
+        if (penetratedArmor > 0f)
+        {
+            penetratedDamage = damage - (penetratedArmor * 2);
+        }
+        else if (damage >= 1f)
+        {
+            penetratedDamage = 1f;
+        }
+        else
+        {
+            penetratedDamage = damage;
+        }
+
+        healthPoint -= penetratedDamage;
+
+        // 출혈 확률 계산
+        float baseBleedChance = 0.1f;
+
+        // 피해량 기반 보정
+        float damageRatio = Mathf.Clamp01(penetratedDamage / 20f);
+        baseBleedChance += damageRatio * 0.3f;
+
+        // 관통력 기반 보정
+        float penetrationBonus = Mathf.Clamp01(penetration / 10f);
+        baseBleedChance += penetrationBonus * 0.2f;
+
+        // 방어력 감쇠
+        float armorRatio = Mathf.Clamp01(armorPoint / 10f);
+        baseBleedChance -= armorRatio * 0.25f;
+
+        // 확률로 적용
+        if (Random.value < Mathf.Clamp01(baseBleedChance))
+        {
+            AddBleed(1); // 출혈 1레벨 적용
+        }
+
+
         UpdateStatusUI();
     }
 
