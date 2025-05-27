@@ -24177,7 +24177,7 @@ MonoBehaviour:
   weightMax: 60
   isBleeding: 0
   levelBleeding: 0
-  levelBleedingMax: 0
+  levelBleedingMax: 5
   bleedImage: {fileID: 2845937907547295270}
   bleedText: {fileID: 3513629789403645681}
   money: 600000

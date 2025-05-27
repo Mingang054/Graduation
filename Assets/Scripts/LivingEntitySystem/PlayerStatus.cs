@@ -26,7 +26,7 @@ public class PlayerStatus : DamageableEntity
 
     public bool isBleeding = false;
     public int levelBleeding = 0;
-    public int levelBleedingMax = 0;
+    public int levelBleedingMax = 5;
     public GameObject bleedImage;
     public TMP_Text bleedText;
 
@@ -193,6 +193,7 @@ public class PlayerStatus : DamageableEntity
         if (Random.value < Mathf.Clamp01(baseBleedChance))
         {
             AddBleed(1); // 출혈 1레벨 적용
+            Debug.Log("출혈발생");
         }
 
 
@@ -367,6 +368,7 @@ public class PlayerStatus : DamageableEntity
     {
         CancelAllRegens();
         UIManager.Instance.EnableGameOverUI();
+        PlayerMovement.Instance.enabled = false;
         base.Die();
         //base.Die();
     }
