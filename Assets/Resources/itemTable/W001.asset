@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: W001
   m_EditorClassIdentifier: 
   size: {x: 4, y: 2}
-  itemName: AR-15
+  itemName: MK4
   itemCode: W001
   itemSprite: {fileID: -6523142373678959762, guid: b3bdc39ceadcf6c40ba48684213813b8, type: 3}
   price: 10000
@@ -27,7 +27,7 @@ MonoBehaviour:
   penetration: 10
   damageAP: 0
   penetrationAP: 0
-  fireRate: 0.1
+  fireRate: 0.15
   fireDelay: 0
   projectileSpeed: 16
   pelletCount: 1

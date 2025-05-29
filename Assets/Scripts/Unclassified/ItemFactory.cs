@@ -52,7 +52,7 @@ public static class ItemFactory
         if (itemData is WeaponData weaponData) return new Weapon(weaponData);
         if (itemData is ArmorData armorData) return new Armor(armorData);
         if (itemData is ConsumableData consumableData) return new Consumable(consumableData);
-
+        if (itemData is EtcItemData etcItemData) return new ItemInstance(etcItemData);
         Debug.LogError($"[ItemFactory] 알 수 없는 아이템 타입: {itemData.GetType()}");
         return null;
     }

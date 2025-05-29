@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: W102
   m_EditorClassIdentifier: 
   size: {x: 2, y: 1}
-  itemName: Pisstool
+  itemName: testPistol
   itemCode: W102
   itemSprite: {fileID: 21300000, guid: 99b63c4a223085843a45df31a94dc215, type: 3}
   price: 500
@@ -21,6 +21,7 @@ MonoBehaviour:
   maxStack: 1
   itemType: 0
   description: 
+  forSale: 0
   category: 0
   damage: 1
   penetration: 1
@@ -35,10 +36,20 @@ MonoBehaviour:
   colliderSize: 1
   dispersion: 1
   dispersionRate: 1
+  magCountMax: 0
+  WeaponPrefab: {fileID: 0}
   reloadMode: 0
   fireMode: 0
   attackMode: 1
   attackClip: {fileID: 0}
+  loadClip: {fileID: 0}
+  loadbarClip: {fileID: 0}
+  empty: {fileID: 0}
+  weaponArm: {fileID: 0}
+  weaponBody: {fileID: 0}
+  weaponUnloadBody: {fileID: 0}
+  weaponLoadBar: {fileID: 0}
+  roadCount: []
   bullet: {fileID: 0}
   ammoType: 0
   durability: 100

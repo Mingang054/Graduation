@@ -6,6 +6,7 @@ public class WeaponLoadingBar : MonoBehaviour, IBeginDragHandler, IDragHandler, 
     public bool isX = true;
     public float pullOffset = 5f;
     public float pullMaxOffset = 6f;
+    
 
     private RectTransform rectTransform;
     private Vector2 originalPosition;
