@@ -1,5 +1,8 @@
 using Unity.Cinemachine;
+#if UNITY_EDITOR
 using UnityEditor.Timeline.Actions;
+#endif
+
 using UnityEngine;
 
 public class ZoomCursor : MonoBehaviour

@@ -4,7 +4,10 @@ using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+#if UNITY_EDITOR
 using Unity.PlasticSCM.Editor.WebApi;
+#endif
+
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -157,6 +160,17 @@ public class VestInventory : MonoBehaviour
 
         switch (a.ammoType)
         {
+            case WeaponAType.Shell:
+                if (a.reloadMode == ReloadType.Single)
+                {
+                    if(isGrip && originVestPlacable.ammoType == a.ammoType && weaponOnHand.currentWeapon.magCount < a.magCountMax)
+                    {
+                        weaponOnHand.currentWeapon.magCount++;
+                        AudioManager.Instance.PlaySFX(a.loadClip);  //소리재생
+                        UseGrip();
+                    }
+                }
+                    break;
             default:        //통상 방식
                 if (!weaponOnHand.currentWeapon.isMag)  //탄창이 없으면 바로 탄창 삽입 
                 {

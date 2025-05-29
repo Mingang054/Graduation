@@ -345,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 015c4035ce9881641b0742f0e9a5aedd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcCode: 
+  npcCode: E005
   healthPointMax: 100
   healthPoint: 100
   armorPoint: 10
@@ -354,7 +354,7 @@ MonoBehaviour:
   isDead: 0
   faction: 3
   entityCollider: {fileID: 0}
-  npcData: {fileID: 11400000, guid: 6a0ac19d7be95a24cad3987f37a4f331, type: 2}
+  npcData: {fileID: 11400000, guid: 26932ccb192ce304eb98b253d49def61, type: 2}
   isAttacking: 0
   alertState: 0
   agent: {fileID: 7167484162453746437}
@@ -366,9 +366,9 @@ MonoBehaviour:
   attackPostDelayTime: 1000
   ROFClose: 300
   ROFFar: 300
-  closeFire: 5
-  farFire: 5
-  reloadCount: 50
+  closeFire: 10
+  farFire: 10
+  reloadCount: 30
   reloadDelay: 6000
   A: 0
   rushRate: 1

@@ -38,6 +38,9 @@ public class PlayerStatus : DamageableEntity
     public Slider hpSlider;
     public Slider spSlider;
 
+    public Slider ergSlider;
+    public Slider hrdSlider;
+
     public NPCData npcData;
     private Animator animator;
     // entityCollider = GetComponent<Collider2D>(); 
@@ -49,8 +52,20 @@ public class PlayerStatus : DamageableEntity
 
 
 
+    private void OnEnable()   // 새 씬에서 다시 활성화될 때
+    {
+        // 예: 출혈·체력 상태 초기화
+        isBleeding = false;
+        levelBleeding = 0;
+        healthPoint = healthPointMax;
+        UpdateBleedUI();
+        UpdateStatusUI();
+    }
+
+
     public override void Awake()
     {
+        drainPerSec = 100f / drainDurationSec;   // ≒ 0.08333
         faction = Faction.Friendly;
         entityCollider = GetComponent<Collider2D>();
         
@@ -68,12 +83,24 @@ public class PlayerStatus : DamageableEntity
 
 
 
+    [Tooltip("고갈까지 걸리는 목표 시간(초)")]
+    public float drainDurationSec = 1200f;   // 20분 = 1 200초
 
+    private float drainPerSec;               // 초당 감소량
 
-    // Update is called once per frame
+   
+
     void Update()
     {
+        float dt = Time.deltaTime;
+
+        eneregy = Mathf.Max(0f, eneregy - drainPerSec * dt);
+        hydration = Mathf.Max(0f, hydration - drainPerSec * dt);
+        UpdateStatusUI();
+        // 필요하면 UI 갱신
+        // UpdateStatusUI();
     }
+
     private CancellationTokenSource bleedCTS;
     // UI 참조
 
@@ -172,7 +199,6 @@ public class PlayerStatus : DamageableEntity
             penetratedDamage = damage;
         }
 
-        healthPoint -= penetratedDamage;
 
         // 출혈 확률 계산
         float baseBleedChance = 0.1f;
@@ -208,7 +234,11 @@ public class PlayerStatus : DamageableEntity
     public void UpdateStatusUI()
     {
         hpSlider.value = healthPoint;
-        //
+        spSlider.value = staminaPoint;
+        ergSlider.value = eneregy;
+        hrdSlider.value = hydration;
+
+
     }
 
     public void initNPC()
@@ -363,13 +393,34 @@ public class PlayerStatus : DamageableEntity
         foreach (var eff in _activeRegens)
             eff.cts.Cancel();
         _activeRegens.Clear();
+
+        bleedCTS?.Cancel();        // ★ 출혈 CTS도 함께 취소
+        bleedCTS = null;
     }
+
+    private void OnDisable()       // 비활성화(씬 언로드 포함) 시
+    {
+        bleedCTS?.Cancel();
+        bleedCTS = null;
+        CancelAllRegens();         // 이미 구현된 재생 루프 취소
+    }
+
+    private void OnDestroy()       // 오브젝트 파괴 시도 동일
+    {
+        bleedCTS?.Cancel();
+        bleedCTS = null;
+    }
+
     public override void Die()
     {
         CancelAllRegens();
+
+        // 🔽 출혈 태스크도 강제 종료
+        bleedCTS?.Cancel();
+        bleedCTS = null;
+
         UIManager.Instance.EnableGameOverUI();
         PlayerMovement.Instance.enabled = false;
         base.Die();
-        //base.Die();
     }
 }

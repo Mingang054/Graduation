@@ -1,6 +1,10 @@
-﻿using Unity.PlasticSCM.Editor.WebApi;
+﻿#if UNITY_EDITOR
+using Unity.PlasticSCM.Editor.WebApi;
+#endif
+
 using Unity.VisualScripting;
-using UnityEditor.UI;
+using UnityEngine.UI;          // ✅ 유니티 UI
+using TMPro;                   // ✅ 텍스트메시 프로
 using UnityEngine;
 
 // 공통 아이템 속성을 가진 클래스

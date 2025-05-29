@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 017e5a97c42525440b06c80f40c74bfe, type: 3}
+  m_Name: M003-Graveyard 1
+  m_EditorClassIdentifier: 
+  questId: M003
+  title: Graveyard
+  description: 
+  objectives:
+  - type: 2
+    key: F001
+    targetCount: 1
+  itemRewards:
+  - itemId: W001
+    quantity: 1
+  moneyReward: 5000
+  requiredCompletedQuests:
+  - {fileID: 11400000, guid: 3cafc5fb3eec31d49bfa1710cb87e07f, type: 2}
+  isRepeatable: 0

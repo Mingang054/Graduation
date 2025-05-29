@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2ef97174c5aea84ba58d6cf616e68fd, type: 3}
-  m_Name: V002
+  m_Name: D003
   m_EditorClassIdentifier: 
   size: {x: 1, y: 1}
-  itemName: Watch
-  itemCode: V002
-  itemSprite: {fileID: 6072598326140135360, guid: 763928c0f1307014087c56fe81c36cb3, type: 3}
-  price: 3000
-  weight: 0.2
+  itemName: Goldbar
+  itemCode: D003
+  itemSprite: {fileID: 901578052349173646, guid: 763928c0f1307014087c56fe81c36cb3, type: 3}
+  price: 50000
+  weight: 8
   maxStack: 1
   itemType: 4
-  description: 
+  description: Jackpot
   forSale: 0

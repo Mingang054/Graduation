@@ -32,5 +32,6 @@ public enum Faction
     Friendly,
     Ruscist,
     Zombie,
+    Bandit
 }
 

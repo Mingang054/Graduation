@@ -24,8 +24,8 @@ MonoBehaviour:
   faction: 3
   damage: 45
   penetration: 40
-  attackAudio: {fileID: 8300000, guid: b03ba1c96fb95a747a2e8f0ff01387a1, type: 3}
-  bodySprite: {fileID: 8544195505073520909, guid: 69c0526fa1365714392cab0ebe448ef9, type: 3}
+  attackAudio: {fileID: 8300000, guid: 71bad3838e24d8b43ba311f13b751aa9, type: 3}
+  bodySprite: {fileID: 2063138471602320343, guid: c8340f73497e02a4a822b41c84757614, type: 3}
   bodyAnimation: {fileID: 7400000, guid: f3ce607574d32f24aa69a7632eed5a33, type: 2}
   armSprite: {fileID: -8958755221049680785, guid: d8feb1e97753bce499d7125d8fc12e20, type: 3}
   armAnimation: {fileID: 7400000, guid: f8427575d32b98b40970cb3607cdefbd, type: 2}

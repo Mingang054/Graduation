@@ -248,7 +248,7 @@ public static class SaveLoader
             if (slotUI != null)
             {
                 var itemUI = ItemUIPoolManager.Instance.GetItemUI(inst);
-                itemUI.GetComponent<ItemInstanceUI>().EquipItem(slotUI);
+                itemUI.GetComponent<ItemInstanceUI>().EquipItem(slotUI,true);
                 itemUI.GetComponent<ItemInstanceUI>().UpdateUI();
             }
         }

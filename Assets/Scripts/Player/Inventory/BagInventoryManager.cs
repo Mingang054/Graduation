@@ -1,8 +1,14 @@
 ﻿using System.Collections.Generic;
+#if UNITY_EDITOR
+
 using UnityEditorInternal.Profiling.Memory.Experimental;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
 using static UnityEditor.FilePathAttribute;
+#endif
+
 
 public class BagInventoryManager : MonoBehaviour
 {
@@ -158,33 +164,10 @@ public class BagInventoryManager : MonoBehaviour
         SetMyItems(myItems);
     }
 
-    public void ResetMyItems()  //Load 단계 외 구동 금지
-    {
+    public void ResetMyItems() => ClearItemUIs(myInventory, myItems);
 
-        // 1) 슬롯 점유 해제
-        for (int y = 1; y <= myInventoryVector.y; y++)
-        {
-            for (int x = 1; x <= myInventoryVector.x; x++)
-            {
-                mySlots[new Vector2Int(x, y)].SetOccupied(false);
-            }
-        }
 
-        // 2) opponentInventory 하위 자식 오브젝트 반환 (한 단계만)
-        foreach (Transform child in myInventory)
-        {
-            // 오브젝트가 ItemInstanceUI 컴포넌트를 가지고 있는지 확인
-            ItemInstanceUI ui = child.GetComponent<ItemInstanceUI>();
-            if (ui != null)
-            {
-                ItemUIPoolManager.Instance.ReturnItemUI(child.gameObject);
-            }
-        }
 
-        // 3) opponentItems 참조 제거
-        myItems = null;
-    }
-    
     public void SetMyItems(List<ItemInstance> setItems)
     {
 
@@ -197,7 +180,7 @@ public class BagInventoryManager : MonoBehaviour
                 mySlots[new Vector2Int(x, y)].SetOccupied(false);
             }
         }
-        myItems = setItems;
+        myItems = new List<ItemInstance>(setItems);
         //ItemPoolManager 연동 파트
         LoadMyItemsUI();
         //미구현
@@ -237,6 +220,8 @@ public class BagInventoryManager : MonoBehaviour
             }
         }
 
+        ClearItemUIs(opponentInventory, opponentItems);
+        /*
         // 2) opponentInventory 하위 자식 오브젝트 반환 (한 단계만)
         foreach (Transform child in opponentInventory)
         {
@@ -247,26 +232,29 @@ public class BagInventoryManager : MonoBehaviour
                 ItemUIPoolManager.Instance.ReturnItemUI(child.gameObject);
             }
         }
-
+        */
         // 3) opponentItems 참조 제거
         opponentItems = null;
     }
 
     public void SetOpponentItems(List<ItemInstance> setItems)
     {
-        ResetOpponentItems();
-        //기존 등록된 Item 해제
-        for (int y = 1; y<= opponentInventoryVector.y; y++)
+        ResetOpponentItems();           // ← 항상 먼저 클리어
+
+        opponentItems = new List<ItemInstance>(setItems);
+
+        foreach (var item in opponentItems)
         {
-            for(int x = 1; x<= opponentInventoryVector.x; x++)
-            {
-                opponentSlots[new Vector2Int(x, y)].SetOccupied(false);
-            }
+            OccupySlots(item.location, item.data.size, opponentSlots);
+
+            GameObject uiObj = ItemUIPoolManager.Instance.GetItemUI(item);
+            uiObj.transform.SetParent(opponentInventory, false);
+
+            var ui = uiObj.GetComponent<ItemInstanceUI>();
+            ui.Initialize(item);        // or ui.itemInstance = item; ui.UpdateUI();
+
+            uiObj.SetActive(true);
         }
-        opponentItems = setItems;
-        //ItemPoolManager 연동 파트
-        LoadOpponentItemsUI();
-        //미구현
     }
 
     //-- opponentInvneoty에 있는 아이템 UI로 로딩 --//
@@ -531,6 +519,27 @@ public class BagInventoryManager : MonoBehaviour
     }
 
 
+
+    /// <summary>
+    /// parentTransform 하위에 남아 있는 모든 ItemInstanceUI를 풀로 반환
+    /// + 로컬 List<ItemInstance> 도 비워준다
+    /// </summary>
+    private void ClearItemUIs(Transform parent, List<ItemInstance> itemList)
+    {
+        // ① 남아 있는 UI 오브젝트를 전부 풀로 반환
+        for (int i = parent.childCount - 1; i >= 0; i--)
+        {
+            Transform child = parent.GetChild(i);
+            if (child.TryGetComponent<ItemInstanceUI>(out var ui))
+            {
+                ui.itemInstance = null;                 // 참조 끊기
+                ItemUIPoolManager.Instance.ReturnItemUI(child.gameObject);
+            }
+        }
+
+        // ② 내부 리스트도 깨끗하게
+        itemList?.Clear();
+    }
 }
 
 

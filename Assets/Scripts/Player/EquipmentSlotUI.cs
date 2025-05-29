@@ -1,5 +1,8 @@
 using UnityEngine;
+#if UNITY_EDITOR
 using static UnityEditor.FilePathAttribute;
+#endif
+
 using UnityEngine.EventSystems;
 
 public class EquipmentSlotUI : MonoBehaviour

@@ -164,7 +164,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8544195505073520909, guid: 69c0526fa1365714392cab0ebe448ef9, type: 3}
+  m_Sprite: {fileID: -2488397520003069394, guid: 157231e9f754edc488cb8e95b9a22741, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -185,7 +185,7 @@ Animator:
   m_GameObject: {fileID: 6060164250564918476}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b0c99c30493e8b04598a6c96de7a1ddf, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4337320e2f2306b40b70ed5b71d52df3, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -354,7 +354,7 @@ MonoBehaviour:
   isDead: 0
   faction: 3
   entityCollider: {fileID: 0}
-  npcData: {fileID: 11400000, guid: 6a0ac19d7be95a24cad3987f37a4f331, type: 2}
+  npcData: {fileID: 11400000, guid: 96fc0d05c72676545947465465bffae9, type: 2}
   isAttacking: 0
   alertState: 0
   agent: {fileID: 7167484162453746437}
@@ -364,9 +364,13 @@ MonoBehaviour:
   attackCollider: {fileID: 0}
   attackPreDelayTime: 1000
   attackPostDelayTime: 2000
+  ROFClose: 200
+  ROFFar: 300
   closeFire: 1
   farFire: 1
   reloadCount: 5
+  reloadDelay: 5000
+  A: 0
   rushRate: 1
   stopRate: 4
   aroundRate: 4

@@ -6,11 +6,16 @@ public class SceneLoader : MonoBehaviour
 {
 
     public static SceneLoader instance;
-
     public void Awake()
     {
-       if (instance == null)
-       instance = this;
+        if (instance == null)
+            instance = this;
+
+        // 🔥 Title 씬이면 커서 활성화
+        if (SceneManager.GetActiveScene().name == "Title")
+        {
+            Cursor.visible = true;
+        }
     }
 
     private void Start()

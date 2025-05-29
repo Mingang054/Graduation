@@ -1,67 +1,76 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// 플레이어 이동 & 스프린트
+///  └ 스태미나 소모·회복은 PlayerStatus의 staminaPoint를 직접 사용
+/// </summary>
 public class PlayerMovement : MonoBehaviour
 {
-    public static PlayerMovement Instance { get; private set; } // 싱글톤 인스턴스
+    /* ────────────────── 싱글턴 ────────────────── */
+    public static PlayerMovement Instance { get; private set; }
 
+    /* ────────────────── 레퍼런스 ───────────────── */
     [SerializeField] private Animator animator;
-
-    // 임시 변수들
-    private float temp = 50f; // 임시 달리기용 자원
-    private float tempMax = 100f;
-    private float tempRegain = 1f;
-    private float tempCost = 5;
-
-    // sprint 플래그
-    private bool isSprinting = false;
-    private bool isSprintable = true;
-    private bool isSprintReset = true;
-
-    // 이동 관련 변수
-    private float walkSpeed = 4f;
-    public float WalkSpeed
-    {
-        get { return walkSpeed; }
-        private set { walkSpeed = Mathf.Clamp(value, 0f, 20f); }
-    }
-
-    private float sprintSpeed = 7.5f;
-    public float SprintSpeed
-    {
-        get { return sprintSpeed; }
-        private set { sprintSpeed = Mathf.Clamp(value, 0f, 20f); }
-    }
-
-
-    private Vector2 moveInput;
     private Rigidbody2D playerRigidbody2D;
     private Camera mainCamera;
+    private PlayerStatus status;                // ★ PlayerStatus 참조
 
-    //private float previousDirection = 1f; // 이전 방향 저장
-    private Vector3 previousMousePosition;
+    /* ────────────────── 스피드 ────────────────── */
+    [SerializeField] private float walkSpeed = 4f;
+    [SerializeField] private float sprintSpeed = 7.5f;
+
+    public float WalkSpeed
+    {
+        get => walkSpeed;
+        private set => walkSpeed = Mathf.Clamp(value, 0f, 20f);
+    }
+    public float SprintSpeed
+    {
+        get => sprintSpeed;
+        private set => sprintSpeed = Mathf.Clamp(value, 0f, 20f);
+    }
+
+    /* ────────────────── 스프린트 자원 ──────────── */
+    [Header("스태미나 소모·회복 (초당)")]
+    [SerializeField] private float staminaCostPerSec = 5f;  // 달릴 때 초당 소모
+    [SerializeField] private float staminaRegenPerSec = 1f;  // 걷기/정지 중 초당 회복
+
+    /* ────────────────── 입력 & 상태 ─────────────── */
+    private Vector2 moveInput;
+    private bool isSprinting = false;  // 버튼 누름 상태
+    private bool isSprintable = true;   // 스태미나가 남아 달릴 수 있는지
+    private bool isSprintReset = true;   // 버튼 떼었다 → 재눌러야 다시 달림
+
+    /* 애니메이터 캐시 */
     private bool wasWalking = false;
     private bool wasSprinting = false;
 
+    /* ────────────────── Unity 라이프사이클 ──────── */
     private void Awake()
     {
+        /* 싱글턴 */
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
+
         playerRigidbody2D = GetComponent<Rigidbody2D>();
-        mainCamera = Camera.main; // 메인 카메라 참조
+        mainCamera = Camera.main;
 
-        // 싱글톤 초기화
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject); // 중복 인스턴스 제거
-        }
-
-
+        /* PlayerStatus 찾기 */
+        status = PlayerStatus.instance ?? GetComponent<PlayerStatus>();
+        if (status == null)
+            Debug.LogError("PlayerStatus 인스턴스를 찾을 수 없습니다!", this);
     }
 
-    public void OnMove(InputValue value)            // WASD nomalVector 반환
+    private void Start()
+    {
+        if (status == null)
+        {
+            status = PlayerStatus.instance ?? GetComponent<PlayerStatus>();
+        }
+    }
+    /* ────────────────── 입력 시스템 ─────────────── */
+    public void OnMove(InputValue value)            // WASD
     {
         moveInput = value.Get<Vector2>();
     }
@@ -70,61 +79,53 @@ public class PlayerMovement : MonoBehaviour
     {
         if (value.isPressed)
         {
-            // Sprint 버튼을 다시 누르기 위해 먼저 떼야 한다.
-            if (!isSprintReset)
-                return;
-
+            if (!isSprintReset) return;             // 버튼 떼기 전에 재입력 방지
             isSprinting = true;
         }
         else
         {
-            // Sprint 버튼이 떼어질 때 상태 초기화
             isSprinting = false;
             isSprintReset = true;
         }
     }
 
-    private void Update()
-    {
-        //OptimizeFlipObject(); // 마우스 위치 변화 시에만 반전 처리
-    }
-
+    /* ────────────────── 메인 루프 ──────────────── */
     void FixedUpdate()
     {
-        OptimizeControlMovement(); // 이동 관련 최적화 처리
-        OptimizeUpdateAnimator(); // 애니메이션 상태 변경 시에만 업데이트
+        ControlMovementOptimized();   // 이동 + 스태미나
+        UpdateAnimatorOptimized();    // 애니메이션 변동 시만 적용
     }
 
-    private void OptimizeControlMovement()
+    /* ────────────────── 이동 & 스태미나 ─────────── */
+    private void ControlMovementOptimized()
     {
-        if (moveInput == Vector2.zero) // 이동하지 않을 때는 조기 반환
+        /* 이동 입력이 없으면 회복만 */
+        if (moveInput == Vector2.zero)
         {
-            RegainTemp();
+            RegainStamina();
             return;
         }
 
-        bool isTempEnough = temp > 0;
+        bool hasStamina = status.staminaPoint > 0f;
 
-        // 스프린트 가능 여부 업데이트
-        if (!isTempEnough)
+        /* 스프린트 가능 여부 재평가 */
+        if (!hasStamina)
         {
             isSprintable = false;
-            isSprinting = false; // 스프린트 중단
+            isSprinting = false;
         }
-        else if (!isSprinting)
-        {
-            isSprintable = true; // 스프린트가 아닌 경우 회복 가능
-        }
+        else if (!isSprinting) isSprintable = true;
 
-        if (isSprinting && isSprintable && isTempEnough)
+        /* 이동 */
+        if (isSprinting && isSprintable && hasStamina)
         {
             isSprintReset = false;
-            temp -= tempCost * Time.fixedDeltaTime;
+            DrainStamina();
             MovePlayer(sprintSpeed);
         }
         else
         {
-            RegainTemp();
+            RegainStamina();
             MovePlayer(walkSpeed);
         }
     }
@@ -135,58 +136,39 @@ public class PlayerMovement : MonoBehaviour
         playerRigidbody2D.MovePosition(playerRigidbody2D.position + movement);
     }
 
-    private void RegainTemp()
+    private void DrainStamina()
     {
-        temp = Mathf.Clamp(temp + tempRegain * Time.fixedDeltaTime, 0, tempMax);
+        status.staminaPoint = Mathf.Max(
+            0f,
+            status.staminaPoint - staminaCostPerSec * Time.fixedDeltaTime);
     }
 
-    public void SetMoveSpeed(float newSpeed)
+    private void RegainStamina()
     {
-        WalkSpeed = newSpeed; // 속성의 private set을 통해 값 설정
+        status.staminaPoint = Mathf.Clamp(
+            status.staminaPoint + staminaRegenPerSec * Time.fixedDeltaTime,
+            0f,
+            status.staminaPointMax);
     }
 
-
-    /*private void OptimizeFlipObject()    //PlayerShooter로 이관
+    /* ────────────────── 애니메이터 최적화 ───────── */
+    private void UpdateAnimatorOptimized()
     {
-        // 마우스 위치를 월드 좌표로 변환
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
+        bool isWalkingNow = moveInput != Vector2.zero && !isSprinting;
+        bool isSprintingNow = isSprinting && moveInput != Vector2.zero;
 
-        // 플레이어와 마우스 간의 거리 계산
-        Vector3 direction = mousePosition - transform.position;
-        float currentDirection = Mathf.Sign(direction.x);
-
-        // 방향이 바뀌었을 때만 처리
-        if (currentDirection != previousDirection)
+        if (isWalkingNow != wasWalking)
         {
-            previousDirection = currentDirection;
-
-            Vector3 scale = playerToFlip.localScale;
-            scale.x = Mathf.Abs(scale.x) * currentDirection;
-            playerToFlip.localScale = scale;
+            animator.SetBool("isWalk", isWalkingNow);
+            wasWalking = isWalkingNow;
         }
-    }*/
-
-
-    private void OptimizeUpdateAnimator()
-    {
-        // Stand -> Walk -> Sprint 전환을 위한 애니메이션 상태 설정
-        bool isWalking = moveInput != Vector2.zero && !isSprinting; // 걷는 중인지 확인
-        bool isSprintingNow = isSprinting && moveInput != Vector2.zero; // 달리는 중인지 확인
-
-        if (isWalking != wasWalking)
-        {
-            animator.SetBool("isWalk", isWalking);
-            wasWalking = isWalking;
-        }
-
         if (isSprintingNow != wasSprinting)
         {
             animator.SetBool("isSprint", isSprintingNow);
             wasSprinting = isSprintingNow;
         }
     }
+
+    /* ────────────────── 외부에서 걷기 속도 조정 ─── */
+    public void SetMoveSpeed(float newSpeed) => WalkSpeed = newSpeed;
 }
-
-
-

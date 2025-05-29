@@ -87,23 +87,24 @@ public class WeaponLoadingBarForM1014 : MonoBehaviour,
     }
 
     /*────────────────────────  공통 위치 적용  ────────────────*/
+    /*────────────────────────  공통 위치 적용  ────────────────*/
     private void ApplyOffset(float offset)
     {
-        // 주 UI
+        /* 주 핸들 UI 이동 ─ 기존과 동일 */
         Vector2 newPos = originalPosition;
-        if (isX) newPos.x += offset;
+        if (isX) newPos.x += offset;   // 주 UI 는 isX 축으로 이동
         else newPos.y -= offset;
         rectTransform.anchoredPosition = newPos;
 
-        // 짝꿍 UI
+        /* 짝꿍 UI 이동 ─ X 값은 절대 건드리지 않고 Y축만 이동 */
         if (linkedRect != null)
         {
             Vector2 lPos = linkedOriginalPos;
-            if (isX) lPos.x += offset;
-            else lPos.y -= offset;
+            lPos.y -= offset;          // 항상 세로 방향으로만 오프셋
             linkedRect.anchoredPosition = lPos;
         }
     }
+
 
     public void InsertWithIsStopped()
     {

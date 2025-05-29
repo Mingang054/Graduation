@@ -8,6 +8,8 @@ public class ItemDB : MonoBehaviour
     private Dictionary<string, ItemData> itemDictionary = new Dictionary<string, ItemData>();
 
     public List<ItemData> weaponItems = new List<ItemData>();
+    public List<ItemData> valueItems = new List<ItemData>();
+    public List<ItemData> dataItems = new List<ItemData>();
     public List<ItemData> foodItems = new List<ItemData>();
     public List<ItemData> healItems = new List<ItemData>();
 
@@ -43,6 +45,10 @@ public class ItemDB : MonoBehaviour
                     foodItems.Add(item);
                 else if (item.itemCode.StartsWith("H"))
                     healItems.Add(item);
+                else if (item.itemCode.StartsWith("D"))
+                    valueItems.Add(item);
+                else if (item.itemCode.StartsWith("V"))
+                    dataItems.Add(item);
             }
             else
             {

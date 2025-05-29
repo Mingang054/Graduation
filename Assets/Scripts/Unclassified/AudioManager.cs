@@ -10,6 +10,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource voiceSource;   //UIÈ¿°úÀ½
     [SerializeField] private AudioSource uiSource;
 
+    [SerializeField] private AudioClip eatClip;
+
     [SerializeField] private AudioClip coinClip;
     
     private void Awake()
@@ -54,5 +56,10 @@ public class AudioManager : MonoBehaviour
     public void PlayCoin()
     {
         PlaySFX(coinClip);
+    }
+
+    public void PlayEatAudio()
+    {
+        PlaySFX(eatClip);
     }
 }

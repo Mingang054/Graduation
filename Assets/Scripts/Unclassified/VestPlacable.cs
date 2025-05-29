@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using Unity.VisualScripting;
+#if UNITY_EDITOR
 using UnityEditor.Experimental.GraphView;
+#endif
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -79,7 +82,6 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
                     else
                         Debug.LogWarning("[UpdateUI] mediumSprite 인덱스 초과");
                     break;
-                    break;
                 case WeaponAType.Heavy:
                     image.sprite = spriteSet.heavySprite[count];
                     break;
@@ -144,11 +146,12 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
 
         var am = AmmunitionManager.instance;
 
+            int need = 0;
         switch (ammoType)
         {
-            case WeaponAType.Light:
-                int need = 90 - magAmmoCount;
-                if (need > 10) need = 10;
+            case WeaponAType.Pistol:
+                            need = 30 - magAmmoCount;
+                if (need > 10) need = 15;
                 if (am.lightAmmo < need) need = am.lightAmmo;
 
                 if (need > 0)
@@ -156,9 +159,33 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
                     am.lightAmmo -= need;
                     magAmmoCount += need;
 
-                    if (magAmmoCount > 60)
-                        count = 3;
-                    else if (magAmmoCount > 30)
+                    if (magAmmoCount > 30)
+                        count = 2;
+                    else if (magAmmoCount > 0)
+                        count = 1;
+                    else
+                        count = 0;
+                    am.UpdateAmmo();
+                    UpdateUI();
+                }
+
+                // 여기서 조건 판단
+                if (magAmmoCount >= 30 || am.mediumAmmo <= 0)
+                    return true; // 🔥 멈춰야 한다
+                else
+                    return false; // 계속 진행
+
+            case WeaponAType.Light:
+                need = 60 - magAmmoCount;
+                if (need > 10) need = 15;
+                if (am.lightAmmo < need) need = am.lightAmmo;
+
+                if (need > 0)
+                {
+                    am.lightAmmo -= need;
+                    magAmmoCount += need;
+
+                    if (magAmmoCount > 30)
                         count = 2;
                     else if (magAmmoCount > 0)
                         count = 1;
@@ -202,14 +229,16 @@ public class VestPlacable : MonoBehaviour, IPointerClickHandler, IPointerDownHan
                     return false; // 계속 진행
 
             case WeaponAType.Shell:
-                if (am.shellAmmo > 0)
+                if (am.shellAmmo > 0 && am.shellAmmo < 8)
                 {
                     am.shellAmmo--;
                     count++;
                     am.UpdateAmmo();
                     UpdateUI();
                 }
-
+                if (count>=8 || am.shellAmmo <=0)
+                { return true; }
+                else
                 // shell은 아직 멈출 조건 따로 없음
                 return false;
 

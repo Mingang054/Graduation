@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c2ef97174c5aea84ba58d6cf616e68fd, type: 3}
-  m_Name: V001
+  m_Name: D002
   m_EditorClassIdentifier: 
   size: {x: 1, y: 1}
-  itemName: Golden Watch
-  itemCode: V001
-  itemSprite: {fileID: -793132797106500749, guid: 763928c0f1307014087c56fe81c36cb3, type: 3}
-  price: 7000
+  itemName: Watch
+  itemCode: D002
+  itemSprite: {fileID: 6072598326140135360, guid: 763928c0f1307014087c56fe81c36cb3, type: 3}
+  price: 3000
   weight: 0.2
   maxStack: 1
   itemType: 4

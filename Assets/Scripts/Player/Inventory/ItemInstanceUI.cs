@@ -1,13 +1,17 @@
 ﻿using Cysharp.Threading.Tasks.Triggers;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+#if UNITY_EDITOR
 using Unity.PlasticSCM.Editor.WebApi;
+#endif
+
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler,
+    IPointerClickHandler
 {
     private CanvasGroup canvasGroup;
     public Image itemImage;
@@ -22,7 +26,53 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     private Vector2Int originLocation;
     private Vector2 originalPosition;
 
-    private float Cell => BagInventoryManager.Instance.CellSize;
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        // ① 우-클릭만 반응
+        if (eventData.button != PointerEventData.InputButton.Right) return;
+
+        // ② 아이템이 ConsumableData인지 확인
+        if (itemInstance != null && itemInstance.data is ConsumableData consumableData)
+        {
+            // ── 음식(ConsumableType.Food)만 빠른 섭취 ──
+            if (consumableData.consumableType == ConsumableType.Food
+                && itemInstance is Consumable consum)        // ← 여기!
+            {
+                this.TryUseItem();
+
+            }
+        }
+    }
+
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        // 좌클릭 드래그 중엔 설명창 띄우지 않도록 예외 처리
+        if (eventData.dragging) return;
+
+        /* 예) 즉시 아이템 설명창에 텍스트 채우기 */
+        if (itemdescript.itemDescription != null && itemInstance != null)
+        {
+            ItemData data = itemInstance.data;
+            itemdescript.itemDescription.SetText(
+                data.itemName,
+                data.price,
+                data.description);
+            itemdescript.itemDescription.gameObject.SetActive(true);
+        }
+
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        /* 예) 설명창 숨기기 */
+        if (itemdescript.itemDescription != null)
+            itemdescript.itemDescription.gameObject.SetActive(false);
+
+    }
+
+
+private float Cell => BagInventoryManager.Instance.CellSize;
     private void OnEnable()
     {
         if (itemInstance != null && itemInstance.data!=null) 
@@ -209,6 +259,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
         // 기존처럼 delta 기반으로 UI 이동
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
 
@@ -218,6 +269,10 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
 
     public void OnEndDrag(PointerEventData eventData)
     {
+
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+
+
         Debug.Log($"[OnEndDrag] 드래그 종료: {itemInstance.data.itemName}");
 
         // 다시 RaycastTarget 활성화
@@ -409,7 +464,7 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         return true;
     }
 
-    public void EquipItem(EquipmentSlotUI foundEquipUI) {
+    public void EquipItem(EquipmentSlotUI foundEquipUI, bool fromLoad = false) {
         //게임 로드 시에도 사용가능
 
         //기존 위치에 대한 점유해제 및 리스트 내 삭제
@@ -439,11 +494,16 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         itemInstance.currentEquipSlotType = foundEquipUI.GetEquipSlotType();
 
         Weapon weapon = itemInstance as Weapon;
-        WeaponData weaponData = weapon.data as WeaponData;
+        WeaponData wData = weapon.data as WeaponData;
 
-        GameObject ob = Instantiate(weaponData.WeaponPrefab, VestInventory.Instance.hand);
-        ob.SetActive(false);
-        
+        GameObject ob = null;
+        if (!fromLoad)                               // ★ 세이브 로드 시엔 생성 생략
+        {
+            ob = Instantiate(wData.WeaponPrefab, VestInventory.Instance.hand);
+            ob.SetActive(false);
+        }
+
+
         switch (foundEquipUI.GetEquipSlotType())
         {
             case EquipSlotType.firstWeapon:
@@ -783,7 +843,6 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             {
                 // item 또는 힐 칸에서 제거 로직 (미구현)
                 RemoveItemOnUI();
-                ItemUIPoolManager.Instance.ReturnItemUI(this.gameObject);
             }
             else
             {
@@ -791,18 +850,23 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             }
         }
     }
-
     public void RemoveItemOnUI()
     {
         var bag = BagInventoryManager.Instance;
 
         /* ① 인벤토리에 있었던 경우 → 리스트에서 빼고 슬롯 점유 해제 */
-        if (bag.myItems.Remove(itemInstance))
+        if (bag.myItems.Contains(itemInstance))
+        {
+            bag.FreeItemSlots(itemInstance);          // 점유 해제
+            bag.myItems.Remove(itemInstance);         // 리스트 제거
+        }
+        else if (bag.opponentItems != null && bag.opponentItems.Contains(itemInstance))
+        {
             bag.FreeItemSlots(itemInstance);
-        else if (bag.opponentItems != null && bag.opponentItems.Remove(itemInstance))
-            bag.FreeItemSlots(itemInstance);
+            bag.opponentItems.Remove(itemInstance);
+        }
 
-        /* ② 힐‑슬롯에 들어 있던 경우 → HealItemManager 정리 */
+        /* ② 힐-슬롯에 들어 있던 경우 → HealItemManager 정리 */
         var hMgr = HealItemManager.instance;
         if (hMgr != null && itemInstance is Consumable con)
         {
@@ -810,8 +874,8 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
             {
                 if (hMgr.consumables[i] == con)
                 {
-                    hMgr.consumables[i] = null;                 // 배열 비움
-                    hMgr.healSlot[i].equipedItem = null;                 // 슬롯‑UI 비움
+                    hMgr.consumables[i] = null;   // 배열 비움
+                    hMgr.healSlot[i].equipedItem = null; // 슬롯-UI 비움
                     break;
                 }
             }
@@ -820,5 +884,14 @@ public class ItemInstanceUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
         /* ③ 착용 중이었으면 해제 */
         if (itemInstance.currentEquipSlotUI != null)
             UnEquip();
+
+        /* ── 여기서 참조 끊기 (중요) ───────────────────────── */
+        itemInstance = null;           // ★ 다음 재사용 때 이전 데이터 잔존 방지
+        itemImage.sprite = null;      // (선택) 아이콘 초기화
+        itemCountText.text = "";
+
+        /* ④ 마지막에 UI 풀로 반환 (호출부에 이미 있다면 중복 호출 금지) */
+        ItemUIPoolManager.Instance.ReturnItemUI(gameObject);
     }
+
 }

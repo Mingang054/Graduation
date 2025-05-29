@@ -134,6 +134,11 @@ public class PlayerShooter : MonoBehaviour
         if (currentWeaponData.attackClip != null)
         {
             AudioManager.Instance.PlaySFX(currentWeaponData.attackClip);
+            if (currentWeaponData.category == WeaponCategoryLegacy.Shotgun)
+            {
+
+                AudioManager.Instance.PlaySFX(currentWeaponData.loadbarClip);
+            }
         }
 
         for (int i = 0; i < currentWeaponData.pelletCount; i++)

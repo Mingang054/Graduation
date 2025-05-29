@@ -14,13 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questId: M003
   title: Graveyard
-  description: 
+  description: 'Kill 2 MG Gunner.
+
+    Kill 2 Elite MG Gunner.'
   objectives:
-  - type: 2
-    key: F001
-    targetCount: 1
+  - type: 0
+    key: E004
+    targetCount: 2
+  - type: 0
+    key: E005
+    targetCount: 2
   itemRewards:
   - itemId: W001
+    quantity: 1
+  - itemId: W003
     quantity: 1
   moneyReward: 5000
   requiredCompletedQuests:

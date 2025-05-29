@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65eb3cdf2fdb3dc468bfc646a1a4111b, type: 3}
+  m_Name: E004-EliteMG
+  m_EditorClassIdentifier: 
+  essential: 0
+  npcCode: E004
+  health: 120
+  armor: 20
+  speed: 0.8
+  detectionRange: 25
+  fireRange: 25
+  attckType: 0
+  trackType: 1
+  faction: 3
+  damage: 45
+  penetration: 20
+  attackAudio: {fileID: 8300000, guid: 7109c0eea120b00488278ee6e4b4dec2, type: 3}
+  bodySprite: {fileID: -2488397520003069394, guid: 157231e9f754edc488cb8e95b9a22741, type: 3}
+  bodyAnimation: {fileID: 7400000, guid: c2b0dfa2bb43dd641a4851fdd917824c, type: 2}
+  armSprite: {fileID: 6697041672820064122, guid: 27bd94625610432418c87f1e3b2736f7, type: 3}
+  armAnimation: {fileID: 0}
+  attackSprite: {fileID: 0}
+  attackAnimation: {fileID: 0}
+  deathAnimation: {fileID: 0}
+  deathAudio: {fileID: 8300000, guid: 2772181598cf8834ab7ad877159624c9, type: 3}
+  onHitAudio: {fileID: 8300000, guid: fae419b7422642d418da55520dfc9f56, type: 3}
+  projectileSprite: {fileID: -9162543748346876049, guid: dc89443e6b4d3ba4ca5433c199e72613, type: 3}

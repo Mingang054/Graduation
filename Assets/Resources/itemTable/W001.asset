@@ -27,9 +27,9 @@ MonoBehaviour:
   penetration: 10
   damageAP: 0
   penetrationAP: 0
-  fireRate: 0.15
+  fireRate: 0.1
   fireDelay: 0
-  projectileSpeed: 16
+  projectileSpeed: 20
   pelletCount: 1
   barrelLength: 1
   timeToSwap: 0

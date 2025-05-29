@@ -1,4 +1,8 @@
+
+#if UNITY_EDITOR
 using Unity.PlasticSCM.Editor.WebApi;
+#endif
+
 using UnityEngine;
 
 public class HealItemManager : MonoBehaviour
@@ -17,6 +21,10 @@ public class HealItemManager : MonoBehaviour
     public Consumable currentConsumable;
     public ItemInstanceUI currentConsumableUI;
 
+    public void OnDisable()
+    {
+        itemdescript.itemDescription.gameObject.SetActive(false);
+    }
     private void Awake()
     {
         if (instance == null) instance = this;
