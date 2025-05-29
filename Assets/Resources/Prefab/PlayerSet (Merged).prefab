@@ -24162,8 +24162,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcCode: player
-  healthPointMax: 30
-  healthPoint: 30
+  healthPointMax: 50
+  healthPoint: 50
   armorPoint: 10
   reduction: 0
   isEssential: 0

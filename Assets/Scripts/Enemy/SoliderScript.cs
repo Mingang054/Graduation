@@ -28,10 +28,17 @@ public class SoliderScript : NPCBase
     private bool isFiring;                       // 🔑 FireTask 실행 중 여부
     public int attackPreDelayTime = 500;
     public int attackPostDelayTime = 1000;
+
+    public int ROFClose = 200;
+    public int ROFFar = 300;
     public int closeFire = 6;
     public int farFire = 3;
+    
     public int reloadCount = 15;
     public const int reloadMax = 15;
+    public int reloadDelay = 5000;
+    public int A;
+
 
     [Header("AI Random Weights")]
     public int rushRate = 2;
@@ -235,7 +242,7 @@ public class SoliderScript : NPCBase
             {
                 reloadCount -= closeFire;
                 for (int i = 0; i < closeFire; i++) {
-                    await UniTask.Delay(200, cancellationToken: token);
+                    await UniTask.Delay(ROFClose, cancellationToken: token);
                     FireProjectile();
                 }
             }
@@ -244,14 +251,14 @@ public class SoliderScript : NPCBase
                 reloadCount -= farFire;
                 for (int i = 0; i < farFire; i++)
                 {
-                    await UniTask.Delay(300, cancellationToken: token);
+                    await UniTask.Delay(ROFFar, cancellationToken: token);
                     FireProjectile();
                 }
             }
 
             if (reloadCount <= 0)
             {
-                await UniTask.Delay(6000, cancellationToken: token); // 재장전
+                await UniTask.Delay(reloadDelay, cancellationToken: token); // 재장전
                 reloadCount = reloadMax;
             }
 
