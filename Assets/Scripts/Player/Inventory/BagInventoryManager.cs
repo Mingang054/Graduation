@@ -459,17 +459,6 @@ public class BagInventoryManager : MonoBehaviour
 
 
 
-    //-- 스왑 구현(미구현)
-
-    public void SetPlayerWeapon()
-    {
-        //currentUsingWeapon = ;
-        //currentWeapon = ;
-    }
-    public void SetPlayerArmor()
-    {
-        //단순 합연산
-    }
 
 
 

@@ -301,8 +301,9 @@ public class PlayerStatus : DamageableEntity
     {
         isBleeding = true;
     }
-    public void StopBleed() {
-        isBleeding = false;
+    public void StopBleed()
+    {
+        RemoveBleed(2);
     }
 
 

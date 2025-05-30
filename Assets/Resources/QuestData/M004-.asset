@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 017e5a97c42525440b06c80f40c74bfe, type: 3}
-  m_Name: M003-Graveyard 1
+  m_Name: M004-
   m_EditorClassIdentifier: 
   questId: M003
   title: Graveyard
   description: 
   objectives:
-  - type: 2
-    key: F001
-    targetCount: 1
+  - type: 3
+    key: Bandit
+    targetCount: 12
   itemRewards:
-  - itemId: W001
+  - itemId: V001
     quantity: 1
   moneyReward: 5000
   requiredCompletedQuests:
-  - {fileID: 11400000, guid: 3cafc5fb3eec31d49bfa1710cb87e07f, type: 2}
+  - {fileID: 11400000, guid: fe39919cd4df7ad458683e445a0704ad, type: 2}
   isRepeatable: 0

@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Unity.VisualScripting;
 
 /// <summary>
 /// SaveLoader : 모든 세이브 데이터를 한 파일로 묶어 저장/로드
@@ -131,23 +132,32 @@ public static class SaveLoader
         };
 
         // ① 인벤토리
-        foreach (var it in bag.myItems) gs.inventory.myItems.Add(ToItem(it));
+        foreach (var it in bag.myItems) {
+            
+            gs.inventory.myItems.Add(ToItem(it)); }
 
         // ② 장비 슬롯
+        // ② 장비 슬롯
         foreach (var ui in new[] {
-                 bag.firstWeaponUI?.GetComponent<EquipmentSlotUI>(),
-                 bag.secondWeaponUI?.GetComponent<EquipmentSlotUI>(),
-                 bag.thirdWeaponUI?.GetComponent<EquipmentSlotUI>(),
-                 bag.headArmorUI?.GetComponent<EquipmentSlotUI>(),
-                 bag.bodyArmorUI?.GetComponent<EquipmentSlotUI>() })
+         bag.firstWeaponUI?.GetComponent<EquipmentSlotUI>(),
+         bag.secondWeaponUI?.GetComponent<EquipmentSlotUI>(),
+         bag.thirdWeaponUI ?.GetComponent<EquipmentSlotUI>(),
+         bag.headArmorUI  ?.GetComponent<EquipmentSlotUI>(),
+         bag.bodyArmorUI  ?.GetComponent<EquipmentSlotUI>() })
         {
             if (ui == null) continue;
+
+            /* ToItem() 결과가 null 이면 그 슬롯은 저장하지 않음 */
+            ItemSaveData saved = ui.equipedItem ? ToItem(ui.equipedItem.itemInstance) : null;
+            if (saved == null) continue;                 // ★ 필터링
+
             gs.equipSlot.equipSlots.Add(new EquipSlotSaveData
             {
                 slotType = ui.GetEquipSlotType(),
-                item = ui.equipedItem ? ToItem(ui.equipedItem.itemInstance) : null
+                item = saved
             });
         }
+
 
         // ③ 힐 슬롯
         for (int i = 0; i < heal.consumables.Length; i++)
@@ -217,39 +227,45 @@ public static class SaveLoader
         var newItems = new List<ItemInstance>();
         foreach (var saveItem in data.inventory.myItems)
         {
-            var item = ItemFactory.CreateItem(new ItemInitData
+            if (saveItem.itemCode != null)
             {
-                itemCode = saveItem.itemCode,
-                count = saveItem.count,
-                location = saveItem.location,
-                durability = saveItem.durability,
-                loaded = saveItem.loaded,
-                magCount = saveItem.magAmmoCount
-            });
-            newItems.Add(item);
+
+                var item = ItemFactory.CreateItem(new ItemInitData
+                {
+                    itemCode = saveItem.itemCode,
+                    count = saveItem.count,
+                    location = saveItem.location,
+                    durability = saveItem.durability,
+                    loaded = saveItem.loaded,
+                    magCount = saveItem.magAmmoCount
+                });
+                newItems.Add(item);
+            }
         }
         bag.SetMyItems(newItems);
 
         // ② 장비 슬롯 복구
         foreach (var equip in data.equipSlot.equipSlots)
         {
-            if (equip.item == null || string.IsNullOrEmpty(equip.item.itemCode))
-                continue;
-            var inst = ItemFactory.CreateItem(new ItemInitData
-            {
-                itemCode = equip.item.itemCode,
-                count = equip.item.count,
-                durability = equip.item.durability,
-                loaded = equip.item.loaded,
-                magCount = equip.item.magAmmoCount
-            });
+            if (equip.item != null || ! string.IsNullOrEmpty(equip.item.itemCode)) { 
+            
+                var inst = ItemFactory.CreateItem(new ItemInitData
+                {
+                    itemCode = equip.item.itemCode,
+                    count = equip.item.count,
+                    durability = equip.item.durability,
+                    loaded = equip.item.loaded,
+                    magCount = equip.item.magAmmoCount
+                });
 
-            var slotUI = BagInventoryManager.Instance.GetEquipSlotUI(equip.slotType);
-            if (slotUI != null)
-            {
-                var itemUI = ItemUIPoolManager.Instance.GetItemUI(inst);
-                itemUI.GetComponent<ItemInstanceUI>().EquipItem(slotUI,true);
-                itemUI.GetComponent<ItemInstanceUI>().UpdateUI();
+                var slotUI = BagInventoryManager.Instance.GetEquipSlotUI(equip.slotType);
+                if (slotUI != null)
+                {
+                    var itemUI = ItemUIPoolManager.Instance.GetItemUI(inst);
+                    itemUI.GetComponent<ItemInstanceUI>().EquipItem(slotUI,true);
+                    itemUI.GetComponent<ItemInstanceUI>().UpdateUI();
+                }
+            
             }
         }
 
@@ -365,17 +381,28 @@ public static class SaveLoader
     /*──────────────── ItemInstance ↔ SaveData 변환 ────────────────*/
     private static ItemSaveData ToItem(ItemInstance it)
     {
+        if (it == null || it.data == null ||          // ← 기존 검사
+            string.IsNullOrEmpty(it.data.itemCode))   // ← ★ itemCode 비어 있으면 무시
+        {
+            return null;      // 저장용 데이터 만들지 않음
+        }
+
         var d = new ItemSaveData
         {
             itemCode = it.data.itemCode,
             count = it.count,
             location = it.location
         };
-
-        if (it is Weapon w) { d.durability = w.durability; d.loaded = w.isChamber; d.magAmmoCount = w.magCount; }
+        if (it is Weapon w)
+        {
+            d.durability = w.durability;
+            d.loaded = w.isChamber;
+            d.magAmmoCount = w.magCount;
+        }
         else if (it is Armor a) d.durability = a.durability;
         return d;
     }
+
 }
 
 /*──────────────────────── Save Data 구조체 (통합) ────────────────────────*/
